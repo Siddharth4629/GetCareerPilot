@@ -1,7 +1,7 @@
 // api-client.js - Full-Stack MongoDB & Express REST API Client
 
 const ApiClient = (function() {
-  const API_BASE = '/api';
+  const API_BASE = (typeof window !== 'undefined' && window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
 
   function getToken() {
     return localStorage.getItem('devpath_token') || '';

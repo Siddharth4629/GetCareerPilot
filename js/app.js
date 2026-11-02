@@ -300,28 +300,40 @@ async function checkDbStatus() {
 
   try {
     const res = await ApiClient.checkStatus();
-    if (res.mongodbConnected) {
+    if (res.database === "supabase" || res.supabaseTableReady || res.supabaseConnected) {
       if (dot) {
         dot.style.background = "var(--color-teal)";
-        dot.style.boxShadow = "0 0 8px var(--color-teal)";
+        dot.style.boxShadow = "0 0 10px var(--color-teal)";
       }
-      if (text) text.innerText = "MongoDB Active 🟢";
+      if (text) text.innerText = "Supabase Database Connected 🟢";
+      pill.style.borderColor = "rgba(45, 212, 191, 0.4)";
+      pill.style.background = "rgba(45, 212, 191, 0.08)";
+    } else if (res.mongodbConnected) {
+      if (dot) {
+        dot.style.background = "var(--color-teal)";
+        dot.style.boxShadow = "0 0 10px var(--color-teal)";
+      }
+      if (text) text.innerText = "MongoDB Connected 🟢";
       pill.style.borderColor = "rgba(45, 212, 191, 0.4)";
     } else if (res.database === "local_store") {
       if (dot) {
         dot.style.background = "var(--color-indigo)";
-        dot.style.boxShadow = "0 0 8px var(--color-indigo)";
+        dot.style.boxShadow = "0 0 10px var(--color-indigo)";
       }
       if (text) text.innerText = "Database Active (Local Store) 🟣";
       pill.style.borderColor = "rgba(99, 102, 241, 0.4)";
     } else {
       if (dot) {
         dot.style.background = "var(--color-pink)";
-        dot.style.boxShadow = "0 0 8px var(--color-pink)";
+        dot.style.boxShadow = "0 0 10px var(--color-pink)";
       }
       if (text) text.innerText = "Offline Mode 🟡";
     }
   } catch (e) {
+    if (dot) {
+      dot.style.background = "var(--color-pink)";
+      dot.style.boxShadow = "0 0 10px var(--color-pink)";
+    }
     if (text) text.innerText = "Offline Mode 🟡";
   }
 }
