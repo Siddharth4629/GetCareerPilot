@@ -519,6 +519,58 @@ app.put('/api/user/profile', authenticate, async (req, res) => {
   }
 });
 
+
+// ==========================================
+// 10. SECURE SERVER-SIDE AI GATEWAY (GEMINI 2.5 FLASH)
+// ==========================================
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+
+app.get('/api/ai/status', (req, res) => {
+  res.json({
+    configured: Boolean(GEMINI_API_KEY && GEMINI_API_KEY.trim() !== ''),
+    model: 'gemini-2.5-flash',
+    architecture: 'secure_server_proxy',
+    message: GEMINI_API_KEY ? 'Backend AI Gateway Active 🟢' : 'Server AI Gateway ready for key or offline fallback'
+  });
+});
+
+app.post('/api/ai/generateContent', async (req, res) => {
+  try {
+    const { contents, systemInstruction, generationConfig } = req.body;
+    // Support server environment key, or client developer override via header
+    const key = GEMINI_API_KEY || req.headers['x-gemini-key'] || (req.body && req.body.apiKey);
+
+    if (!key) {
+      return res.status(503).json({
+        error: 'Gemini API key is not configured on the backend server',
+        fallbackAvailable: true
+      });
+    }
+
+    const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+    const payload = { contents };
+    if (systemInstruction) payload.systemInstruction = systemInstruction;
+    if (generationConfig) payload.generationConfig = generationConfig;
+
+    const apiRes = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!apiRes.ok) {
+      const errText = await apiRes.text();
+      return res.status(apiRes.status).json({ error: errText });
+    }
+
+    const data = await apiRes.json();
+    res.json(data);
+  } catch (err) {
+    console.error('Server AI Gateway error:', err.message);
+    res.status(500).json({ error: err.message, fallbackAvailable: true });
+  }
+});
+
 // 10. Serve Static Files
 app.use(express.static(path.join(__dirname)));
 

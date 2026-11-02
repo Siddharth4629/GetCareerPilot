@@ -793,43 +793,80 @@ function toggleInterestChip(element, interestName) {
   }
 }
 
+
 function loadAdvisorDemoProfile(field = 'tech') {
   const bgInput = document.getElementById("advisor-background");
   const skillsInput = document.getElementById("advisor-skills");
   const ambitionSelect = document.getElementById("advisor-ambition");
   const levelSelect = document.getElementById("advisor-level");
 
-  levelSelect.value = "intermediate";
+  if (levelSelect) levelSelect.value = "intermediate";
 
-  if (field === 'finance') {
-    bgInput.value = "B.Com in Accounting & Financial Management";
-    skillsInput.value = "Financial Modeling, Advanced Excel, Valuation, Ratio Analysis, Accounting Principles";
-    ambitionSelect.value = "Finance, investment banking, valuation & wealth advisory";
+  if (field === 'school-stream') {
+    if (bgInput) bgInput.value = "Class 10 High School Student (CBSE/ICSE)";
+    if (skillsInput) skillsInput.value = "Mathematics, Physics, Logical Reasoning, Creative Writing, Scratch Programming";
+    if (ambitionSelect) ambitionSelect.value = "High-growth tech, AI innovations & software development";
+    state.selectedInterests = ["Software & Artificial Intelligence", "Engineering & Core Systems"];
+    showToast("Loaded Class 10 (Stream Selection) profile!", "info");
+  } else if (field === 'higher-neet-med') {
+    if (bgInput) bgInput.value = "Class 12 Science PCB (NEET Aspirant)";
+    if (skillsInput) skillsInput.value = "Human Physiology, Organic Chemistry, Botany, Genetics, Clinical Curiosity";
+    if (ambitionSelect) ambitionSelect.value = "Healthcare, biomedical sciences & clinical practice";
+    state.selectedInterests = ["Healthcare & Biomedical Sciences", "Data Science & Analytics"];
+    showToast("Loaded Class 12 Medical / NEET profile!", "info");
+  } else if (field === 'higher-law') {
+    if (bgInput) bgInput.value = "Class 12 Humanities / Commerce (CLAT Aspirant)";
+    if (skillsInput) skillsInput.value = "Legal Reasoning, Constitutional Awareness, Debate, Critical Reading, Current Affairs";
+    if (ambitionSelect) ambitionSelect.value = "Law, corporate governance, civil services & public policy";
+    state.selectedInterests = ["Law, Legal Studies & Public Policy", "Product & Business Management"];
+    showToast("Loaded Class 12 Law / CLAT profile!", "info");
+  } else if (field === 'higher-cuet-commerce') {
+    if (bgInput) bgInput.value = "Class 12 Commerce with Mathematics (CUET Aspirant)";
+    if (skillsInput) skillsInput.value = "Accountancy, Business Studies, Microeconomics, Calculus, Statistics";
+    if (ambitionSelect) ambitionSelect.value = "Finance, investment banking, valuation & wealth advisory";
+    state.selectedInterests = ["Finance & Investment Banking", "Product & Business Management"];
+    showToast("Loaded Class 12 Commerce / CUET profile!", "info");
+  } else if (field === 'gov') {
+    if (bgInput) bgInput.value = "Undergraduate Degree in Humanities / Social Sciences / Engineering";
+    if (skillsInput) skillsInput.value = "Indian Polity, Public Administration, Essay Writing, Ethics, Socio-Economic Policy";
+    if (ambitionSelect) ambitionSelect.value = "Law, corporate governance, civil services & public policy";
+    state.selectedInterests = ["Civil Services & Public Administration", "Law, Legal Studies & Public Policy"];
+    showToast("Loaded Civil Services / UPSC sample profile!", "info");
+  } else if (field === 'defense') {
+    if (bgInput) bgInput.value = "Class 12 Science PCM / NDA Aspirant";
+    if (skillsInput) skillsInput.value = "Aerodynamics Basics, Physical Fitness, Navigation, Leadership, Mental Agility";
+    if (ambitionSelect) ambitionSelect.value = "Core engineering, manufacturing, robotics & physical systems";
+    state.selectedInterests = ["Aviation & Defense Services", "Engineering & Core Systems"];
+    showToast("Loaded Aviation & Defense sample profile!", "info");
+  } else if (field === 'finance') {
+    if (bgInput) bgInput.value = "B.Com in Accounting & Financial Management";
+    if (skillsInput) skillsInput.value = "Financial Modeling, Advanced Excel, Valuation, Ratio Analysis, Accounting Principles";
+    if (ambitionSelect) ambitionSelect.value = "Finance, investment banking, valuation & wealth advisory";
     state.selectedInterests = ["Finance & Investment Banking", "Data Science & Analytics"];
     showToast("Loaded Finance & Commerce sample profile!", "info");
   } else if (field === 'business') {
-    bgInput.value = "BBA / Bachelor in Business Management";
-    skillsInput.value = "Product Strategy, Agile, Market Research, Jira, PRD Writing, Communication";
-    ambitionSelect.value = "Corporate leadership, product management & business strategy";
+    if (bgInput) bgInput.value = "BBA / Bachelor in Business Management";
+    if (skillsInput) skillsInput.value = "Product Strategy, Agile, Market Research, Jira, PRD Writing, Communication";
+    if (ambitionSelect) ambitionSelect.value = "Corporate leadership, product management & business strategy";
     state.selectedInterests = ["Product & Business Management", "Marketing, SEO & Content Strategy"];
     showToast("Loaded Business & Product Management sample profile!", "info");
   } else if (field === 'design') {
-    bgInput.value = "B.Des in Visual Communication / Self-Taught UI Designer";
-    skillsInput.value = "Figma, Wireframing, User Research, Prototyping, Typography, Adobe XD";
-    ambitionSelect.value = "Creative design, media, UI/UX & digital arts";
+    if (bgInput) bgInput.value = "B.Des in Visual Communication / Self-Taught UI Designer";
+    if (skillsInput) skillsInput.value = "Figma, Wireframing, User Research, Prototyping, Typography, Adobe XD";
+    if (ambitionSelect) ambitionSelect.value = "Creative design, media, UI/UX & digital arts";
     state.selectedInterests = ["UI/UX & Visual Design", "Product & Business Management"];
     showToast("Loaded UI/UX & Creative Arts sample profile!", "info");
   } else if (field === 'healthcare') {
-    bgInput.value = "B.Sc in Biotechnology / Pre-Med Student";
-    skillsInput.value = "Molecular Biology, PCR, Clinical Protocols, Biostatistics, Laboratory Safety";
-    ambitionSelect.value = "Healthcare, biomedical sciences & clinical practice";
+    if (bgInput) bgInput.value = "B.Sc in Biotechnology / Pre-Med Student";
+    if (skillsInput) skillsInput.value = "Molecular Biology, PCR, Clinical Protocols, Biostatistics, Laboratory Safety";
+    if (ambitionSelect) ambitionSelect.value = "Healthcare, biomedical sciences & clinical practice";
     state.selectedInterests = ["Healthcare & Biomedical Sciences", "Data Science & Analytics"];
     showToast("Loaded Healthcare & Biomedical sample profile!", "info");
   } else {
     // Tech & AI (default)
-    bgInput.value = "B.Tech in Computer Science & Engineering (3rd Year)";
-    skillsInput.value = "Python, JavaScript, HTML5/CSS3, Git, SQL, Basics of Machine Learning";
-    ambitionSelect.value = "High-growth tech, AI innovations & software development";
+    if (bgInput) bgInput.value = "B.Tech in Computer Science & Engineering (3rd Year)";
+    if (skillsInput) skillsInput.value = "Python, JavaScript, HTML5/CSS3, Git, SQL, Basics of Machine Learning";
+    if (ambitionSelect) ambitionSelect.value = "High-growth tech, AI innovations & software development";
     state.selectedInterests = ["Software & Artificial Intelligence", "Data Science & Analytics"];
     showToast("Loaded Tech & AI student profile!", "info");
   }
@@ -838,7 +875,7 @@ function loadAdvisorDemoProfile(field = 'tech') {
   const chips = document.querySelectorAll("#advisor-interest-chips .interest-chip");
   chips.forEach(chip => {
     const text = chip.innerText.trim();
-    const isSelected = state.selectedInterests.some(sel => text.includes(sel.split(" ")[0]) || sel.includes(text.split(" ")[0]));
+    const isSelected = state.selectedInterests && state.selectedInterests.some(sel => text.includes(sel.split(" ")[0]) || sel.includes(text.split(" ")[0]));
     if (isSelected) {
       chip.classList.add("selected");
     } else {
@@ -846,6 +883,7 @@ function loadAdvisorDemoProfile(field = 'tech') {
     }
   });
 }
+
 
 async function generateCareerRecommendations() {
   const background = document.getElementById("advisor-background").value.trim();

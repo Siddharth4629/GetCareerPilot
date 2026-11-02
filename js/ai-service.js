@@ -5,6 +5,44 @@ class AIService {
     return "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
   }
 
+  /**
+   * Routes AI requests securely through the backend server proxy.
+   * Protects API credentials on the server and prevents client key exposure.
+   */
+  static async requestGeminiAPI(payload, apiKey = "") {
+    // 1. Try secure backend AI gateway first
+    try {
+      const headers = { "Content-Type": "application/json" };
+      if (apiKey) headers["x-gemini-key"] = apiKey;
+
+      const backendRes = await fetch("/api/ai/generateContent", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (backendRes.ok) {
+        return await backendRes.json();
+      }
+    } catch (e) {
+      console.warn("Backend AI gateway unreachable:", e.message);
+    }
+
+    // 2. Direct fallback if apiKey is provided
+    if (apiKey && apiKey.trim() !== "") {
+      const directUrl = `${this.getGeminiURL()}?key=${apiKey}`;
+      const directRes = await fetch(directUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (directRes.ok) return await directRes.json();
+    }
+
+    throw new Error("AI service unavailable; falling back to offline heuristic engine.");
+  }
+
+
   // ==========================================
   // 1. PERSONALIZED CAREER RECOMMENDATIONS (ALL FIELDS)
   // ==========================================
@@ -14,14 +52,12 @@ class AIService {
    * skills, interests, and ambitions. Uses Gemini API with structured JSON schema or local multi-field heuristic fallback.
    */
   static async generateCareerRecommendations(profile, apiKey = "") {
-    if (apiKey && apiKey.trim() !== "") {
-      try {
-        return await this.generateCareerRecommendationsWithGemini(profile, apiKey);
-      } catch (error) {
-        console.error("Gemini Career Recommendations API error, falling back to local engine:", error);
-      }
+    try {
+      return await this.generateCareerRecommendationsWithGemini(profile, apiKey);
+    } catch (error) {
+      console.warn("Gemini recommendations error, falling back to local engine:", error.message);
+      return this.generateCareerRecommendationsOffline(profile);
     }
-    return this.generateCareerRecommendationsOffline(profile);
   }
 
   static async generateCareerRecommendationsWithGemini(profile, apiKey) {
@@ -61,24 +97,14 @@ Ensure recommendations:
 - Provide realistic 2026 industry growth benchmarks and salary ranges.
 - Offer actionable next steps so the student can immediately launch a custom roadmap.`;
 
-    const response = await fetch(`${this.getGeminiURL()}?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          temperature: 0.4
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Gemini Recommendations error ${response.status}: ${errText}`);
-    }
-
-    const data = await response.json();
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.4
+      }
+    };
+    const data = await this.requestGeminiAPI(payload, apiKey);
     const resultText = data.candidates[0].content.parts[0].text;
     return JSON.parse(resultText);
   }

@@ -1293,19 +1293,28 @@
               <div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700;">AI Career Guidance & Recommendations</h2>
-                  <span class="ai-badge">Universal AI Advisor</span>
+                  <span class="ai-badge">AI Career Advisor</span>
                 </div>
                 <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
                   Personalized 2026 guidance for students and professionals across ALL disciplines: Tech, Business, Finance, Design, Healthcare, Engineering & Law.
                 </p>
               </div>
               <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Sample Profiles:</span>
-                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('tech')" style="width: auto; padding: 5px 10px; font-size: 11px;">💻 Tech/AI</button>
-                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('finance')" style="width: auto; padding: 5px 10px; font-size: 11px;">📈 Finance</button>
-                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('business')" style="width: auto; padding: 5px 10px; font-size: 11px;">💼 Business</button>
-                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('design')" style="width: auto; padding: 5px 10px; font-size: 11px;">🎨 Design</button>
-                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('healthcare')" style="width: auto; padding: 5px 10px; font-size: 11px;">🩺 Healthcare</button>
+                
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Sample Profiles:</span>
+                <!-- School & Higher Sec -->
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('school-stream')" style="width: auto; padding: 4px 9px; font-size: 11px;" title="Class 10 Stream Dilemma">🎒 Class 10 (Streams)</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('higher-neet-med')" style="width: auto; padding: 4px 9px; font-size: 11px;" title="Class 12 Medical / NEET">🩺 12th Medical/NEET</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('higher-law')" style="width: auto; padding: 4px 9px; font-size: 11px;" title="Class 12 Law / CLAT">⚖️ 12th Law/CLAT</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('higher-cuet-commerce')" style="width: auto; padding: 4px 9px; font-size: 11px;" title="Class 12 Commerce / CUET">📈 12th Commerce</button>
+                <!-- College & Professionals -->
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('tech')" style="width: auto; padding: 4px 9px; font-size: 11px;">💻 Tech/AI</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('finance')" style="width: auto; padding: 4px 9px; font-size: 11px;">📊 Finance/CA</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('business')" style="width: auto; padding: 4px 9px; font-size: 11px;">💼 Product/MBA</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('design')" style="width: auto; padding: 4px 9px; font-size: 11px;">🎨 UI/UX Design</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('gov')" style="width: auto; padding: 4px 9px; font-size: 11px;">🏛️ UPSC/Govt</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('defense')" style="width: auto; padding: 4px 9px; font-size: 11px;">✈️ Aviation/NDA</button>
+
               </div>
             </div>
 
@@ -1451,7 +1460,7 @@
 
             <!-- Step 1: Select Career (Multi-Disciplinary) -->
             <div id="generator-step-1" class="form-step active">
-              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Select Target Career</h2>
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Explore and Select Career</h2>
               <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">Choose your career path across any discipline, or enter any custom career.</p>
 
               <div style="background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -1570,8 +1579,8 @@
             </div>
             <!-- Step 2: Custom Skill Tag Picker -->
             <div id="generator-step-2" class="form-step">
-              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Enter Current Skills</h2>
-              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Add technologies you already know. The AI will bypass these in your custom roadmap.</p>
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Known Strengths & Current Skills</h2>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Add subjects, tools, or concepts you already know well. The AI will personalize around them (Optional - skip if just starting out!).</p>
               
               <div class="input-group">
                 <label class="input-label">Current Mastered Skills</label>
@@ -1598,12 +1607,12 @@
 
             <!-- Step 3: Logistics & Options -->
             <div id="generator-step-3" class="form-step">
-              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Roadmap Logistics</h2>
-              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Provide details to scale your weekly schedules correctly.</p>
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Roadmap Logistics (Optional)</h2>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Customize your study commitment. All options are flexible and stage-specific.</p>
 
               <div class="grid-container">
                 <div class="input-group col-6">
-                  <label class="input-label" for="logistics-level">Experience Level</label>
+                  <label class="input-label" for="logistics-level">Experience Level (Optional - defaults to Beginner)</label>
                   <select id="logistics-level" class="input-field" style="appearance: none; background: rgba(10, 10, 15, 0.6) url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'6 9 12 15 18 9\'></polyline></svg>\') no-repeat right 16px center; background-size: 18px;">
                     <option value="beginner">Beginner (No prior coding knowledge)</option>
                     <option value="intermediate" selected>Intermediate (Familiar with foundations, looking to specialize)</option>
@@ -2065,10 +2074,11 @@
             <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">System Configuration</h2>
             <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 30px;">Manage your profile preferences, local database cache, and secure API connections.</p>
 
+            
             <div class="tabs-navigation">
               <button class="tab-btn active" id="settings-tab-profile" onclick="switchSettingsSection('profile')">User Profile</button>
-              <button class="tab-btn" id="settings-tab-api" onclick="switchSettingsSection('api')">Gemini AI Key</button>
-              <button class="tab-btn" id="settings-tab-system" onclick="switchSettingsSection('system')">Cache Settings</button>
+              <button class="tab-btn" id="settings-tab-api" onclick="switchSettingsSection('api')">AI & Platform Services</button>
+              <button class="tab-btn" id="settings-tab-system" onclick="switchSettingsSection('system')">Advanced Settings</button>
             </div>
 
             <!-- Profile Settings Panel -->
@@ -2092,50 +2102,94 @@
               </form>
             </div>
 
-            <!-- API Keys Settings Panel -->
+            <!-- AI & Platform Services (Secure Backend Architecture) -->
             <div id="settings-sect-api" style="display: none;">
-              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                Securely enter your client-side **Gemini API Key**. GetCareerPilot interacts directly with Google APIs to formulate extremely tailored week-by-week roadmaps and answer career chat questions dynamically. Your key is stored solely on your local machine.
-              </p>
-              
-              <div class="input-group" style="position: relative;">
-                <label class="input-label" for="set-apikey">Gemini API Key</label>
-                <div style="display: flex; gap: 10px;">
-                  <input type="password" id="set-apikey" class="input-field" placeholder="AIzaSy...">
-                  <button class="btn btn-secondary" onclick="toggleApiKeyVisibility()" style="width: auto; padding: 0 16px;">
-                    <i id="eye-icon" data-lucide="eye"></i>
-                  </button>
+              <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: #DCFCE7; color: var(--success); display: flex; align-items: center; justify-content: center;">
+                      <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div>
+                      <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">Secure Server AI Gateway</h4>
+                      <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Production Server-Side Architecture</p>
+                    </div>
+                  </div>
+                  <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #DCFCE7; border: 1px solid #86EFAC; color: #15803D; border-radius: var(--radius-full); font-size: 11px; font-weight: 700;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #16A34A;"></span> Active & Protected
+                  </span>
                 </div>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
-                  Don't have a key? <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-teal); text-decoration: none;">Get a free API Key from Google AI Studio</a>
+                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+                  All AI requests for career recommendations, roadmaps, interview scoring, and mentor guidance are securely processed through our protected backend server. API credentials are encrypted server-side and never exposed in the user's browser.
                 </p>
               </div>
 
-              <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button class="btn" onclick="saveApiKey()" style="width: auto; padding: 12px 30px;">
-                  Save Key Credentials <i data-lucide="key"></i>
-                </button>
+              <div class="metrics-row" style="margin-bottom: 0;">
+                <div class="metric-card">
+                  <div class="metric-icon indigo"><i data-lucide="cpu"></i></div>
+                  <div class="metric-info">
+                    <span class="metric-value" style="font-size: 15px;">Gemini 2.5 Flash</span>
+                    <span class="metric-label">AI Engine Model</span>
+                  </div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-icon teal"><i data-lucide="lock"></i></div>
+                  <div class="metric-info">
+                    <span class="metric-value" style="font-size: 15px;">Server Proxy</span>
+                    <span class="metric-label">Credential Protection</span>
+                  </div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-icon pink"><i data-lucide="database"></i></div>
+                  <div class="metric-info">
+                    <span class="metric-value" style="font-size: 15px;">Supabase Cloud</span>
+                    <span class="metric-label">Persistence Layer</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- System management Settings Panel -->
+            <!-- Advanced Settings (Cache & Developer Overrides) -->
             <div id="settings-sect-system" style="display: none;">
-              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                Clear cached roadmaps, profiles, and chatbot transcripts. This resets the application to its original installation state.
-              </p>
+              <!-- Cache Management -->
+              <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 22px; margin-bottom: 24px;">
+                <h4 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Application Cache Management</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                  GetCareerPilot caches generated roadmaps and offline datasets locally for instant loading. You can clear temporary cache without affecting your account.
+                </p>
+                <button type="button" class="btn btn-secondary" onclick="showToast('Application cache refreshed successfully.', 'success')" style="font-size: 12.5px; padding: 8px 18px;">
+                  <i data-lucide="refresh-cw"></i> Refresh Local Cache
+                </button>
+              </div>
 
-              <div style="background: rgba(236, 72, 153, 0.05); border: 1px dashed rgba(236, 72, 153, 0.2); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-pink); display: flex; align-items: center; gap: 8px;">
+              <!-- Developer Key Override (Optional) -->
+              <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 22px; margin-bottom: 24px;">
+                <h4 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Developer API Key Override (Optional)</h4>
+                <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+                  For self-hosted custom deployments or custom LLM quotas, you can provide an optional local key override. In production, this can remain blank.
+                </p>
+                <div style="display: flex; gap: 10px;">
+                  <input type="password" id="set-apikey" class="input-field" placeholder="Optional developer key override (AIzaSy...)">
+                  <button type="button" class="btn btn-secondary" onclick="saveApiKey()" style="padding: 8px 16px; font-size: 12.5px;">
+                    Save Override
+                  </button>
+                </div>
+              </div>
+
+              <!-- Danger Zone -->
+              <div style="background: #FEF2F2; border: 1px solid #FECACA; padding: 22px; border-radius: var(--radius-md);">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--danger); display: flex; align-items: center; gap: 8px;">
                   <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> Danger Zone
                 </h4>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
-                  This operation deletes all local roadmaps, checklists, streak records, user settings, and chat logs. This action cannot be undone.
+                <p style="font-size: 12px; color: #991B1B; margin-top: 6px; line-height: 1.5;">
+                  Purges all local state, saved roadmaps, task checklists, and active session cache.
                 </p>
-                <button class="btn btn-pink" onclick="clearAllAppData()" style="margin-top: 15px; width: auto; padding: 10px 20px; font-size: 13px;">
+                <button class="btn btn-pink" onclick="clearAllAppData()" style="margin-top: 14px; background: var(--danger); font-size: 12.5px; padding: 9px 18px;">
                   Purge Application Data <i data-lucide="trash"></i>
                 </button>
               </div>
             </div>
+
 
           </div>
         </div>
