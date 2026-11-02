@@ -1,186 +1,186 @@
-# GetCareerPilot – AI-Powered Career Guidance Platform | 2026 🚀
-**AI Application Developer Project**
+# GetCareerPilot – AI-Powered Career Discovery & Development Platform 🚀
 
-[![HTML5 Badge](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![CSS3 Badge](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
-[![JavaScript Badge](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Google Gemini API](https://img.shields.io/badge/Gemini%201.5%20Flash-8E75C2?style=for-the-badge&logo=google-gemini&logoColor=white)](https://ai.google.dev/)
+> **Discover. Explore. Plan. Achieve.**  
+> *One platform for every student, regardless of academic background or career interest.*
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-getcareerpilot.vercel.app-4F46E5?style=for-the-badge&logo=vercel&logoColor=white)](https://getcareerpilot.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-172554?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Siddharth4629/GetCareerPilot)
+[![Google Gemini API](https://img.shields.io/badge/Gemini%202.5%20Flash-8E75C2?style=for-the-badge&logo=google-gemini&logoColor=white)](https://ai.google.dev/)
+[![Supabase Database](https://img.shields.io/badge/Supabase-Database%20Ready-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-**GetCareerPilot** is an intelligent, client-side career guidance platform engineered to empower technology aspirants in navigating and mastering modern engineering careers. Built with a futuristic **Cyberpunk glassmorphic UI**, the platform seamlessly integrates **Google Gemini 1.5 Flash** to deliver personalized career recommendations, deep LLM-based resume skill-gap audits, customized 4-week learning curriculums, interactive mentorship, and intelligent job matching.
+---
+
+## 🌟 Overview
+
+**GetCareerPilot** is an intelligent, full-spectrum career guidance and skill development platform designed for students from Class 9 onwards through university and professional graduation.
+
+Rather than focusing solely on computer science or engineering, GetCareerPilot guides students across **12 comprehensive sectors**—including Technology, Healthcare & Medicine, Business & Management, Finance & Banking, Law & Legal Services, Creative Design & Media, Government & Civil Services, Education, Defense, and Vocational Sciences.
+
+The platform adapts dynamically to three primary educational milestones:
+- 🎒 **School Students (Class 9 & 10)**: Discover passions, understand stream requirements (Science PCM/PCB, Commerce, Humanities, Vocational), and select the right academic track.
+- 🏛️ **Higher Secondary Students (Class 11 & 12)**: Explore 25+ undergraduate degrees, track national entrance examinations (JEE, NEET, CUET, CLAT, NDA, NATA), and discover verified merit scholarships.
+- 💼 **College Students & Graduates**: Identify missing industry skills, optimize resumes with ATS scoring, prepare with AI mock interviews, practice daily study habits, and build personalized learning roadmaps.
 
 ---
 
-## 📌 Core Engineering Highlights
+## 📸 Key Platform Highlights
 
-* **AI-Powered Career Guidance Platform:** Integrated Google Gemini API to dynamically analyze user educational background, engineering passions, and existing skills to synthesize tailored 2026 career recommendations with salary outlooks, growth projections, and match scores.
-* **LLM-Based Features:** Implemented semantic resume skill-gap analysis, personalized 4-week learning roadmaps with daily milestones, and an interactive AI chatbot equipped with contextual engineering prompts.
-* **Structured AI Response Generation:** Designed strict JSON schemas (`responseMimeType: "application/json"`) and asynchronous API integration ensuring error-free, type-safe client-side data parsing with intelligent offline heuristic fallbacks.
-* **Intelligent Job-Matching Workflows:** Developed end-to-end job-matching workflows with multi-tier readiness scoring, requirement gap identification, and bespoke AI career guidance with tailored interview questions and STAR-method resume bullets.
-
----
-
-## 🛠️ System Architecture
-
-The application runs on a high-performance, serverless client-side architecture using modular ES6 JavaScript and browser `localStorage` persistence, connecting directly to Gemini API endpoints:
-
-```mermaid
-graph TD
-    UI[HTML5 / Modern CSS3 Cyberpunk UI] <--> Controller[app.js - State Coordinator]
-    Controller <--> Storage[(Browser LocalStorage API)]
-    
-    subgraph Core Intelligence Modules
-        Advisor[AI Career Advisor - Recommendation Engine]
-        Analyzer[Resume Analyzer - LLM & Regex Dual Engine]
-        Roadmap[Roadmap Generator - Timeline Constructor]
-        Chat[AI Career Mentor - Contextual Chatbot]
-        JobWorkflow[Intelligent Job Matcher - Readiness & Guidance]
-    end
-    
-    Controller <--> Advisor
-    Controller <--> Analyzer
-    Controller <--> Roadmap
-    Controller <--> Chat
-    Controller <--> JobWorkflow
-    
-    subgraph Data & API Layer
-        AIService[ai-service.js - Gemini API Router & JSON Schema Engine]
-        Templates[data-templates.js - Offline Knowledge Base]
-        GeminiAPI{Google Gemini 1.5 Flash API}
-    end
-    
-    Advisor <--> AIService
-    Analyzer <--> AIService
-    Roadmap <--> AIService
-    Chat <--> AIService
-    JobWorkflow <--> AIService
-    
-    AIService <--> |Async JSON Schema Calls| GeminiAPI
-    AIService -.-> |Offline Heuristic Fallback| Templates
+```
+                                GETCAREERPILOT ARCHITECTURE
+   
+    [ Public Landing Page ]  ──►  [ 5-Step Adaptive Onboarding ]  ──►  [ Auth & Cloud Sync ]
+           (9 Sections)                  (RIASEC Quiz & Stage)           (Supabase + Offline)
+                                                   │
+                                                   ▼
+                ┌─────────────────────────────────────────────────────────────┐
+                │             PERSONALIZED MULTI-STAGE DASHBOARDS             │
+                ├──────────────────────────────┬──────────────────────────────┤
+                │  Class 9-10 (School)         │ Stream Guide & RIASEC Traits │
+                │  Class 11-12 (Higher Sec)    │ Degree & Entrance Explorer   │
+                │  College & Graduates         │ Resume Audit & Mock Cockpit  │
+                └──────────────────────────────┴──────────────────────────────┘
+                                                   │
+        ┌───────────────────────┬──────────────────┴────┬───────────────────────┐
+        ▼                       ▼                       ▼                       ▼
+  [ AI Career Advisor ]   [ Roadmap Builder ]     [ Mock Interview ]      [ Skill Gap Analyzer ]
+  (12 Modern Sectors)     (4-Week Action Plans)   (AI Speech & Scoring)   (Resume vs Job Desc)
 ```
 
 ---
 
-## 🌟 Key Features in Detail
+## 🎯 Target Audience Pathways
 
-### 1. 🧭 AI Career Advisor (Personalized Career Recommendations)
-* **Tailored Recommendation Engine:** Users enter their academic background, current technical skills, engineering passions (e.g. Generative AI, Full-Stack, Cloud Systems), and work ambitions.
-* **Gemini LLM Synthesis:** Evaluates 2026 technology trends to recommend the top 3-4 career tracks, complete with match percentages (e.g. 95%), market salary benchmarks, transferable strengths, skills to acquire, and immediate first steps.
-* **1-Click Adoption:** Selecting any recommended career automatically configures the user profile and loads the Roadmap Builder.
+### A. School Students (Class 9 & 10)
+* **Interest Discovery**: Scientific 10-question aptitude assessment based on John Holland's RIASEC framework (Realistic, Investigative, Artistic, Social, Enterprising, Conventional).
+* **Stream & Subject Selection**: Side-by-side comparison of Science (PCM & PCB), Commerce (with/without Math), Humanities, and Vocational options.
+* **Subject-to-Career Mapping**: Clear explanations of what subjects are required for careers like Medicine, Law, Civil Services, Product Design, and Engineering.
+* **Foundational Educational Roadmap**: Step-by-step guidance preparing for Class 11 subject decisions without forcing premature specialization.
 
-### 2. 🔍 LLM-Based Resume Skill-Gap Analysis 🔥
-* **Dual-Engine Architecture:** Toggle seamlessly between **Gemini LLM Semantic Mode** (deep context-aware analysis) and **Local Regex Matcher** (lightning-fast offline matching).
-* **Semantic Evaluation:** Evaluates true engineering depth, architecture exposure, and production tooling beyond raw keyword matching.
-* **AI Recruiter Verdict:** Synthesizes an executive assessment of candidate readiness.
-* **Gap Remediation:** Categorizes missing technologies into *Critical*, *High*, and *Medium* priorities with practical mini-projects, and injects them as an extra week into the user's active roadmap with one click.
-* **Tailored Resume Bullets:** Provides STAR-method bullet suggestions to upgrade the resume for that specific job posting.
+### B. Higher Secondary Students (Class 11 & 12)
+* **Undergraduate Degree Explorer**: Curated profiles for 25+ popular undergraduate programs (B.Tech, MBBS, BBA, B.Com, B.Des, BA LLB, BCA, BSc Nursing, etc.) detailing duration, eligibility, entrance routes, and career paths.
+* **Competitive Entrance Exam Directory**: Eligibility criteria, exam frequency, subjects tested, and conducting bodies for major national exams: JEE Main/Advanced, NEET-UG, CUET-UG, CLAT, NDA, NATA, and UCEED.
+* **Scholarship Finder**: National and state scholarship eligibility guides (Central Sector Scheme, INSPIRE, PMSSS, AICTE Pragati).
 
-### 3. 🗺️ Personalized Learning Roadmap Builder
-* **Interactive 3-Step Wizard:** Customizes curriculums based on career track, experience level (Beginner/Intermediate/Advanced), and weekly bandwidth (5h - 40h/week).
-* **Mastered Skill Filtering:** Detects existing skills and excludes or marks them as prerequisites in the syllabus.
-* **Multi-Week Schedule & Projects:** Compiles 4 weeks of structured study topics, daily practical tasks, 3 progressive project specifications, and 5 technical interview questions.
-
-### 4. 💬 Context-Aware AI Career Mentor Chat
-* **Interactive Chat Companion:** Answers structural tech queries, system design principles, and code debugging.
-* **Quick-Prompt Chips:** Instant prompts for project suggestions, interview tips, and learning roadmaps.
-* **Markdown Code Rendering:** Formats code snippets, tables, and lists cleanly.
-
-### 5. 💼 Intelligent Job-Matching & Career Guidance Workflow
-* **Visual Workflow Pipeline:** Displays a 4-step pipeline: *Profile Extracted ➔ Compatibility Engine ➔ Gaps Identified ➔ AI Career Guidance*.
-* **Dynamic Fit Quotients:** Computes real-time match scores against job openings using weighted intersections of verified skills and roadmap progress.
-* **Bespoke Job Guidance Modal:** Users can click **"✨ AI Guidance"** on any job posting to receive:
-  * Overall Candidate Assessment & Fit Quotient.
-  * 7-Day Sprint Action Plan before applying.
-  * Anticipated Interview Questions with specific coaching strategies.
-  * Tailored STAR-method Resume Bullet Points with 1-click clipboard copy.
+### C. College Students & Graduates
+* **Skill Gap & Resume Analyzer**: Dual-engine semantic parser evaluating resumes against target job descriptions, identifying missing skills categorized by priority (*Critical*, *High*, *Medium*).
+* **AI Mock Interview Cockpit**: Practice realistic interview questions tailored across 12 sectors, with speech/text answers and instant scoring on relevance, clarity, and depth.
+* **Daily Learning Planner & Habit Tracker**: Daily task prioritization, study streak counter, and integrated Pomodoro focus timer (25/5 min cycles).
+* **AI Roadmap Builder**: 4-week structured curriculums with daily tasks, progressive capstone projects, and technical milestone checklists.
+* **Contextual Career Mentor Chat**: 24/7 AI chat companion for code debugging, portfolio review, and career transition strategy.
 
 ---
 
-## 💻 Structured AI JSON Schema Implementation
+## 🛠️ Technology Stack & Engineering Architecture
 
-All generative AI features strictly enforce structured JSON output using Gemini's `responseMimeType: "application/json"`, preventing markdown formatting errors and ensuring deterministic data types:
-
-```javascript
-// Example: Structured JSON Schema prompt in ai-service.js
-const prompt = `You are an Elite AI Career Guidance Counselor & Technical Architect.
-Analyze the user's background, current technical skills, and engineering passions...
-
-You MUST return your response as a valid, parsable JSON object:
-{
-  "summary": "string (holistic assessment)",
-  "recommendations": [
-    {
-      "id": "string",
-      "title": "string",
-      "matchScore": number,
-      "badge": "string",
-      "salaryRange": "string",
-      "marketDemand": "string",
-      "fitRationale": "string",
-      "strengthsYouHave": ["string"],
-      "skillsToAcquire": ["string"],
-      "recommendedFirstStep": "string",
-      "keyTechnologies": ["string"]
-    }
-  ]
-}`;
-
-const response = await fetch(`${this.getGeminiURL()}?key=${apiKey}`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: {
-      responseMimeType: "application/json",
-      temperature: 0.3
-    }
-  })
-});
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-GetCareerPilot is a 100% client-side application. No Node.js build steps, backend servers, or databases are required.
-
-### 2. Launching Locally
-* **Option 1: Direct Browser** — Double click `index.html` in Chrome, Edge, Safari, or Firefox.
-* **Option 2: Local Web Server (Recommended)** — In the project root, run:
-  ```powershell
-  npx serve
-  ```
-  Or right-click `index.html` in VS Code and select **Open with Live Server**.
-
-### 3. Activating Gemini Live AI Mode
-1. Get a free API key from [Google AI Studio](https://aistudio.google.com/).
-2. Open **GetCareerPilot** in your browser.
-3. Navigate to **Settings ➔ Gemini AI Key**, paste your key, and click **Save Changes**.
-4. All features (Career Recommendations, Skill Gap Analysis, Roadmaps, Job Guidance, and Mentor Chat) will instantly run on live Gemini 1.5 Flash AI!
-5. *(Note: If no API key is provided, the platform automatically runs on our intelligent client-side heuristic engines for 100% offline functionality).*
+| Layer | Technologies Used | Description |
+|---|---|---|
+| **Frontend UI** | HTML5, Vanilla ES6+, CSS3 Custom Properties | Modern SaaS theme (Deep Navy `#172554`, Indigo `#4F46E5`, Violet `#7C3AED`, Slate `#F8FAFC`, Pure White `#FFFFFF`). Zero heavyweight framework dependencies. |
+| **Icons & Visuals** | Lucide Icons, Canvas Confetti, CSS Grid/Flexbox | Fast, responsive, accessible layouts with smooth transitions. |
+| **Backend AI Gateway** | Node.js, Express.js | Secure server proxy (`/api/ai/generateContent`) protecting API credentials from client-side exposure. |
+| **Generative AI** | Google Gemini 2.5 Flash / 1.5 Flash | Strict JSON schema output (`responseMimeType: "application/json"`) with deterministic structured parsing. |
+| **Cloud Database** | Supabase Cloud (PostgreSQL / REST) | Real-time user profile sync, roadmap persistence, and credential storage. |
+| **Offline Resilience** | Browser LocalStorage API | Transparent offline heuristic engines for 100% functionality without internet or database connectivity. |
+| **Deployment** | Vercel Serverless / Node.js Host | Continuous integration and deployment from GitHub repository. |
 
 ---
 
 ## 📂 Project Directory Structure
 
-```
+```text
 GetCareerPilot/
-│
-├── index.html              # Single Page Application markup & cyber UI layouts
-├── README.md               # Project documentation & portfolio highlights
+├── index.html                   # High-converting Landing Page, Auth Portal & Student Workspace
+├── server.js                    # Node.js backend with secure Gemini AI Gateway & local auth
+├── package.json                 # Project dependencies and startup scripts
+├── README.md                    # Platform documentation and architecture overview
 │
 ├── css/
-│   └── styles.css          # Glassmorphic cyber theme, design tokens, responsive layouts
+│   └── styles.css               # SaaS design system, responsive typography, and high-contrast tokens
 │
 └── js/
-    ├── app.js              # Application state coordinator, tab routing, and event bindings
-    ├── ai-service.js       # Google Gemini API connector, JSON schemas & offline heuristic engines
-    ├── data-templates.js   # Predefined roadmaps, career archetypes, and mock job postings
-    └── resume-analyzer.js  # NLP parser, regex extractor, and skill gap scoring algorithms
+    ├── app.js                   # Application controller, stage switcher, and event orchestrator
+    ├── api-client.js            # Unified cloud client (Supabase + local server + offline fallback)
+    ├── ai-service.js            # Secure Gemini AI router, JSON schemas, and offline fallbacks
+    ├── data-templates.js        # Knowledge base: 36 career tracks, 25+ degrees, RIASEC questions
+    └── resume-analyzer.js       # NLP resume parser, regex extractor, and skill gap scoring
 ```
 
 ---
 
+## ⚡ Quick Start & Installation
+
+### Option 1: Direct Web Access (No Setup Required)
+Visit the live deployment at [getcareerpilot.vercel.app](https://getcareerpilot.vercel.app/).
+- Click **"Try Interactive Demo"** to explore with pre-loaded profiles (`alex@getcareerpilot.com` / `password123`).
+- Or click **"Start Career Discovery"** to run through the 5-step onboarding wizard.
+
+---
+
+### Option 2: Running Locally with Node.js & Secure AI Gateway
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Siddharth4629/GetCareerPilot.git
+   cd GetCareerPilot
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables** (Optional but recommended):
+   Create a `.env` file in the project root:
+   ```env
+   PORT=3000
+   GEMINI_API_KEY=your_google_gemini_api_key_here
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+   *(Note: You can get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/)).*
+
+4. **Start the server**:
+   ```bash
+   npm start
+   ```
+
+5. **Open in browser**:
+   Navigate to `http://localhost:3000`.
+
+---
+
+### Option 3: Static Browser Run (Zero-Server Mode)
+Because GetCareerPilot contains intelligent offline heuristics, you can simply open `index.html` directly in any modern browser:
+* Double-click `index.html`, or
+* Run with VS Code **Live Server** extension.
+
+---
+
+## 🔒 Security & Privacy Architecture
+
+* **Secure AI Gateway**: Gemini API keys are held securely on the Node.js backend. Client requests pass through `/api/ai/generateContent` so API keys are never exposed in client-side network tabs or source code.
+* **Hybrid Storage Architecture**: Profiles automatically sync to Supabase Cloud when connected, and gracefully cache in encrypted local storage when offline or running in standalone mode.
+* **Data Privacy**: Resume audits and career assessments can be run 100% client-side with zero external data sharing.
+
+---
+
+## 🤝 Contributing
+
+Contributions, feedback, and feature suggestions are welcome!
+1. Fork the Project (`https://github.com/Siddharth4629/GetCareerPilot/fork`)
+2. Create your Feature Branch (`git checkout -b feature/NewCareerPathway`)
+3. Commit your Changes (`git commit -m 'feat: add Environmental Engineering track'`)
+4. Push to the Branch (`git push origin feature/NewCareerPathway`)
+5. Open a Pull Request
+
+---
+
 ## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <b>GetCareerPilot</b> — Discover your interests, explore possibilities, and build your future.
+</p>
