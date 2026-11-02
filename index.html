@@ -30,8 +30,498 @@
   <!-- ========================================== -->
   <!-- 1. AUTHENTICATION VIEW (Default display) -->
   <!-- ========================================== -->
+  
+  <!-- ======================================================== -->
+  <!-- PUBLIC LANDING PAGE (VISITOR VIEW - 9 SECTIONS)         -->
+  <!-- ======================================================== -->
+  <div id="landing-view" style="display: block;">
+    
+    <!-- Top Landing Navbar -->
+    <header class="landing-nav">
+      <a href="#" class="landing-logo">
+        <div class="landing-logo-icon">
+          <i data-lucide="compass"></i>
+        </div>
+        <span class="landing-logo-text">GetCareerPilot</span>
+      </a>
+
+      <ul class="landing-nav-menu">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#who-can-use">Who It's For</a></li>
+        <li><a href="#career-categories">12 Career Fields</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#ai-guidance">AI Guidance</a></li>
+        <li><a href="#why-choose">Why Us</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <div class="landing-nav-actions">
+        <button type="button" class="btn btn-secondary" onclick="showDemoLogin()" style="padding: 8px 14px; font-size: 13px;">
+          <i data-lucide="play" style="width: 14px; height: 14px;"></i> Demo
+        </button>
+        <button type="button" class="btn" onclick="showAuthScreen()" style="padding: 8px 18px; font-size: 13px;">
+          <i data-lucide="log-in" style="width: 14px; height: 14px;"></i> Sign In / Register
+        </button>
+      </div>
+    </header>
+
+    <!-- SECTION 1: HERO SECTION -->
+    <section class="landing-hero">
+      <div class="landing-badge">
+        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+        AI-Powered Career Discovery & Educational Platform
+      </div>
+      <h1 class="landing-headline">
+        Your Future Starts With <span>Understanding Yourself.</span>
+      </h1>
+      <p class="landing-subheadline">
+        Discover the right career path based on your education level, interests and skills. Not sure what you want to become? Let's discover it together.
+      </p>
+
+      <div class="landing-cta-row">
+        <button type="button" class="btn" onclick="startOnboarding()" style="padding: 14px 28px; font-size: 15px; font-weight: 700;">
+          <i data-lucide="compass" style="width: 18px; height: 18px;"></i> Discover My Career
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="scrollToSection('career-categories')" style="padding: 14px 26px; font-size: 15px;">
+          <i data-lucide="layers" style="width: 18px; height: 18px;"></i> Explore Career Options
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="showDemoLogin()" style="padding: 14px 22px; font-size: 14px; border-color: var(--secondary); color: var(--secondary);">
+          <i data-lucide="play-circle" style="width: 18px; height: 18px;"></i> Try Demo Dashboard
+        </button>
+      </div>
+
+      <div class="landing-trust-strip">
+        <div class="trust-item"><i data-lucide="check-circle-2"></i> Scientific RIASEC Profiling</div>
+        <div class="trust-item"><i data-lucide="check-circle-2"></i> 12 Non-Tech & Tech Disciplines</div>
+        <div class="trust-item"><i data-lucide="check-circle-2"></i> Verified Entrance Exam Portals</div>
+        <div class="trust-item"><i data-lucide="check-circle-2"></i> Class 9 to Graduation</div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: HOW GETCAREERPILOT WORKS -->
+    <section id="how-it-works" class="landing-section landing-section-alt">
+      <div class="section-head">
+        <div class="section-tag">Methodology</div>
+        <h2 class="section-title">How GetCareerPilot Works</h2>
+        <p class="section-desc">A structured, four-step journey transforming uncertainty into clear academic decisions and career readiness.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-badge">1</div>
+          <h4>Discover Interests & Aptitude</h4>
+          <p>Take our 10-question Holland RIASEC assessment to uncover natural strengths, work personality types, and core inclinations.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-badge">2</div>
+          <h4>Explore Careers, Courses & Streams</h4>
+          <p>Compare streams (Science, Commerce, Arts), 25+ degrees, competitive entrance exams, and 36 high-growth professions across 12 sectors.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-badge">3</div>
+          <h4>Build Personalized Roadmap</h4>
+          <p>Generate week-by-week learning milestones, required subjects, certifications, and project targets tailored to your stage.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-badge">4</div>
+          <h4>Develop Skills & Track Progress</h4>
+          <p>Scan your resume with our ATS engine, practice AI mock interviews with 0-100 scoring, and maintain daily study streaks with Pomodoro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: WHO CAN USE GETCAREERPILOT? -->
+    <section id="who-can-use" class="landing-section">
+      <div class="section-head">
+        <div class="section-tag">Target Audiences</div>
+        <h2 class="section-title">Designed for Every Stage of Learning</h2>
+        <p class="section-desc">Whether you are choosing high school subjects, preparing for college admissions, or transitioning into the job market.</p>
+      </div>
+
+      <div class="audience-grid">
+        <!-- Tier A: School Students -->
+        <div class="audience-card">
+          <span class="audience-pill pill-school">School Students (Class 9 & 10)</span>
+          <h3>Discover Strengths & Choose Stream</h3>
+          <p>Make confident choices after Class 10 with scientific stream comparison, career path discovery, and subject insights.</p>
+          <ul class="audience-features">
+            <li><i data-lucide="check"></i> 10-Question RIASEC Interest Assessment</li>
+            <li><i data-lucide="check"></i> Stream Selection Guide (Science, Commerce, Arts)</li>
+            <li><i data-lucide="check"></i> Core & Elective Subject Exploration</li>
+            <li><i data-lucide="check"></i> High School Decision Timeline</li>
+          </ul>
+          <button type="button" class="btn btn-secondary" onclick="startOnboardingWithStage('Class 10')" style="margin-top: 24px;">
+            Explore School Roadmap
+          </button>
+        </div>
+
+        <!-- Tier B: Higher Secondary -->
+        <div class="audience-card">
+          <span class="audience-pill pill-higher">Higher Secondary (Class 11 & 12)</span>
+          <h3>Plan College Journey & Degrees</h3>
+          <p>Navigate university courses, track national entrance examinations, discover government scholarships, and find top colleges.</p>
+          <ul class="audience-features">
+            <li><i data-lucide="check"></i> 25+ Degree Programs & Eligibility Benchmarks</li>
+            <li><i data-lucide="check"></i> National Entrance Exam Tracker (JEE, NEET, CUET, CLAT)</li>
+            <li><i data-lucide="check"></i> College Finder with Estimated Fee Ranges</li>
+            <li><i data-lucide="check"></i> Verified National & Private Scholarships</li>
+          </ul>
+          <button type="button" class="btn btn-secondary" onclick="startOnboardingWithStage('Class 12')" style="margin-top: 24px;">
+            Explore Higher Secondary
+          </button>
+        </div>
+
+        <!-- Tier C: College & Graduates -->
+        <div class="audience-card">
+          <span class="audience-pill pill-college">College & Graduates</span>
+          <h3>Accelerate Professional Careers</h3>
+          <p>Bridge industry skill gaps, verify resume ATS compliance, practice AI mock interviews, and organize daily learning habits.</p>
+          <ul class="audience-features">
+            <li><i data-lucide="check"></i> PDF / DOCX Resume ATS Scoring & Gap Audit</li>
+            <li><i data-lucide="check"></i> AI Mock Interview Cockpit across 12 Sectors</li>
+            <li><i data-lucide="check"></i> Multi-Discipline Skill Gap Diagnostic</li>
+            <li><i data-lucide="check"></i> Daily Study Planner & Pomodoro Streak Tracker</li>
+          </ul>
+          <button type="button" class="btn btn-secondary" onclick="startOnboardingWithStage('Undergraduate')" style="margin-top: 24px;">
+            Accelerate Career
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: EXPLORE CAREER CATEGORIES (12 SECTORS) -->
+    <section id="career-categories" class="landing-section landing-section-alt">
+      <div class="section-head">
+        <div class="section-tag">Comprehensive Coverage</div>
+        <h2 class="section-title">Explore 12 Diverse Career Sectors</h2>
+        <p class="section-desc">GetCareerPilot is not just for computer science. Explore high-growth opportunities across all fields of modern society.</p>
+      </div>
+
+      <div class="categories-grid">
+        <div class="category-card" onclick="openDemoWithSector('tech')">
+          <div class="category-card-icon">💻</div>
+          <h4>Information Technology & Software</h4>
+          <p>Fullstack engineering, cloud architecture, cybersecurity, devops, and distributed computing.</p>
+          <span class="category-roles-tag">₹6L - ₹45L+ • Fast Growth</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('ai')">
+          <div class="category-card-icon">🤖</div>
+          <h4>Data Science & Artificial Intelligence</h4>
+          <p>Machine learning engineering, generative AI, LLM systems, computer vision, and data analytics.</p>
+          <span class="category-roles-tag">₹8L - ₹50L+ • Hyper Growth</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('engineering')">
+          <div class="category-card-icon">⚙️</div>
+          <h4>Engineering & Core Technologies</h4>
+          <p>Mechanical, robotics, VLSI semiconductor design, renewable energy, and electrical systems.</p>
+          <span class="category-roles-tag">₹5L - ₹32L+ • Stable Demand</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('healthcare')">
+          <div class="category-card-icon">🩺</div>
+          <h4>Healthcare, Medicine & Life Sciences</h4>
+          <p>Clinical medicine, biomedical research, biotechnology, public health, and pharmaceutical care.</p>
+          <span class="category-roles-tag">₹7L - ₹40L+ • Essential</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('business')">
+          <div class="category-card-icon">📊</div>
+          <h4>Business, Management & Startups</h4>
+          <p>Product management, management consulting, venture building, operations, and growth strategy.</p>
+          <span class="category-roles-tag">₹8L - ₹42L+ • High Impact</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('finance')">
+          <div class="category-card-icon">📈</div>
+          <h4>Finance, Banking & Fintech</h4>
+          <p>Investment banking, chartered accountancy, financial modeling, quantitative analysis, and wealth management.</p>
+          <span class="category-roles-tag">₹7L - ₹45L+ • Lucrative</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('design')">
+          <div class="category-card-icon">🎨</div>
+          <h4>Creative Arts, Design & Media</h4>
+          <p>UI/UX design, visual communication, animation, 3D modeling, digital media, and content direction.</p>
+          <span class="category-roles-tag">₹5L - ₹28L+ • Creative</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('law')">
+          <div class="category-card-icon">⚖️</div>
+          <h4>Law, Legal Studies & Public Policy</h4>
+          <p>Corporate law, litigation, intellectual property, constitutional advocacy, and policy governance.</p>
+          <span class="category-roles-tag">₹6L - ₹35L+ • Prestigious</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('gov')">
+          <div class="category-card-icon">🏛️</div>
+          <h4>Government Services & Administration</h4>
+          <p>Civil services (UPSC CSE), state administration, public administration, and public sector leadership.</p>
+          <span class="category-roles-tag">Pay Commission Grades • High Security</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('education')">
+          <div class="category-card-icon">📚</div>
+          <h4>Education, Teaching & Academic Research</h4>
+          <p>University professorship, research fellowships, curriculum engineering, and instructional design.</p>
+          <span class="category-roles-tag">₹5L - ₹25L+ • Intellectual</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('defense')">
+          <div class="category-card-icon">✈️</div>
+          <h4>Aviation, Defense & Protective Services</h4>
+          <p>Commercial piloting, Indian Armed Forces (NDA/CDS), aerospace engineering, and air traffic control.</p>
+          <span class="category-roles-tag">₹8L - ₹40L+ • Honor & Travel</span>
+        </div>
+
+        <div class="category-card" onclick="openDemoWithSector('vocational')">
+          <div class="category-card-icon">🛠️</div>
+          <h4>Skilled Trades & Vocational Careers</h4>
+          <p>Industrial automation, specialized culinary arts, renewable electrical tech, and advanced mechanics.</p>
+          <span class="category-roles-tag">₹4L - ₹20L+ • Practical Skill</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: PLATFORM FEATURES -->
+    <section id="features" class="landing-section">
+      <div class="section-head">
+        <div class="section-tag">Capabilities</div>
+        <h2 class="section-title">Everything You Need To Build Your Career</h2>
+        <p class="section-desc">One cohesive platform replacing disjointed blogs, confusing exam portals, and expensive coaching advisors.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="help-circle"></i></div>
+          <h4>Scientific RIASEC Assessment</h4>
+          <p>10 calibrated behavioral questions providing an instant personality archetype and recommended fields based on John Holland's theory.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="git-branch"></i></div>
+          <h4>Class 10 Stream Selection Guide</h4>
+          <p>Detailed matrix comparing Science PCM, Science PCB, Commerce, Humanities, and Vocational options with difficulty ratings and careers.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="graduation-cap"></i></div>
+          <h4>College & Entrance Exam Explorer</h4>
+          <p>25+ degrees, top colleges, estimated fees, and real-time tracking of JEE, NEET, CUET, CLAT, and NDA with verified links.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="file-check"></i></div>
+          <h4>PDF & DOCX ATS Resume Analyzer</h4>
+          <p>Client-side document parsing that checks keyword density against target job roles, reveals missing skills, and suggests improvements.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="mic"></i></div>
+          <h4>AI Mock Interview Cockpit (12 Sectors)</h4>
+          <p>Realistic interview simulations with 0-100 rubric evaluations, feedback on technical depth and communication, and model answers.</p>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-box-icon"><i data-lucide="timer"></i></div>
+          <h4>Daily Planner & Pomodoro Streak</h4>
+          <p>Stay consistent with daily task checklists, a built-in 25-minute Pomodoro timer, and motivational study streak tracking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: HOW AI GUIDANCE WORKS (TRANSPARENCY) -->
+    <section id="ai-guidance" class="landing-section">
+      <div class="ai-transparency-card">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255, 255, 255, 0.12); border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; color: #93C5FD;">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Grounded Intelligence
+          </div>
+          <h3>How AI Career Guidance Works</h3>
+          <p>
+            Unlike generic chatbots that produce speculative answers, GetCareerPilot pairs state-of-the-art Large Language Models (Gemini 2.5 Flash) with verified national databases, curriculum guidelines, and actual job market requirements.
+          </p>
+          <button type="button" class="btn" onclick="startOnboarding()" style="background-color: #ffffff; color: var(--primary);">
+            Start Your Free Assessment <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="ai-pillars">
+          <div class="ai-pillar-item">
+            <i data-lucide="database"></i>
+            <div class="ai-pillar-text">
+              <h5>Grounded in Official Portals</h5>
+              <p>Exam dates and college admissions cross-referenced with NTA, UPSC, Consortium of NLUs, and state boards.</p>
+            </div>
+          </div>
+          <div class="ai-pillar-item">
+            <i data-lucide="lock"></i>
+            <div class="ai-pillar-text">
+              <h5>Zero Hallucinations Policy</h5>
+              <p>If data is unverified or dates are tentative, the platform marks it clearly and directs you to official portals.</p>
+            </div>
+          </div>
+          <div class="ai-pillar-item">
+            <i data-lucide="refresh-cw"></i>
+            <div class="ai-pillar-text">
+              <h5>Continuous Cloud Sync</h5>
+              <p>Your roadmaps, quiz results, and streak records are securely preserved in live Supabase cloud storage.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: WHY CHOOSE GETCAREERPILOT? -->
+    <section id="why-choose" class="landing-section landing-section-alt">
+      <div class="section-head">
+        <div class="section-tag">Our Philosophy</div>
+        <h2 class="section-title">Why Choose GetCareerPilot?</h2>
+        <p class="section-desc">Traditional career counseling is often expensive, biased toward specific coaching centers, and limited to engineering.</p>
+      </div>
+
+      <div class="audience-grid">
+        <div class="audience-card">
+          <div style="font-size: 26px; margin-bottom: 14px;">🎯</div>
+          <h3>Multi-Stage Continuity</h3>
+          <p>We accompany you from Class 9 high school choices all the way to university courses, resume building, and job interview preparation.</p>
+        </div>
+        <div class="audience-card">
+          <div style="font-size: 26px; margin-bottom: 14px;">⚖️</div>
+          <h3>100% Unbiased & Free</h3>
+          <p>No sponsored rankings or paid college advertisements. Recommendations are purely based on your unique profile and merit.</p>
+        </div>
+        <div class="audience-card">
+          <div style="font-size: 26px; margin-bottom: 14px;">🌐</div>
+          <h3>All Disciplines Welcome</h3>
+          <p>Full support for Medicine, Law, Commerce, Arts, Civil Services, Design, and Core Engineering alongside Modern Tech.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: FREQUENTLY ASKED QUESTIONS -->
+    <section id="faq" class="landing-section">
+      <div class="section-head">
+        <div class="section-tag">Common Inquiries</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-desc">Got questions about GetCareerPilot? Here are answers to the most common queries.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Is GetCareerPilot only for engineering and computer science students?</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            No! GetCareerPilot supports 12 broad sectors including Medicine, Healthcare, Law, Public Policy, Chartered Accountancy, Creative Arts, Aviation, Teaching, and Vocational Trades. We believe every student deserves personalized guidance regardless of stream.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How does the Class 10 stream selection guide work?</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Our Stream Selection Guide compares Science PCM, Science PCB, Commerce, Arts/Humanities, and Vocational courses. It evaluates required subjects, typical workloads, future undergraduate courses, and top professions to help you make an informed decision.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>What is the RIASEC assessment and how accurate is it?</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            The RIASEC framework is a globally recognized psychological model developed by Dr. John Holland that groups career interests into six archetypes: Realistic, Investigative, Artistic, Social, Enterprising, and Conventional. Our 10 calibrated questions compute your top personality traits and suggest fitting careers.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How does the AI Mock Interview Cockpit score responses?</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            The Cockpit evaluates your answer across 4 key criteria: Relevance & Accuracy, Technical / Domain Depth, Clarity & Structure, and Delivery. It provides a numeric score from 0-100, highlights your key strengths, identifies specific gaps, and provides an exemplary model answer.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Is GetCareerPilot free to use?</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Yes! All core tools including the RIASEC Assessment, Stream Selection Guide, College & Exam Explorer, Resume ATS Analyzer, AI Mock Interview Cockpit, and Daily Planner are 100% free for students and job seekers.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: SAAS FOOTER -->
+    <footer class="landing-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #ffffff; color: var(--primary); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+            </div>
+            <span style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: #ffffff;">GetCareerPilot</span>
+          </div>
+          <p style="color: #94A3B8; font-size: 13.5px; line-height: 1.6; max-width: 320px; margin-bottom: 16px;">
+            An AI-powered career discovery and development platform helping students make informed educational decisions and build real skills.
+          </p>
+          <div style="font-size: 12px; color: #64748B;">
+            Tagline: <em>Discover. Explore. Plan. Achieve.</em>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>For Students</h4>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="startOnboardingWithStage('Class 10')">Class 9 & 10 (Streams)</a></li>
+            <li><a href="javascript:void(0)" onclick="startOnboardingWithStage('Class 12')">Class 11 & 12 (Colleges)</a></li>
+            <li><a href="javascript:void(0)" onclick="startOnboardingWithStage('Undergraduate')">College & Graduates</a></li>
+            <li><a href="javascript:void(0)" onclick="showDemoLogin()">Interactive Demo</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Platform Tools</h4>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="startOnboarding()">RIASEC Aptitude Quiz</a></li>
+            <li><a href="#career-categories">12 Career Fields</a></li>
+            <li><a href="#features">Resume ATS Engine</a></li>
+            <li><a href="#features">AI Mock Interviews</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Trust & Safety</h4>
+          <ul>
+            <li><a href="#ai-guidance">AI Transparency</a></li>
+            <li><a href="https://github.com/Siddharth4629/GetCareerPilot" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="javascript:void(0)" onclick="showAuthScreen()">Sign In / Portal</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 GetCareerPilot. All rights reserved. Grounded educational guidance platform.</div>
+        <div style="display: flex; gap: 16px;">
+          <span>Educational Disclaimer: Entrance exam dates and criteria should be verified on official government portals (NTA, UPSC, etc.).</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
   <div id="auth-view" class="auth-container">
     <div class="auth-card">
+        <div style="text-align: left; margin-bottom: 14px;"><a href="javascript:void(0)" onclick="showLandingPage()" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--secondary);"><i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i> Back to Homepage</a></div>
       <div class="logo-section">
         <div class="logo-icon">
           <i data-lucide="compass"></i>
@@ -1718,6 +2208,195 @@
       <!-- Modal Content Output -->
       <div id="modal-guidance-content" style="display: none;">
         <!-- Dynamically populated by app.js -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- 5-STEP PERSONALIZED ONBOARDING WIZARD MODAL              -->
+  <!-- ======================================================== -->
+  <div id="onboarding-modal" class="modal-overlay" style="display: none;">
+    <div class="onboarding-dialog">
+      <!-- Wizard Header -->
+      <div class="onboarding-header">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary);">
+              Personalize Your Career Journey
+            </h3>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
+              Step <span id="onboard-step-num">1</span> of 5: Tailoring your dashboard experience
+            </p>
+          </div>
+          <button type="button" class="modal-close-btn" onclick="closeOnboardingModal()">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <!-- 5-Step Visual Indicator -->
+        <div class="onboarding-steps-indicator">
+          <div class="step-indicator-item active" id="step-ind-1" onclick="jumpToOnboardingStep(1)">
+            <div class="step-circle">1</div>
+            <span class="step-label">Profile</span>
+          </div>
+          <div class="step-indicator-item" id="step-ind-2" onclick="jumpToOnboardingStep(2)">
+            <div class="step-circle">2</div>
+            <span class="step-label">Education</span>
+          </div>
+          <div class="step-indicator-item" id="step-ind-3" onclick="jumpToOnboardingStep(3)">
+            <div class="step-circle">3</div>
+            <span class="step-label">Academics</span>
+          </div>
+          <div class="step-indicator-item" id="step-ind-4" onclick="jumpToOnboardingStep(4)">
+            <div class="step-circle">4</div>
+            <span class="step-label">Interests</span>
+          </div>
+          <div class="step-indicator-item" id="step-ind-5" onclick="jumpToOnboardingStep(5)">
+            <div class="step-circle">5</div>
+            <span class="step-label">Launch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wizard Body -->
+      <div class="onboarding-body">
+        
+        <!-- STEP 1: BASIC PROFILE SETUP -->
+        <div class="onboarding-step-content active" id="onboard-step-1">
+          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 1: What should we call you?</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Let's set up your profile and current career ambition.</p>
+
+          <div class="input-group">
+            <label class="input-label" for="onboard-name">Your Full Name</label>
+            <input type="text" id="onboard-name" class="input-field" placeholder="e.g. Rahul Sharma / Ananya Verma" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="onboard-career">Target Career or Ambition</label>
+            <input type="text" id="onboard-career" class="input-field" placeholder="e.g. Software Engineer / Doctor / Chartered Accountant / Product Designer">
+          </div>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); cursor: pointer; margin-top: 10px;">
+            <input type="checkbox" id="onboard-not-sure" onchange="toggleOnboardNotSure(this)" style="accent-color: var(--secondary);">
+            <span>I am not sure what I want to become yet (We will help you discover it!)</span>
+          </label>
+        </div>
+
+        <!-- STEP 2: EDUCATION LEVEL SELECTION -->
+        <div class="onboarding-step-content" id="onboard-step-2">
+          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 2: What is your current academic stage?</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Your dashboard and tools will dynamically customize based on this choice.</p>
+
+          <div class="stage-select-card selected" id="stage-card-school" onclick="selectOnboardingStage('Class 10')">
+            <div class="stage-card-icon"><i data-lucide="book-open"></i></div>
+            <div>
+              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">School Student (Class 9 & 10)</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
+                Need help discovering interests, evaluating subject strengths, and choosing a Class 11 stream (Science, Commerce, Arts, Vocational).
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-select-card" id="stage-card-higher" onclick="selectOnboardingStage('Class 12')">
+            <div class="stage-card-icon"><i data-lucide="graduation-cap"></i></div>
+            <div>
+              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">Higher Secondary (Class 11 & 12)</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
+                Looking for undergraduate degree programs, entrance examinations (JEE, NEET, CUET, CLAT), colleges, and scholarships.
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-select-card" id="stage-card-college" onclick="selectOnboardingStage('Undergraduate')">
+            <div class="stage-card-icon"><i data-lucide="briefcase"></i></div>
+            <div>
+              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">College Student / Graduate</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
+                Seeking resume ATS evaluation, multi-discipline skill gap analysis, AI mock interviews, and learning roadmaps.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: ACADEMIC DETAILS (DYNAMIC) -->
+        <div class="onboarding-step-content" id="onboard-step-3">
+          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 3: Academic Details</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;" id="onboard-step-3-desc">
+            Provide details about your current subjects or field of study.
+          </p>
+
+          <!-- Dynamic Container for Stage Details -->
+          <div id="onboard-stage-specific-fields">
+            <!-- Populated via JS depending on stage selected in Step 2 -->
+          </div>
+        </div>
+
+        <!-- STEP 4: CAREER INTERESTS & PREFERENCES -->
+        <div class="onboarding-step-content" id="onboard-step-4">
+          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 4: Which fields spark your curiosity?</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">Select 2 to 4 sectors that interest you (click to toggle):</p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="onboard-interest-chips-container">
+            <div class="interest-chip selected" onclick="toggleOnboardingChip(this, 'Technology & Software')">💻 Technology & Software</div>
+            <div class="interest-chip selected" onclick="toggleOnboardingChip(this, 'Artificial Intelligence')">🤖 AI & Data Science</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Core Engineering')">⚙️ Core Engineering</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Medicine & Healthcare')">🩺 Medicine & Healthcare</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Business & Startups')">📊 Business & Startups</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Finance & Banking')">📈 Finance & Banking</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Design & Media')">🎨 Creative Design & Media</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Law & Policy')">⚖️ Law & Public Policy</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Civil Services')">🏛️ Civil Services & Govt</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Teaching & Research')">📚 Education & Research</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Aviation & Defense')">✈️ Aviation & Defense</div>
+            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Vocational Trades')">🛠️ Skilled Trades</div>
+          </div>
+        </div>
+
+        <!-- STEP 5: PERSONALIZED DASHBOARD LAUNCH -->
+        <div class="onboarding-step-content" id="onboard-step-5">
+          <div style="text-align: center; padding: 20px 0;">
+            <div style="width: 54px; height: 54px; border-radius: 50%; background: #DCFCE7; color: var(--success); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+              <i data-lucide="check-circle" style="width: 28px; height: 28px;"></i>
+            </div>
+            <h4 style="font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 8px;">Your Career Pilot Is Ready!</h4>
+            <p style="font-size: 14px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 24px; line-height: 1.6;">
+              We have configured your custom learning dashboard based on your academic level and chosen interests.
+            </p>
+
+            <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 24px; max-width: 460px; margin: 0 auto 24px; text-align: left;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 12.5px; color: var(--text-muted);">Name:</span>
+                <span id="onboard-summary-name" style="font-size: 13px; font-weight: 600; color: var(--text-primary);">-</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 12.5px; color: var(--text-muted);">Academic Level:</span>
+                <span id="onboard-summary-stage" style="font-size: 13px; font-weight: 600; color: var(--secondary);">Class 10</span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="font-size: 12.5px; color: var(--text-muted);">Target Direction:</span>
+                <span id="onboard-summary-career" style="font-size: 13px; font-weight: 600; color: var(--text-primary);">-</span>
+              </div>
+            </div>
+
+            <button type="button" class="btn" onclick="finishOnboarding()" style="padding: 12px 32px; font-size: 15px; font-weight: 700;">
+              <i data-lucide="rocket"></i> Launch My Career Dashboard
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Wizard Footer -->
+      <div class="onboarding-footer">
+        <button type="button" id="onboard-prev-btn" class="btn btn-secondary" onclick="prevOnboardingStep()" style="display: none;">
+          <i data-lucide="chevron-left"></i> Previous
+        </button>
+        <div style="margin-left: auto;">
+          <button type="button" id="onboard-next-btn" class="btn" onclick="nextOnboardingStep()">
+            Continue <i data-lucide="chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

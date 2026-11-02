@@ -696,15 +696,27 @@ function logout() {
 
 const viewData = {
   dashboard: { title: "Dashboard Overview", subtitle: "Track progress, tasks, streaks, and gaps" },
-  advisor: { title: "AI Career Advisor", subtitle: "Synthesize tailored 2026 tech career directions with Gemini 1.5 Flash" },
+  assessment: { title: "Aptitude Assessment (RIASEC)", subtitle: "10-question scientific interest profiling based on John Holland's framework" },
+  explorer: { title: "Universal Career Explorer", subtitle: "Explore 36 specialized career pathways across 12 modern sectors" },
+  "stream-guide": { title: "Class 10 Stream Selection Guide", subtitle: "Compare Science PCM/PCB, Commerce, Humanities, and Vocational options" },
+  "college-explorer": { title: "Degree & College Explorer", subtitle: "25+ undergraduate programs, national entrance exams, and verified scholarships" },
+  colleges: { title: "Degree & College Explorer", subtitle: "25+ undergraduate programs, national entrance exams, and verified scholarships" },
+  "mock-interview": { title: "AI Mock Interview Practice", subtitle: "Practice real interview questions across 12 sectors with real-time AI scoring" },
+  planner: { title: "Daily Learning Planner & Habit Tracker", subtitle: "Organize daily study priorities, Pomodoro focus sessions, and build streaks" },
+  advisor: { title: "AI Career Advisor", subtitle: "Synthesize tailored 2026 tech career directions with Gemini Flash" },
   generator: { title: "AI Roadmap Builder", subtitle: "Define goals and build custom learning tracks" },
-  analyzer: { title: "Skill Gap Analyzer", subtitle: "Audit resume text against target job descriptions" },
+  analyzer: { title: "Skill Gap & Resume Analyzer", subtitle: "Audit resume text against target job descriptions" },
+  resume: { title: "Skill Gap & Resume Analyzer", subtitle: "Audit resume text against target job descriptions" },
   mentor: { title: "AI Mentor Chat", subtitle: "Get dynamic guidance on frameworks, code, or interviews" },
   tracker: { title: "Tracker & Job Matchmaker", subtitle: "Manage milestone checkpoints and matching job postings" },
   settings: { title: "System Configuration", subtitle: "Profile parameters, API keys, and cache options" }
 };
 
 function switchTab(tabName) {
+  // Support tab aliases
+  if (tabName === "colleges") tabName = "college-explorer";
+  if (tabName === "resume") tabName = "analyzer";
+
   // Hide all tab views
   const views = document.querySelectorAll(".tab-view");
   views.forEach(v => v.classList.remove("active"));
@@ -728,6 +740,12 @@ function switchTab(tabName) {
 
   // Trigger tab-specific render sequences
   if (tabName === "dashboard") renderDashboard();
+  if (tabName === "assessment" && typeof renderAssessment === "function") renderAssessment();
+  if (tabName === "explorer" && typeof renderCareerExplorer === "function") renderCareerExplorer();
+  if (tabName === "stream-guide" && typeof renderStreamGuide === "function") renderStreamGuide();
+  if (tabName === "college-explorer" && typeof renderCollegeExplorer === "function") renderCollegeExplorer();
+  if (tabName === "mock-interview" && typeof renderMockInterview === "function") renderMockInterview();
+  if (tabName === "planner" && typeof renderDailyPlanner === "function") renderDailyPlanner();
   if (tabName === "advisor") renderAdvisor();
   if (tabName === "generator") renderGenerator();
   if (tabName === "analyzer") renderAnalyzer();
@@ -1433,62 +1451,202 @@ function showChecklistAchievements() {
 // 6. DASHBOARD & PROGRESS METRICS RENDERER
 // ==========================================
 
+
 function renderDashboard() {
   showProgressMetrics();
-  
-  const content = document.getElementById("dashboard-active-roadmap-content");
-  const r = state.activeRoadmap;
 
-  if (!r) {
-    content.innerHTML = `
-      <p class="text-secondary" style="font-size: 14px; text-align: center; padding: 40px 0;">
-        No active roadmap configured. Click the "Build Roadmap" button above to get started!
-      </p>
-    `;
-    return;
-  }
+  const stage = state.academicStage || "College";
+  const container = document.getElementById("tab-dashboard");
+  if (!container) return;
 
-  // Generate dynamic dashboard view: lists next 3 unchecked tasks
-  let taskRows = [];
-  let foundTasks = 0;
-  
-  r.roadmap.weeks.forEach((week, weekIdx) => {
-    week.tasks.forEach((task, taskIdx) => {
-      const isChecked = state.checklistProgress[`${weekIdx}-${taskIdx}`];
-      if (!isChecked && foundTasks < 4) {
-        taskRows.push(`
-          <div class="checklist-item" onclick="toggleTask(${weekIdx}, ${taskIdx}); renderDashboard();">
-            <div class="checklist-checkbox">
-              <i data-lucide="check"></i>
-            </div>
-            <div style="flex-grow: 1;">
-              <span class="checklist-text" style="font-weight: 500;">${task}</span>
-              <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">${week.title}</div>
-            </div>
+  // Render Stage Banner
+  let bannerHTML = "";
+  if (stage.includes("10") || stage.includes("9")) {
+    bannerHTML = `
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+            <i data-lucide="compass" style="width: 24px; height: 24px;"></i>
           </div>
-        `);
-        foundTasks++;
-      }
-    });
-  });
-
-  if (taskRows.length === 0) {
-    content.innerHTML = `
-      <div style="text-align: center; padding: 30px 0;">
-        <i data-lucide="sparkles" style="color: var(--color-teal); width: 32px; height: 32px; margin-bottom: 10px;"></i>
-        <h4 style="font-size: 15px; font-weight: 600;">Roadmap Fully Completed!</h4>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Excellent work. Use the analyzer to verify new gaps.</p>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Discover Your Strengths and Choose Your Ideal Stream</h3>
+              <span class="ai-badge">Class 9 & 10</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+              Unsure about Science PCM/PCB, Commerce, Humanities, or Vocational courses? Discover your Holland RIASEC traits and compare streams side-by-side.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn" onclick="switchTab('assessment')" style="width: auto; padding: 10px 20px; font-size: 13px;">
+            <i data-lucide="help-circle"></i> Take RIASEC Test
+          </button>
+          <button class="btn btn-secondary" onclick="switchTab('stream-guide')" style="width: auto; padding: 10px 18px; font-size: 13px;">
+            <i data-lucide="git-branch"></i> Stream Comparison
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (stage.includes("11") || stage.includes("12")) {
+    bannerHTML = `
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+            <i data-lucide="graduation-cap" style="width: 24px; height: 24px;"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Plan Your College Journey and Future Career</h3>
+              <span class="ai-badge">Class 11 & 12</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+              Explore 25+ undergraduate degrees, track national entrance examinations (JEE, NEET, CUET, CLAT, NDA), and identify verified scholarships.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn" onclick="switchTab('colleges'); setCollegeSubTab('degrees');" style="width: auto; padding: 10px 20px; font-size: 13px;">
+            <i data-lucide="book-open"></i> Degree Explorer
+          </button>
+          <button class="btn btn-secondary" onclick="switchTab('colleges'); setCollegeSubTab('exams');" style="width: auto; padding: 10px 18px; font-size: 13px;">
+            <i data-lucide="calendar"></i> Entrance Exams
+          </button>
+        </div>
       </div>
     `;
   } else {
-    content.innerHTML = `
-      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">Your immediate next steps from your roadmap:</p>
-      <div class="tasks-checklist">${taskRows.join("")}</div>
+    bannerHTML = `
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+            <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Accelerate Your Professional Career</h3>
+              <span class="ai-badge">College & Graduates</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+              Optimize your ATS resume score, audit multi-discipline skill gaps, practice sector mock interviews, and build consistent learning streaks.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn" onclick="switchTab('mock-interview')" style="width: auto; padding: 10px 20px; font-size: 13px;">
+            <i data-lucide="mic"></i> Practice Mock Interview
+          </button>
+          <button class="btn btn-secondary" onclick="switchTab('resume')" style="width: auto; padding: 10px 18px; font-size: 13px;">
+            <i data-lucide="file-check"></i> ATS Resume Scan
+          </button>
+        </div>
+      </div>
     `;
   }
 
-  lucide.createIcons();
+  // Find or insert the banner container
+  let bannerWrapper = document.getElementById("dashboard-stage-banner-wrapper");
+  if (!bannerWrapper) {
+    const metricsRow = container.querySelector(".metrics-row");
+    if (metricsRow) {
+      bannerWrapper = document.createElement("div");
+      bannerWrapper.id = "dashboard-stage-banner-wrapper";
+      metricsRow.parentNode.insertBefore(bannerWrapper, metricsRow);
+    }
+  }
+  if (bannerWrapper) {
+    bannerWrapper.innerHTML = bannerHTML;
+  }
+
+  // Populate active roadmap task list
+  const content = document.getElementById("dashboard-active-roadmap-content");
+  const r = state.activeRoadmap;
+
+  if (content) {
+    if (!r) {
+      if (stage.includes("10") || stage.includes("9")) {
+        content.innerHTML = `
+          <div style="text-align: center; padding: 30px 0;">
+            <i data-lucide="compass" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">Your High School Roadmap is Ready to Configure</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
+              Take our 10-question aptitude assessment or compare streams to generate your custom weekly study plan.
+            </p>
+            <button class="btn" onclick="switchTab('assessment')" style="font-size: 12.5px; padding: 8px 18px;">
+              Start RIASEC Assessment <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        `;
+      } else if (stage.includes("11") || stage.includes("12")) {
+        content.innerHTML = `
+          <div style="text-align: center; padding: 30px 0;">
+            <i data-lucide="graduation-cap" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">Plan Your Entrance & College Preparation</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
+              Explore degree programs, check target entrance requirements, and generate a customized study schedule.
+            </p>
+            <button class="btn" onclick="switchTab('colleges')" style="font-size: 12.5px; padding: 8px 18px;">
+              Explore College Degrees <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `
+          <div style="text-align: center; padding: 30px 0;">
+            <i data-lucide="route" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">No Active Career Roadmap Configured</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
+              Select a target role or scan your resume to build a weekly milestones roadmap.
+            </p>
+            <button class="btn" onclick="switchTab('generator')" style="font-size: 12.5px; padding: 8px 18px;">
+              Build Custom Roadmap <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        `;
+      }
+    } else {
+      let taskRows = [];
+      let foundTasks = 0;
+      r.roadmap.weeks.forEach((week, weekIdx) => {
+        week.tasks.forEach((task, taskIdx) => {
+          const isChecked = state.checklistProgress[`${weekIdx}-${taskIdx}`];
+          if (!isChecked && foundTasks < 4) {
+            taskRows.push(`
+              <div class="checklist-item" onclick="toggleTask(${weekIdx}, ${taskIdx}); renderDashboard();">
+                <div class="checklist-checkbox">
+                  <i data-lucide="check"></i>
+                </div>
+                <div style="flex-grow: 1;">
+                  <span class="checklist-text" style="font-weight: 500;">${task}</span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">${week.title}</div>
+                </div>
+              </div>
+            `);
+            foundTasks++;
+          }
+        });
+      });
+
+      if (taskRows.length === 0) {
+        content.innerHTML = `
+          <div style="text-align: center; padding: 30px 0;">
+            <i data-lucide="sparkles" style="color: var(--success); width: 32px; height: 32px; margin-bottom: 10px;"></i>
+            <h4 style="font-size: 15px; font-weight: 600;">Roadmap Fully Completed!</h4>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Excellent work. Use the skill analyzer to verify new gaps.</p>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">Your immediate next steps from your roadmap:</p>
+          <div class="tasks-checklist">${taskRows.join("")}</div>
+        `;
+      }
+    }
+  }
+
+  if (window.lucide) lucide.createIcons();
 }
+
 
 function showProgressMetrics() {
   const r = state.activeRoadmap;
@@ -3660,4 +3818,348 @@ function resetPomodoro() {
   const btn = document.getElementById("pomodoro-start-btn");
   if (btn) btn.innerText = "Start Sprint";
   updatePomodoroDisplay();
+}
+
+
+// ========================================================
+// PUBLIC LANDING PAGE & ONBOARDING WIZARD CONTROLLERS
+// ========================================================
+
+let onboardingState = {
+  currentStep: 1,
+  name: "",
+  targetCareer: "",
+  notSure: false,
+  academicStage: "Class 10",
+  academicDetails: {},
+  interests: ["Technology & Software", "Artificial Intelligence"]
+};
+
+function showLandingPage() {
+  const landing = document.getElementById("landing-view");
+  const auth = document.getElementById("auth-view");
+  const workspace = document.getElementById("app-workspace");
+  if (landing) landing.style.display = "block";
+  if (auth) auth.style.display = "none";
+  if (workspace) workspace.style.display = "none";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.lucide) lucide.createIcons();
+}
+
+function scrollToSection(sectionId) {
+  const el = document.getElementById(sectionId);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function toggleFaq(item) {
+  if (!item) return;
+  const wasOpen = item.classList.contains("open");
+  document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("open"));
+  if (!wasOpen) {
+    item.classList.add("open");
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function openDemoWithSector(sectorKey) {
+  showDemoLogin();
+  setTimeout(() => {
+    switchTab("explorer");
+    const searchInput = document.getElementById("career-search-input");
+    if (searchInput) {
+      const sectorNames = {
+        tech: "Software",
+        ai: "Artificial Intelligence",
+        engineering: "Engineering",
+        healthcare: "Doctor",
+        business: "Product Manager",
+        finance: "Investment",
+        design: "Design",
+        law: "Law",
+        gov: "Civil Services",
+        education: "Professor",
+        defense: "Pilot",
+        vocational: "Automation"
+      };
+      if (sectorNames[sectorKey]) {
+        searchInput.value = sectorNames[sectorKey];
+        if (typeof filterCareers === "function") filterCareers();
+      }
+    }
+  }, 400);
+}
+
+function startOnboardingWithStage(stage) {
+  onboardingState.academicStage = stage;
+  startOnboarding();
+  selectOnboardingStage(stage);
+}
+
+function startOnboarding() {
+  const modal = document.getElementById("onboarding-modal");
+  if (!modal) return;
+  
+  onboardingState.currentStep = 1;
+  const nameInput = document.getElementById("onboard-name");
+  const careerInput = document.getElementById("onboard-career");
+  if (nameInput) nameInput.value = state.user ? state.user.username : "";
+  if (careerInput) careerInput.value = state.user ? formatCareerTitle(state.user.career) : "";
+
+  renderOnboardingStep();
+  modal.style.display = "flex";
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeOnboardingModal() {
+  const modal = document.getElementById("onboarding-modal");
+  if (modal) modal.style.display = "none";
+}
+
+function jumpToOnboardingStep(step) {
+  if (step < 1 || step > 5) return;
+  onboardingState.currentStep = step;
+  renderOnboardingStep();
+}
+
+function nextOnboardingStep() {
+  if (onboardingState.currentStep === 1) {
+    const nameInput = document.getElementById("onboard-name");
+    const careerInput = document.getElementById("onboard-career");
+    const notSureCheck = document.getElementById("onboard-not-sure");
+    
+    const name = nameInput ? nameInput.value.trim() : "";
+    if (!name) {
+      showToast("Please enter your name to personalize your guidance.", "warning");
+      if (nameInput) nameInput.focus();
+      return;
+    }
+    onboardingState.name = name;
+    onboardingState.targetCareer = notSureCheck && notSureCheck.checked ? "Undecided - Exploring Options" : (careerInput ? careerInput.value.trim() : "Software Engineer");
+  }
+
+  if (onboardingState.currentStep === 2) {
+    renderOnboardStageFields(onboardingState.academicStage);
+  }
+
+  if (onboardingState.currentStep === 4) {
+    // Populate summary for step 5
+    const nameSum = document.getElementById("onboard-summary-name");
+    const stageSum = document.getElementById("onboard-summary-stage");
+    const careerSum = document.getElementById("onboard-summary-career");
+    if (nameSum) nameSum.innerText = onboardingState.name || "Student";
+    if (stageSum) stageSum.innerText = onboardingState.academicStage;
+    if (careerSum) careerSum.innerText = onboardingState.targetCareer || "Undecided - Exploring Options";
+  }
+
+  if (onboardingState.currentStep < 5) {
+    onboardingState.currentStep++;
+    renderOnboardingStep();
+  }
+}
+
+function prevOnboardingStep() {
+  if (onboardingState.currentStep > 1) {
+    onboardingState.currentStep--;
+    renderOnboardingStep();
+  }
+}
+
+function renderOnboardingStep() {
+  const step = onboardingState.currentStep;
+  const stepNumEl = document.getElementById("onboard-step-num");
+  if (stepNumEl) stepNumEl.innerText = step;
+
+  // Indicators
+  for (let i = 1; i <= 5; i++) {
+    const ind = document.getElementById(`step-ind-${i}`);
+    if (ind) {
+      ind.classList.remove("active", "completed");
+      if (i === step) ind.classList.add("active");
+      else if (i < step) ind.classList.add("completed");
+    }
+    const content = document.getElementById(`onboard-step-${i}`);
+    if (content) {
+      content.classList.toggle("active", i === step);
+    }
+  }
+
+  // Buttons
+  const prevBtn = document.getElementById("onboard-prev-btn");
+  const nextBtn = document.getElementById("onboard-next-btn");
+  if (prevBtn) prevBtn.style.display = step > 1 ? "inline-flex" : "none";
+  if (nextBtn) {
+    nextBtn.style.display = step === 5 ? "none" : "inline-flex";
+    nextBtn.innerHTML = step === 4 ? `Review & Setup <i data-lucide="chevron-right"></i>` : `Continue <i data-lucide="chevron-right"></i>`;
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function selectOnboardingStage(stage) {
+  onboardingState.academicStage = stage;
+  const schoolCard = document.getElementById("stage-card-school");
+  const higherCard = document.getElementById("stage-card-higher");
+  const collegeCard = document.getElementById("stage-card-college");
+
+  if (schoolCard) schoolCard.classList.toggle("selected", stage.includes("10") || stage.includes("9"));
+  if (higherCard) higherCard.classList.toggle("selected", stage.includes("11") || stage.includes("12"));
+  if (collegeCard) collegeCard.classList.toggle("selected", stage.includes("Undergraduate") || stage.includes("Graduate"));
+
+  renderOnboardStageFields(stage);
+}
+
+function renderOnboardStageFields(stage) {
+  const container = document.getElementById("onboard-stage-specific-fields");
+  const desc = document.getElementById("onboard-step-3-desc");
+  if (!container) return;
+
+  if (stage.includes("10") || stage.includes("9")) {
+    if (desc) desc.innerText = "Select your favorite subjects and preferred learning approach for stream matching.";
+    container.innerHTML = `
+      <div class="input-group">
+        <label class="input-label">Favorite School Subjects (Select all that apply)</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">📐 Mathematics</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🔬 Science (Physics/Chem/Bio)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🌍 Social Studies & History</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">📖 English & Literature</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">💻 Computer Applications / Coding</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🎨 Visual Arts & Craft</div>
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" for="onboard-learning-style">Preferred Learning Style</label>
+        <select id="onboard-learning-style" class="input-field">
+          <option value="Hands-on experiments & building things">Hands-on experiments & building things (Practical)</option>
+          <option value="Analytical problem-solving & logical formulas">Analytical problem-solving & logical formulas (Maths/Logic)</option>
+          <option value="Reading, writing & conceptual discussions">Reading, writing & conceptual discussions (Humanities)</option>
+          <option value="Visual diagrams, charts & multimedia">Visual diagrams, charts & multimedia (Creative)</option>
+        </select>
+      </div>
+    `;
+  } else if (stage.includes("11") || stage.includes("12")) {
+    if (desc) desc.innerText = "Select your current Class 11-12 stream and target national entrance examinations.";
+    container.innerHTML = `
+      <div class="input-group">
+        <label class="input-label" for="onboard-current-stream">Current Higher Secondary Stream</label>
+        <select id="onboard-current-stream" class="input-field">
+          <option value="Science (PCM - Physics, Chemistry, Maths)">Science (PCM - Physics, Chemistry, Maths)</option>
+          <option value="Science (PCB - Physics, Chemistry, Biology)">Science (PCB - Physics, Chemistry, Biology)</option>
+          <option value="Science (PCMB - All Sciences & Maths)">Science (PCMB - All Sciences & Maths)</option>
+          <option value="Commerce (with Mathematics)">Commerce (with Mathematics)</option>
+          <option value="Commerce (without Mathematics / IP)">Commerce (without Mathematics / IP)</option>
+          <option value="Humanities / Arts">Humanities / Arts</option>
+          <option value="Vocational / Applied Skills">Vocational / Applied Skills</option>
+        </select>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label">Target Competitive Entrance Examinations</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">⚡ JEE (Main / Adv)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🩺 NEET-UG</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🎓 CUET-UG (Central Universities)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">⚖️ CLAT (National Law Universities)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">✈️ NDA (National Defence Academy)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🎨 NATA / UCEED (Design & Architecture)</div>
+        </div>
+      </div>
+    `;
+  } else {
+    if (desc) desc.innerText = "Provide details regarding your degree program, expected graduation, and career domain.";
+    container.innerHTML = `
+      <div class="input-group">
+        <label class="input-label" for="onboard-degree-name">Degree Program / Field of Study</label>
+        <input type="text" id="onboard-degree-name" class="input-field" placeholder="e.g. B.Tech Computer Science / B.Com Honours / B.A. Economics / MBBS / BCA / BBA">
+      </div>
+      <div class="grid-container" style="margin-bottom: 0;">
+        <div class="col-6">
+          <div class="input-group">
+            <label class="input-label" for="onboard-grad-year">Expected Graduation Year</label>
+            <select id="onboard-grad-year" class="input-field">
+              <option value="2026">2026 (Final Year)</option>
+              <option value="2027">2027 (Pre-Final Year)</option>
+              <option value="2028">2028 (Sophomore)</option>
+              <option value="2029">2029 (Freshman)</option>
+              <option value="Graduated">Already Graduated / Working</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="input-group">
+            <label class="input-label" for="onboard-primary-goal">Immediate Priority</label>
+            <select id="onboard-primary-goal" class="input-field">
+              <option value="Campus Placements & Software Roles">Campus Placements & Software Roles</option>
+              <option value="Internship Search">Summer / Off-Campus Internship</option>
+              <option value="Resume ATS & Interview Prep">Resume ATS & Mock Interview Practice</option>
+              <option value="Higher Studies (GATE / CAT / GRE)">Higher Studies (GATE / CAT / GRE)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function toggleOnboardNotSure(cb) {
+  const careerInput = document.getElementById("onboard-career");
+  if (!careerInput) return;
+  if (cb.checked) {
+    careerInput.value = "Undecided - Exploring Options";
+    careerInput.disabled = true;
+  } else {
+    careerInput.value = "";
+    careerInput.disabled = false;
+    careerInput.focus();
+  }
+}
+
+function toggleOnboardingChip(chip, name) {
+  chip.classList.toggle("selected");
+  if (chip.classList.contains("selected")) {
+    if (!onboardingState.interests.includes(name)) onboardingState.interests.push(name);
+  } else {
+    onboardingState.interests = onboardingState.interests.filter(i => i !== name);
+  }
+}
+
+function finishOnboarding() {
+  const name = onboardingState.name || "Explorer";
+  const stage = onboardingState.academicStage || "Class 10";
+  const career = onboardingState.targetCareer || "Software Engineer";
+
+  if (!state.user) {
+    state.user = {
+      username: name,
+      email: name.toLowerCase().replace(/\s+/g, ".") + "@student.getcareerpilot.com",
+      career: career.toLowerCase().replace(/\s+/g, "-"),
+      stage: stage,
+      skills: ["Problem Solving", "Critical Thinking", "Curiosity"]
+    };
+  } else {
+    state.user.username = name;
+    state.user.career = career.toLowerCase().replace(/\s+/g, "-");
+    state.user.stage = stage;
+  }
+
+  state.academicStage = stage;
+  saveStateToLocalStorage();
+
+  // If ApiClient active, sync profile to Supabase
+  if (window.ApiClient && ApiClient.saveUserProfile) {
+    ApiClient.saveUserProfile({
+      user: state.user,
+      academicStage: stage,
+      career: state.user.career
+    }).catch(e => console.warn("Supabase onboarding sync fallback:", e));
+  }
+
+  closeOnboardingModal();
+  showDashboardWorkspace();
+  onStageChange(stage);
+  switchTab("dashboard");
+  showToast(`Welcome, ${name}! Your personalized ${stage} dashboard is ready.`, "success");
 }
