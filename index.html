@@ -8,7 +8,7 @@
   <meta name="description" content="GetCareerPilot analyzes your skills, detects resume gaps, customizes learning roadmaps, schedules weekly tasks, and matches you with career mentors using Gemini AI.">
   <meta name="robots" content="index, follow">
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2026_5">
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Client-side PDF & DOCX Document Extraction Engines -->
@@ -94,40 +94,43 @@
   <div id="app-workspace" class="dashboard-wrapper" style="display: none;">
     
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+    <aside id="app-sidebar" class="sidebar">
       <div class="sidebar-logo">
-        <div class="sidebar-logo-icon">
+        <div class="sidebar-logo-icon" onclick="toggleSidebar()" title="Toggle Sidebar" style="cursor: pointer;">
           <i data-lucide="compass"></i>
         </div>
         <span class="sidebar-logo-text">GetCareerPilot</span>
+        <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Minimize Sidebar (Ctrl+B)">
+          <i data-lucide="chevron-left"></i>
+        </button>
       </div>
 
       <nav class="sidebar-menu">
-        <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')">
+        <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')" data-tooltip="Dashboard" title="Dashboard">
           <a href="#"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
         </li>
-        <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')">
+        <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')" data-tooltip="AI Career Advisor" title="AI Career Advisor">
           <a href="#"><i data-lucide="compass"></i><span>AI Career Advisor</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
         </li>
-        <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')">
+        <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')" data-tooltip="Roadmap Builder" title="Roadmap Builder">
           <a href="#"><i data-lucide="route"></i><span>Roadmap Builder</span></a>
         </li>
-        <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')">
+        <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')" data-tooltip="Skill Gap Analyzer" title="Skill Gap Analyzer">
           <a href="#"><i data-lucide="sparkles"></i><span>Skill Gap Analyzer</span></a>
         </li>
-        <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')">
+        <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')" data-tooltip="AI Mentor Chat" title="AI Mentor Chat">
           <a href="#"><i data-lucide="messages-square"></i><span>AI Mentor Chat</span></a>
         </li>
-        <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')">
+        <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')" data-tooltip="Tracker & Jobs" title="Tracker & Jobs">
           <a href="#"><i data-lucide="check-square"></i><span>Tracker & Jobs</span></a>
         </li>
-        <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')">
+        <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')" data-tooltip="Settings" title="Settings">
           <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
         </li>
       </nav>
 
-      <div class="sidebar-user">
-        <div id="user-avatar" class="user-avatar">JD</div>
+      <div class="sidebar-user" title="Account profile">
+        <div id="user-avatar" class="user-avatar" onclick="toggleSidebar()" style="cursor: pointer;" title="Toggle Sidebar">JD</div>
         <div class="user-info">
           <div id="user-display-name" class="user-name">Jane Doe</div>
           <div id="user-display-career" class="user-role">Unconfigured Career</div>
@@ -143,9 +146,14 @@
       
       <!-- Top header bar -->
       <header class="content-header">
-        <div class="header-title">
-          <h1 id="view-title">Dashboard Overview</h1>
-          <p id="view-subtitle">Monitor your professional growth and skills metrics</p>
+        <div class="header-left-group" style="display: flex; align-items: center; gap: 16px;">
+          <button id="sidebar-toggle-header-btn" class="sidebar-toggle-header-btn" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">
+            <i data-lucide="panel-left"></i>
+          </button>
+          <div class="header-title">
+            <h1 id="view-title">Dashboard Overview</h1>
+            <p id="view-subtitle">Monitor your professional growth and skills metrics</p>
+          </div>
         </div>
         <div class="header-actions">
           <button class="btn btn-secondary" onclick="switchTab('advisor')" style="padding: 10px 16px; font-size: 14px; border-color: rgba(99, 102, 241, 0.4);">
@@ -1136,10 +1144,10 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/data-templates.js?v=2026_4"></script>
-  <script src="js/resume-analyzer.js?v=2026_4"></script>
-  <script src="js/ai-service.js?v=2026_4"></script>
-  <script src="js/app.js?v=2026_4"></script>
+  <script src="js/data-templates.js?v=2026_5"></script>
+  <script src="js/resume-analyzer.js?v=2026_5"></script>
+  <script src="js/ai-service.js?v=2026_5"></script>
+  <script src="js/app.js?v=2026_5"></script>
   <!-- ========================================== -->
   <!-- AI CAREER GUIDANCE & INTERVIEW PREP MODAL   -->
   <!-- ========================================== -->

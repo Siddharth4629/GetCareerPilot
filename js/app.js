@@ -19,6 +19,7 @@ let state = {
 // Initialization on DOM Load
 document.addEventListener("DOMContentLoaded", () => {
   loadStateFromLocalStorage();
+  initSidebarState();
   lucide.createIcons();
   setupEventListeners();
 
@@ -218,6 +219,48 @@ function formatCareerTitle(careerKey) {
   return careerKey.split(/[-_ ]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
+// ==========================================
+// 1.5 SIDEBAR TOGGLE & MINIMIZE CONTROLLER
+// ==========================================
+
+function toggleSidebar(forceState) {
+  const sidebar = document.getElementById("app-sidebar") || document.querySelector(".sidebar");
+  const workspace = document.getElementById("app-workspace");
+  if (!sidebar) return;
+
+  const isCurrentlyCollapsed = sidebar.classList.contains("collapsed");
+  const shouldCollapse = forceState !== undefined ? forceState : !isCurrentlyCollapsed;
+
+  if (shouldCollapse) {
+    sidebar.classList.add("collapsed");
+    if (workspace) workspace.classList.add("sidebar-collapsed");
+    localStorage.setItem("devpath_sidebar_collapsed", "true");
+    const collapseBtn = document.getElementById("sidebar-collapse-btn");
+    if (collapseBtn) collapseBtn.setAttribute("title", "Expand Sidebar (Ctrl+B)");
+    const toggleHeaderBtn = document.getElementById("sidebar-toggle-header-btn");
+    if (toggleHeaderBtn) toggleHeaderBtn.setAttribute("title", "Expand Sidebar (Ctrl+B)");
+  } else {
+    sidebar.classList.remove("collapsed");
+    if (workspace) workspace.classList.remove("sidebar-collapsed");
+    localStorage.setItem("devpath_sidebar_collapsed", "false");
+    const collapseBtn = document.getElementById("sidebar-collapse-btn");
+    if (collapseBtn) collapseBtn.setAttribute("title", "Minimize Sidebar (Ctrl+B)");
+    const toggleHeaderBtn = document.getElementById("sidebar-toggle-header-btn");
+    if (toggleHeaderBtn) toggleHeaderBtn.setAttribute("title", "Minimize Sidebar (Ctrl+B)");
+  }
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function initSidebarState() {
+  const saved = localStorage.getItem("devpath_sidebar_collapsed");
+  if (saved === "true") {
+    toggleSidebar(true);
+  }
+}
+
 function showAuthScreen() {
   document.getElementById("auth-view").style.display = "flex";
   document.getElementById("app-workspace").style.display = "none";
@@ -228,6 +271,9 @@ function showDashboardWorkspace() {
   document.getElementById("auth-view").style.display = "none";
   document.getElementById("app-workspace").style.display = "flex";
   
+  // Restore persisted sidebar minimize preference
+  initSidebarState();
+
   // Render user profile details in sidebar
   document.getElementById("user-display-name").innerText = state.user.username;
   document.getElementById("user-avatar").innerText = state.user.username.split(" ").map(n => n[0]).join("").toUpperCase();
@@ -795,6 +841,19 @@ function selectCareer(careerKey) {
 
 function setupEventListeners() {
   setupDragAndDrop();
+
+  // Global Keyboard Shortcuts (Ctrl+B or Cmd+B to toggle sidebar)
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "b" || e.key === "B")) {
+      const activeEl = document.activeElement;
+      const tag = activeEl ? activeEl.tagName.toLowerCase() : "";
+      if (tag === "input" || tag === "textarea" || (activeEl && activeEl.isContentEditable)) {
+        return; // Don't intercept while typing in forms
+      }
+      e.preventDefault();
+      toggleSidebar();
+    }
+  });
 
   // Skill tags input enter trigger
   const skillField = document.getElementById("skills-input-text");
