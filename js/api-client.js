@@ -1,7 +1,9 @@
-// api-client.js - Full-Stack MongoDB & Express REST API Client
+// api-client.js - Full-Stack Supabase Cloud & Local REST API Client
 
 const ApiClient = (function() {
-  const API_BASE = (typeof window !== 'undefined' && window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
+  const SUPABASE_URL = 'https://eomaowtmpnglyvvdnbbi.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_AJTng_9RpRJX8OV7-bDsGg_HkwQgiH4';
+  const LOCAL_API_BASE = (typeof window !== 'undefined' && window.location.port === '3000') ? '/api' : 'http://localhost:3000/api';
 
   function getToken() {
     return localStorage.getItem('devpath_token') || '';
@@ -15,131 +17,311 @@ const ApiClient = (function() {
     }
   }
 
-  function getHeaders() {
+  // Direct Supabase REST fetch helper (works everywhere, zero port dependency)
+  async function supabaseFetch(table, query = '', options = {}) {
+    const url = `${SUPABASE_URL}/rest/v1/${table}${query}`;
     const headers = {
-      'Content-Type': 'application/json'
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...(options.headers || {})
     };
-    const token = getToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(url, { ...options, headers });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: `HTTP ${res.status}` }));
+      throw new Error(err.message || `HTTP ${res.status}`);
     }
-    const savedUser = localStorage.getItem('devpath_user');
-    if (savedUser) {
-      try {
-        const u = JSON.parse(savedUser);
-        if (u && u.email) headers['x-user-email'] = u.email;
-      } catch (e) {}
-    }
-    return headers;
+    return await res.json();
   }
 
-  async function request(endpoint, options = {}) {
-    const url = `${API_BASE}${endpoint}`;
-    const config = {
-      ...options,
-      headers: {
-        ...getHeaders(),
-        ...(options.headers || {})
-      }
+  // Normalize user row
+  function normalize(u) {
+    if (!u) return null;
+    return {
+      id: u.id,
+      username: u.username,
+      email: u.email,
+      password: u.password,
+      career: u.career || 'frontend-developer',
+      level: u.level || 'intermediate',
+      hours: u.hours || 15,
+      skills: u.skills || [],
+      activeRoadmap: u.active_roadmap || u.activeRoadmap || null,
+      checklistProgress: u.checklist_progress || u.checklistProgress || {},
+      chatHistory: u.chat_history || u.chatHistory || [],
+      streakCount: u.streak_count || u.streakCount || 1,
+      lastActiveDate: u.last_active_date || u.lastActiveDate || '',
+      careerRecommendations: u.career_recommendations || u.careerRecommendations || null,
+      apiKey: u.api_key || u.apiKey || '',
+      createdAt: u.created_at || u.createdAt
     };
-
-    try {
-      const response = await fetch(url, config);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}`);
-      }
-      return data;
-    } catch (err) {
-      console.warn(`API request ${endpoint} failed:`, err.message);
-      throw err;
-    }
   }
 
   return {
     getToken,
     setToken,
+    SUPABASE_URL,
 
     // Check Database Health & Connectivity
     async checkStatus() {
+      // 1. Direct Supabase Cloud check
       try {
-        return await request('/status');
-      } catch (e) {
-        return { status: 'offline', database: 'local_client', mongodbConnected: false };
+        const rows = await supabaseFetch('user_profiles', '?select=id&limit=1');
+        return {
+          status: 'ok',
+          database: 'supabase',
+          supabaseConnected: true,
+          supabaseTableReady: true,
+          directCloud: true
+        };
+      } catch (cloudErr) {
+        console.warn('Direct Supabase status check:', cloudErr.message);
       }
+
+      // 2. Try Local Server
+      try {
+        const res = await fetch(`${LOCAL_API_BASE}/status`);
+        if (res.ok) return await res.json();
+      } catch (localErr) {}
+
+      return { status: 'offline', database: 'local_client', supabaseConnected: false };
     },
 
     // User Signup
     async signup(username, email, password) {
-      const res = await request('/auth/signup', {
+      const normEmail = email.toLowerCase().trim();
+
+      // 1. Direct Supabase Cloud
+      try {
+        const existing = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}&select=id`);
+        if (existing && existing.length > 0) {
+          throw new Error('An account with this email already exists. Please Sign In.');
+        }
+
+        const newUserPayload = {
+          username: username.trim(),
+          email: normEmail,
+          password: password,
+          career: 'frontend-developer',
+          level: 'intermediate',
+          hours: 15,
+          skills: [],
+          active_roadmap: null,
+          checklist_progress: {},
+          chat_history: [],
+          streak_count: 1,
+          last_active_date: new Date().toDateString()
+        };
+
+        const inserted = await supabaseFetch('user_profiles', '', {
+          method: 'POST',
+          body: JSON.stringify(newUserPayload)
+        });
+
+        const safeUser = normalize(inserted[0] || newUserPayload);
+        delete safeUser.password;
+        setToken(`sb_token_${Date.now()}`);
+        return { user: safeUser, database: 'supabase' };
+      } catch (err) {
+        if (err.message && err.message.includes('already exists')) throw err;
+        console.warn('Direct Supabase signup failed, trying local server:', err.message);
+      }
+
+      // 2. Local Server fallback
+      const response = await fetch(`${LOCAL_API_BASE}/auth/signup`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
       });
-      if (res.token) setToken(res.token);
-      return res;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Signup failed');
+      if (data.token) setToken(data.token);
+      return data;
     },
 
     // User Login
     async login(email, password) {
-      const res = await request('/auth/login', {
+      const normEmail = email.toLowerCase().trim();
+
+      // 1. Direct Supabase Cloud
+      try {
+        const users = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}&select=*`);
+        if (users && users.length > 0) {
+          const u = users[0];
+          let isMatch = (u.password === password);
+
+          // If password was hashed with bcrypt ($2a$), try local server to verify
+          if (!isMatch && u.password && u.password.startsWith('$2a$')) {
+            try {
+              const srvRes = await fetch(`${LOCAL_API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+              });
+              if (srvRes.ok) {
+                const srvData = await srvRes.json();
+                if (srvData.token) setToken(srvData.token);
+                return srvData;
+              }
+            } catch (e) {}
+          }
+
+          if (!isMatch) {
+            throw new Error('Incorrect password. Please try again.');
+          }
+
+          const safeUser = normalize(u);
+          delete safeUser.password;
+          setToken(`sb_token_${Date.now()}`);
+          return { user: safeUser, database: 'supabase' };
+        } else {
+          throw new Error('No account found for this email. Click "Create Account" to sign up.');
+        }
+      } catch (err) {
+        if (err.message && (err.message.includes('Incorrect password') || err.message.includes('No account found'))) {
+          throw err;
+        }
+        console.warn('Direct Supabase login failed, trying local server:', err.message);
+      }
+
+      // 2. Local Server fallback
+      const response = await fetch(`${LOCAL_API_BASE}/auth/login`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      if (res.token) setToken(res.token);
-      return res;
-    },
-
-    // Get Logged In User
-    async getCurrentUser() {
-      return await request('/user/me');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Login failed');
+      if (data.token) setToken(data.token);
+      return data;
     },
 
     // Save Active Roadmap
     async saveRoadmap(activeRoadmap, career, level, hours, skills) {
-      return await request('/user/roadmap', {
-        method: 'PUT',
-        body: JSON.stringify({ activeRoadmap, career, level, hours, skills })
-      });
+      const savedUser = localStorage.getItem('devpath_user');
+      const email = savedUser ? JSON.parse(savedUser).email : '';
+      if (!email) return;
+
+      const normEmail = email.toLowerCase().trim();
+      const payload = {
+        active_roadmap: activeRoadmap,
+        checklist_progress: {},
+        updated_at: new Date().toISOString()
+      };
+      if (career) payload.career = career;
+      if (level) payload.level = level;
+      if (hours) payload.hours = hours;
+      if (skills) payload.skills = skills;
+
+      try {
+        await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        });
+        return { message: 'Saved to Supabase' };
+      } catch (e) {
+        await fetch(`${LOCAL_API_BASE}/user/roadmap`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': email },
+          body: JSON.stringify({ activeRoadmap, career, level, hours, skills })
+        }).catch(() => {});
+      }
     },
 
-    // Save Task Checklist Progress
+    // Save Progress
     async saveProgress(checklistProgress) {
-      return await request('/user/progress', {
-        method: 'PUT',
-        body: JSON.stringify({ checklistProgress })
-      });
+      const savedUser = localStorage.getItem('devpath_user');
+      const email = savedUser ? JSON.parse(savedUser).email : '';
+      if (!email) return;
+
+      const normEmail = email.toLowerCase().trim();
+      try {
+        await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ checklist_progress: checklistProgress, updated_at: new Date().toISOString() })
+        });
+      } catch (e) {
+        await fetch(`${LOCAL_API_BASE}/user/progress`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': email },
+          body: JSON.stringify({ checklistProgress })
+        }).catch(() => {});
+      }
     },
 
-    // Save Chat History
+    // Save Chat
     async saveChat(chatHistory) {
-      return await request('/user/chat', {
-        method: 'PUT',
-        body: JSON.stringify({ chatHistory })
-      });
+      const savedUser = localStorage.getItem('devpath_user');
+      const email = savedUser ? JSON.parse(savedUser).email : '';
+      if (!email) return;
+
+      const normEmail = email.toLowerCase().trim();
+      try {
+        await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ chat_history: chatHistory, updated_at: new Date().toISOString() })
+        });
+      } catch (e) {
+        await fetch(`${LOCAL_API_BASE}/user/chat`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': email },
+          body: JSON.stringify({ chatHistory })
+        }).catch(() => {});
+      }
     },
 
-    // Save Career Recommendations
+    // Save Recommendations
     async saveRecommendations(careerRecommendations) {
-      return await request('/user/recommendations', {
-        method: 'PUT',
-        body: JSON.stringify({ careerRecommendations })
-      });
+      const savedUser = localStorage.getItem('devpath_user');
+      const email = savedUser ? JSON.parse(savedUser).email : '';
+      if (!email) return;
+
+      const normEmail = email.toLowerCase().trim();
+      try {
+        await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ career_recommendations: careerRecommendations, updated_at: new Date().toISOString() })
+        });
+      } catch (e) {}
     },
 
-    // Update Profile Parameters & Password
+    // Update Profile
     async updateProfile(profileData) {
-      return await request('/user/profile', {
-        method: 'PUT',
-        body: JSON.stringify(profileData)
-      });
+      const savedUser = localStorage.getItem('devpath_user');
+      const email = savedUser ? JSON.parse(savedUser).email : '';
+      if (!email) return;
+
+      const normEmail = email.toLowerCase().trim();
+      const payload = { updated_at: new Date().toISOString() };
+      if (profileData.username) payload.username = profileData.username;
+      if (profileData.career) payload.career = profileData.career;
+      if (profileData.level) payload.level = profileData.level;
+      if (profileData.hours) payload.hours = profileData.hours;
+      if (profileData.skills) payload.skills = profileData.skills;
+      if (profileData.apiKey !== undefined) payload.api_key = profileData.apiKey;
+      if (profileData.password) payload.password = profileData.password;
+
+      try {
+        const updated = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        });
+        return { user: normalize(updated[0]) };
+      } catch (e) {
+        const res = await fetch(`${LOCAL_API_BASE}/user/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': email },
+          body: JSON.stringify(profileData)
+        });
+        return await res.json();
+      }
     },
 
-    // Clear Session Token
     logout() {
       setToken(null);
     }
   };
 })();
 
-// Attach to window
 window.ApiClient = ApiClient;
