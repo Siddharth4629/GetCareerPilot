@@ -38,6 +38,10 @@
         </div>
         <h2 class="logo-title">GetCareerPilot</h2>
         <p class="logo-subtitle" id="auth-subtitle">Your Intelligent Career Growth Companion</p>
+        <div id="db-status-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 10px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--color-teal);">
+          <span id="db-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-teal); box-shadow: 0 0 8px var(--color-teal);"></span>
+          <span id="db-status-text">Database Connected</span>
+        </div>
       </div>
 
       <!-- Auth Mode Switch Tabs: Sign In / Create Account -->
@@ -63,13 +67,26 @@
           <input type="email" id="auth-email" class="input-field" placeholder="e.g., alex@getcareerpilot.com" required>
         </div>
 
-        <!-- Password -->
-        <div class="input-group" style="margin-bottom: 22px;">
+        <!-- Password with visibility toggle -->
+        <div class="input-group" style="margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label class="input-label" for="auth-password" style="margin-bottom: 0;">Password</label>
             <span id="auth-demo-shortcut" style="font-size: 11px; color: var(--color-teal); cursor: pointer; text-decoration: underline;" onclick="fillDemoCredentials()">Fill Demo</span>
           </div>
-          <input type="password" id="auth-password" class="input-field" placeholder="••••••••" required>
+          <div style="position: relative;">
+            <input type="password" id="auth-password" class="input-field" placeholder="••••••••" required style="padding-right: 42px;">
+            <button type="button" onclick="toggleAuthPasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;" title="Show/Hide Password">
+              <i id="auth-password-eye" data-lucide="eye" style="width: 18px; height: 18px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 12.5px; color: var(--text-secondary);">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="auth-remember-me" checked style="accent-color: var(--color-indigo); cursor: pointer;">
+            <span>Remember my email</span>
+          </label>
         </div>
 
         <button type="submit" id="auth-submit-btn" class="btn">
@@ -1144,10 +1161,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/data-templates.js?v=2026_5"></script>
-  <script src="js/resume-analyzer.js?v=2026_5"></script>
-  <script src="js/ai-service.js?v=2026_5"></script>
-  <script src="js/app.js?v=2026_5"></script>
+  <script src="js/data-templates.js?v=2026_6"></script>
+  <script src="js/resume-analyzer.js?v=2026_6"></script>
+  <script src="js/ai-service.js?v=2026_6"></script>
+  <script src="js/api-client.js?v=2026_6"></script>
+  <script src="js/app.js?v=2026_6"></script>
   <!-- ========================================== -->
   <!-- AI CAREER GUIDANCE & INTERVIEW PREP MODAL   -->
   <!-- ========================================== -->

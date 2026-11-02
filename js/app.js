@@ -86,9 +86,26 @@ function saveStateToLocalStorage() {
       checklistProgress: state.checklistProgress,
       chatHistory: state.chatHistory,
       streakCount: state.streakCount,
-      lastActiveDate: state.lastActiveDate
+      lastActiveDate: state.lastActiveDate,
+      careerRecommendations: state.careerRecommendations
     };
     saveRegisteredAccounts(accounts);
+
+    // Sync to MongoDB / Backend database
+    if (window.ApiClient) {
+      if (state.activeRoadmap) {
+        ApiClient.saveRoadmap(state.activeRoadmap, state.user.career, state.user.level, state.user.hours, state.user.skills).catch(() => {});
+      }
+      if (state.checklistProgress) {
+        ApiClient.saveProgress(state.checklistProgress).catch(() => {});
+      }
+      if (state.chatHistory && state.chatHistory.length > 0) {
+        ApiClient.saveChat(state.chatHistory).catch(() => {});
+      }
+      if (state.careerRecommendations) {
+        ApiClient.saveRecommendations(state.careerRecommendations).catch(() => {});
+      }
+    }
   }
 }
 
@@ -265,6 +282,62 @@ function showAuthScreen() {
   document.getElementById("auth-view").style.display = "flex";
   document.getElementById("app-workspace").style.display = "none";
   setAuthMode(state.authMode || "login");
+  checkDbStatus();
+
+  // Restore remembered email if available
+  const lastEmail = localStorage.getItem("devpath_last_email");
+  const emailInput = document.getElementById("auth-email");
+  if (lastEmail && emailInput && !emailInput.value) {
+    emailInput.value = lastEmail;
+  }
+}
+
+async function checkDbStatus() {
+  const pill = document.getElementById("db-status-pill");
+  const dot = document.getElementById("db-status-dot");
+  const text = document.getElementById("db-status-text");
+  if (!pill || !window.ApiClient) return;
+
+  try {
+    const res = await ApiClient.checkStatus();
+    if (res.mongodbConnected) {
+      if (dot) {
+        dot.style.background = "var(--color-teal)";
+        dot.style.boxShadow = "0 0 8px var(--color-teal)";
+      }
+      if (text) text.innerText = "MongoDB Active 🟢";
+      pill.style.borderColor = "rgba(45, 212, 191, 0.4)";
+    } else if (res.database === "local_store") {
+      if (dot) {
+        dot.style.background = "var(--color-indigo)";
+        dot.style.boxShadow = "0 0 8px var(--color-indigo)";
+      }
+      if (text) text.innerText = "Database Active (Local Store) 🟣";
+      pill.style.borderColor = "rgba(99, 102, 241, 0.4)";
+    } else {
+      if (dot) {
+        dot.style.background = "var(--color-pink)";
+        dot.style.boxShadow = "0 0 8px var(--color-pink)";
+      }
+      if (text) text.innerText = "Offline Mode 🟡";
+    }
+  } catch (e) {
+    if (text) text.innerText = "Offline Mode 🟡";
+  }
+}
+
+function toggleAuthPasswordVisibility() {
+  const input = document.getElementById("auth-password");
+  const icon = document.getElementById("auth-password-eye");
+  if (!input) return;
+  if (input.type === "password") {
+    input.type = "text";
+    if (icon) icon.setAttribute("data-lucide", "eye-off");
+  } else {
+    input.type = "password";
+    if (icon) icon.setAttribute("data-lucide", "eye");
+  }
+  if (window.lucide) lucide.createIcons();
 }
 
 function showDashboardWorkspace() {
@@ -280,11 +353,20 @@ function showDashboardWorkspace() {
   
   document.getElementById("user-display-career").innerText = formatCareerTitle(state.user.career);
 
+  // If active roadmap is present, render generator container
+  if (state.activeRoadmap) {
+    const roadmapContainer = document.getElementById("roadmap-output-container");
+    if (roadmapContainer) {
+      roadmapContainer.style.display = "grid";
+      renderActiveRoadmap();
+    }
+  }
+
   // Initial tab render
   switchTab("dashboard");
 }
 
-function handleAuth() {
+async function handleAuth() {
   const emailInput = document.getElementById("auth-email");
   const passwordInput = document.getElementById("auth-password");
   const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
@@ -295,7 +377,13 @@ function handleAuth() {
     return;
   }
 
-  const accounts = getRegisteredAccounts();
+  // Remember email preference
+  const rememberCheckbox = document.getElementById("auth-remember-me");
+  if (rememberCheckbox && rememberCheckbox.checked) {
+    localStorage.setItem("devpath_last_email", email);
+  } else {
+    localStorage.removeItem("devpath_last_email");
+  }
 
   if (state.authMode === "signup") {
     const usernameInput = document.getElementById("auth-username");
@@ -311,6 +399,37 @@ function handleAuth() {
       return;
     }
 
+    // Try MongoDB / Backend API Signup
+    if (window.ApiClient) {
+      try {
+        const res = await ApiClient.signup(username, email, password);
+        state.user = res.user;
+        state.activeRoadmap = null;
+        state.checklistProgress = {};
+        state.chatHistory = [];
+        state.streakCount = 1;
+        state.lastActiveDate = new Date().toDateString();
+
+        wizardState.selectedCareer = state.user.career || "frontend-developer";
+        wizardState.skillsList = [...(state.user.skills || [])];
+
+        saveStateToLocalStorage();
+        showToast(`Welcome to GetCareerPilot, ${username}! Profile saved in database.`, "success");
+        showDashboardWorkspace();
+        return;
+      } catch (err) {
+        if (err.message && (err.message.includes("already exists") || err.message.includes("409"))) {
+          showToast("An account with this email already exists. Please Sign In.", "warning");
+          setAuthMode("login");
+          if (emailInput) emailInput.value = email;
+          return;
+        }
+        console.warn("API signup error, falling back to local storage:", err.message);
+      }
+    }
+
+    // Client-side Fallback
+    const accounts = getRegisteredAccounts();
     if (accounts[email]) {
       showToast("An account with this email already exists. Please Sign In.", "warning");
       setAuthMode("login");
@@ -318,7 +437,6 @@ function handleAuth() {
       return;
     }
 
-    // Register new user account
     const newAccount = {
       username: username,
       email: email,
@@ -331,30 +449,66 @@ function handleAuth() {
       checklistProgress: {},
       chatHistory: [],
       streakCount: 1,
+      lastActiveDate: new Date().toDateString(),
       createdAt: new Date().toISOString()
     };
 
     accounts[email] = newAccount;
     saveRegisteredAccounts(accounts);
 
-    state.user = {
-      username: newAccount.username,
-      email: newAccount.email,
-      career: newAccount.career,
-      level: newAccount.level,
-      hours: newAccount.hours,
-      skills: newAccount.skills
-    };
+    state.user = { ...newAccount };
     state.activeRoadmap = null;
     state.checklistProgress = {};
     state.chatHistory = [];
     state.streakCount = 1;
 
+    wizardState.selectedCareer = state.user.career;
+    wizardState.skillsList = [];
+
     saveStateToLocalStorage();
     showToast(`Welcome to GetCareerPilot, ${username}! Profile created.`, "success");
     showDashboardWorkspace();
   } else {
-    // Login flow
+    // Login flow - Try MongoDB / Backend API Login
+    if (window.ApiClient) {
+      try {
+        const res = await ApiClient.login(email, password);
+        const u = res.user;
+        state.user = {
+          username: u.username,
+          email: u.email,
+          career: u.career || "frontend-developer",
+          level: u.level || "intermediate",
+          hours: u.hours || 15,
+          skills: u.skills || []
+        };
+        state.activeRoadmap = u.activeRoadmap || null;
+        state.checklistProgress = u.checklistProgress || {};
+        state.chatHistory = u.chatHistory || [];
+        state.streakCount = u.streakCount || 1;
+        state.lastActiveDate = u.lastActiveDate || "";
+        state.careerRecommendations = u.careerRecommendations || null;
+        if (u.apiKey) state.apiKey = u.apiKey;
+
+        wizardState.selectedCareer = state.user.career;
+        wizardState.skillsList = [...state.user.skills];
+
+        saveStateToLocalStorage();
+        const dbBadge = res.database === 'mongodb' ? 'MongoDB' : 'Database';
+        showToast(`Welcome back, ${u.username}! Logged in (${dbBadge} Synced).`, "success");
+        showDashboardWorkspace();
+        return;
+      } catch (err) {
+        if (err.message && (err.message.includes("Incorrect password") || err.message.includes("No account found"))) {
+          showToast(err.message, "error");
+          return;
+        }
+        console.warn("API login error, falling back to local storage:", err.message);
+      }
+    }
+
+    // Client-side Fallback Login
+    const accounts = getRegisteredAccounts();
     const account = accounts[email];
     if (!account) {
       showToast("No account found for this email. Click 'Create Account' to sign up.", "error");
@@ -366,7 +520,6 @@ function handleAuth() {
       return;
     }
 
-    // Login successful - restore user session and profile data
     state.user = {
       username: account.username,
       email: account.email,
@@ -379,6 +532,11 @@ function handleAuth() {
     state.checklistProgress = account.checklistProgress || {};
     state.chatHistory = account.chatHistory || [];
     state.streakCount = account.streakCount || 1;
+    state.lastActiveDate = account.lastActiveDate || "";
+    state.careerRecommendations = account.careerRecommendations || null;
+
+    wizardState.selectedCareer = state.user.career;
+    wizardState.skillsList = [...state.user.skills];
 
     saveStateToLocalStorage();
     showToast(`Welcome back, ${account.username}! Signed in successfully.`, "success");
@@ -386,7 +544,40 @@ function handleAuth() {
   }
 }
 
-function showDemoLogin() {
+async function showDemoLogin() {
+  const emailInput = document.getElementById("auth-email");
+  const passwordInput = document.getElementById("auth-password");
+  if (emailInput) emailInput.value = "alex@getcareerpilot.com";
+  if (passwordInput) passwordInput.value = "password123";
+
+  if (window.ApiClient) {
+    try {
+      const res = await ApiClient.login("alex@getcareerpilot.com", "password123");
+      const u = res.user;
+      state.user = {
+        username: u.username,
+        email: u.email,
+        career: u.career || "frontend-developer",
+        level: u.level || "intermediate",
+        hours: u.hours || 15,
+        skills: u.skills || []
+      };
+      state.activeRoadmap = u.activeRoadmap || null;
+      state.checklistProgress = u.checklistProgress || {};
+      state.chatHistory = u.chatHistory || [];
+      state.streakCount = u.streakCount || 3;
+      wizardState.selectedCareer = state.user.career;
+      wizardState.skillsList = [...state.user.skills];
+
+      saveStateToLocalStorage();
+      showToast("Demo profile loaded from database!", "success");
+      showDashboardWorkspace();
+      return;
+    } catch (e) {
+      console.warn("API demo login fallback:", e.message);
+    }
+  }
+
   const accounts = getRegisteredAccounts();
   const demo = accounts["alex@getcareerpilot.com"];
   if (demo) {
@@ -413,6 +604,9 @@ function showDemoLogin() {
     };
   }
   
+  wizardState.selectedCareer = state.user.career;
+  wizardState.skillsList = [...state.user.skills];
+
   saveStateToLocalStorage();
   showToast("Demo profile loaded successfully!", "success");
   showDashboardWorkspace();
@@ -423,18 +617,32 @@ function logout() {
     saveStateToLocalStorage();
   }
 
+  if (window.ApiClient) {
+    ApiClient.logout();
+  }
+
   state.user = null;
   state.activeRoadmap = null;
   state.checklistProgress = {};
   state.chatHistory = [];
   state.streakCount = 1;
   state.lastActiveDate = "";
+  state.careerRecommendations = null;
   
   localStorage.removeItem("devpath_user");
   localStorage.removeItem("devpath_roadmap");
   localStorage.removeItem("devpath_progress");
   localStorage.removeItem("devpath_chat");
+  localStorage.removeItem("devpath_career_recommendations");
   
+  // Reset roadmap output container
+  const roadmapContainer = document.getElementById("roadmap-output-container");
+  if (roadmapContainer) roadmapContainer.style.display = "none";
+
+  // Reset chat window
+  const chatWindow = document.getElementById("chat-messages-window");
+  if (chatWindow) chatWindow.innerHTML = "";
+
   showToast("Logged out successfully.", "info");
   showAuthScreen();
 }
