@@ -1982,6 +1982,1534 @@ const SAMPLE_JOBS = [
 
 const MOCK_JOBS = SAMPLE_JOBS;
 
+
+// ==========================================
+// STAGE 1: STREAM & SUBJECT SELECTION GUIDE (Class 9 & 10)
+// ==========================================
+
+const STREAM_GUIDE_DATA = [
+  {
+    id: "science-pcm",
+    title: "Science (PCM)",
+    subtitle: "Physics, Chemistry & Mathematics",
+    badge: "Technical & Quantitative",
+    icon: "fa-atom",
+    color: "#38bdf8",
+    overview: "Ideal for analytical minds interested in engineering, technology, computing, physical sciences, defense, architecture, and aviation.",
+    coreSubjects: ["Physics", "Chemistry", "Mathematics", "English"],
+    electiveSubjects: ["Computer Science / Informatics Practices", "Economics", "Engineering Graphics", "Physical Education"],
+    keySkills: ["Mathematical problem-solving", "Logical deduction", "Spatial reasoning", "Algorithmic thinking"],
+    workload: "High (Theory + Numerical Calculations + Lab Practicals)",
+    mathRequirement: "Very High",
+    careerPaths: [
+      "Software & AI Engineering",
+      "Aerospace & Aeronautical Engineer",
+      "Robotics & Automation Specialist",
+      "Architect & Urban Planner",
+      "Data Scientist & Quantitative Analyst",
+      "Commercial Pilot / Defense Officer (NDA)"
+    ],
+    idealFor: "Students who enjoy math puzzles, understanding how machinery works, coding, or aspire to enter IITs, NITs, and top tech institutions.",
+    entranceExams: ["JEE Main & Advanced", "BITSAT", "NDA", "NATA", "CUET UG"]
+  },
+  {
+    id: "science-pcb",
+    title: "Science (PCB)",
+    subtitle: "Physics, Chemistry & Biology",
+    badge: "Medical & Life Sciences",
+    icon: "fa-dna",
+    color: "#34d399",
+    overview: "The premier pathway for healthcare, biotechnology, genetics, pharmaceuticals, veterinary science, and environmental research.",
+    coreSubjects: ["Physics", "Chemistry", "Biology (Botany & Zoology)", "English"],
+    electiveSubjects: ["Psychology", "Biotechnology", "Home Science", "Physical Education", "Mathematics (PCMB option)"],
+    keySkills: ["Observational precision", "Scientific retention", "Empathy & patient care", "Experimental lab skills"],
+    workload: "High (Heavy anatomical memorization, diagrammatic precision & practicals)",
+    mathRequirement: "Moderate (High if PCMB selected)",
+    careerPaths: [
+      "Doctor / Surgeon (MBBS/MS)",
+      "Dental Surgeon (BDS)",
+      "Biotechnologist & Geneticist",
+      "Pharmacist & Drug Formulator (B.Pharm)",
+      "Physiotherapist & Sports Rehab",
+      "Veterinary Doctor & Animal Scientist",
+      "Clinical Psychologist & Neuroscientist"
+    ],
+    idealFor: "Students curious about living organisms, passionate about healing others, or fascinated by microbiological discoveries.",
+    entranceExams: ["NEET UG", "CUET UG (Biotech/Biochem)", "ICAR AIEEA", "AIIMS Paramedical"]
+  },
+  {
+    id: "commerce-math",
+    title: "Commerce (with Mathematics)",
+    subtitle: "Accountancy, Business, Economics & Math",
+    badge: "Finance & Corporate Leadership",
+    icon: "fa-chart-line",
+    color: "#f59e0b",
+    overview: "The gold standard for high finance, chartered accountancy, investment banking, actuarial science, and corporate fintech.",
+    coreSubjects: ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"],
+    electiveSubjects: ["Applied Mathematics", "Informatics Practices", "Entrepreneurship", "Financial Market Management"],
+    keySkills: ["Financial literacy", "Quantitative modeling", "Business strategy", "Data interpretation"],
+    workload: "Moderate to High (Balancing accounting ledger practice and calculus)",
+    mathRequirement: "High",
+    careerPaths: [
+      "Chartered Accountant (CA)",
+      "Investment Banker & Equity Analyst",
+      "Actuary & Risk Modeler",
+      "Chief Financial Officer (CFO)",
+      "Management Consultant",
+      "Fintech & Quantitative Trader"
+    ],
+    idealFor: "Students with strong math skills who want lucrative business, finance, or analytical consulting careers without pure science.",
+    entranceExams: ["CA Foundation", "CUET UG (SRCC, St. Xavier's)", "IPMAT (IIM Indore/Rohtak)", "ACET (Actuarial)"]
+  },
+  {
+    id: "commerce-general",
+    title: "Commerce (without Mathematics)",
+    subtitle: "Accountancy, Business, Economics & Informatics",
+    badge: "Management & Entrepreneurship",
+    icon: "fa-briefcase",
+    color: "#fb923c",
+    overview: "Tailored for business administration, marketing, human resources, company secretaryship, entrepreneurship, and event management.",
+    coreSubjects: ["Accountancy", "Business Studies", "Economics", "English"],
+    electiveSubjects: ["Informatics Practices", "Entrepreneurship", "Psychology", "Physical Education", "Commercial Arts"],
+    keySkills: ["Communication & persuasion", "Managerial execution", "Commercial acumen", "Market analysis"],
+    workload: "Moderate (Conceptual study and descriptive case analysis)",
+    mathRequirement: "Basic Commercial Arithmetic only",
+    careerPaths: [
+      "Company Secretary (CS / ICSI)",
+      "Brand Manager & Digital Marketer",
+      "Human Resource Manager",
+      "Startup Founder / Entrepreneur",
+      "Hotel & Hospitality General Manager",
+      "Supply Chain & Retail Executive"
+    ],
+    idealFor: "Students who love commerce, business setups, and organizational leadership but prefer to avoid advanced calculus.",
+    entranceExams: ["CS Executive Entrance (CSEET)", "CUET UG (BBA/B.Com)", "IPMAT", "NCHMCT JEE"]
+  },
+  {
+    id: "humanities-arts",
+    title: "Humanities & Social Sciences (Arts)",
+    subtitle: "History, Pol Sci, Psychology, Sociology & Literature",
+    badge: "Policy, Law & Creative Thought",
+    icon: "fa-landmark",
+    color: "#a855f7",
+    overview: "The most versatile stream developing critical thinking, socio-political awareness, communication, law, diplomacy, and creative media.",
+    coreSubjects: ["History", "Political Science", "Sociology", "Psychology", "English"],
+    electiveSubjects: ["Economics", "Geography", "Philosophy", "Legal Studies", "Fine Arts", "Mass Media"],
+    keySkills: ["Critical reading & analytical writing", "Public argumentation", "Societal empathy", "Creative synthesis"],
+    workload: "Moderate (Extensive essay writing, research reading, and debate)",
+    mathRequirement: "Low (Unless electing Economics with Math)",
+    careerPaths: [
+      "Civil Services (IAS, IPS, IFS, IRS via UPSC)",
+      "Corporate Lawyer & Supreme Court Advocate",
+      "International Diplomat & UN Policy Advisor",
+      "Investigative Journalist & Media Editor",
+      "Clinical Psychologist & Counselor",
+      "Content Strategist, Author & Screenwriter",
+      "Heritage Conservator & Museum Curator"
+    ],
+    idealFor: "Thinkers, writers, public debaters, future civil servants, advocates, and creative strategists.",
+    entranceExams: ["CUET UG (DU, JNU, BHU)", "CLAT & AILET (National Law Universities)", "UPSC CSE", "TISS BAT"]
+  },
+  {
+    id: "vocational-emerging",
+    title: "Vocational, Design & Emerging Tracks",
+    subtitle: "Skill-Based, Practical & Applied Technologies",
+    badge: "Hands-on & Skill-Centric",
+    icon: "fa-palette",
+    color: "#ec4899",
+    overview: "A rapid-growth path emphasizing portfolio mastery, digital creation, applied skills, and direct industry apprenticeship.",
+    coreSubjects: ["Applied Art & Design / IT & Web Applications", "Communication English", "Vocational Elective 1", "Vocational Elective 2"],
+    electiveSubjects: ["UI/UX Design", "Animation & VFX", "Culinary Arts & Bakery", "Electronics & IoT", "Sports Science"],
+    keySkills: ["Practical portfolio execution", "Tool proficiency (Figma, Adobe, Unity)", "Applied troubleshooting"],
+    workload: "Moderate (Studio work, lab projects, and portfolio defense)",
+    mathRequirement: "Minimal",
+    careerPaths: [
+      "UI/UX & Product Designer",
+      "3D Game Animator & VFX Artist",
+      "Executive Chef & Food Entrepreneur",
+      "Sound Engineer & Music Producer",
+      "Fitness Coach & Sports Physiologist",
+      "Interior & Spatial Designer"
+    ],
+    idealFor: "Creative and kinesthetic learners who want to build real products, portfolios, and start freelancing or direct design degrees.",
+    entranceExams: ["NID DAT", "UCEED", "NIFT Entrance", "IHM JEE", "FTII Entrance"]
+  }
+];
+
+// ==========================================
+// STAGE 2: CAREER EXPLORER (12 Major Domains)
+// ==========================================
+
+const CAREER_EXPLORER_DATA = [
+  {
+    id: "science-research",
+    name: "Science & Research",
+    icon: "fa-microscope",
+    color: "#38bdf8",
+    description: "Explore fundamental laws of nature, advance human discovery, and conduct groundbreaking laboratory research.",
+    roles: [
+      {
+        title: "Astrophysicist & Space Scientist",
+        salary: "$80,000 - $145,000 / ₹12-25 LPA",
+        growth: "High (12% 10-yr growth)",
+        educationReq: "B.Sc Physics -> M.Sc -> Ph.D in Astronomy/Astrophysics",
+        description: "Study celestial phenomena, planetary orbits, black holes, and design satellite mission experiments for space agencies like ISRO or NASA.",
+        keySkills: ["Orbital Mechanics", "Python/C++ for Simulation", "Tensor Calculus", "Spectroscopy"],
+        dayInLife: "Analyzing telemetry data from deep space telescopes, modeling cosmic particle collisions, and writing peer-reviewed papers.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Molecular Biologist & Geneticist",
+        salary: "$75,000 - $135,000 / ₹10-22 LPA",
+        growth: "Very High (15% 10-yr growth)",
+        educationReq: "B.Sc Biotechnology -> M.Sc Genetics / Ph.D",
+        description: "Decipher DNA/RNA sequences, investigate gene therapies using CRISPR-Cas9, and develop disease-resistant crop strains.",
+        keySkills: ["Gene Editing (CRISPR)", "PCR Amplification", "Bioinformatics", "Microscopy"],
+        dayInLife: "Culturing cell lines in clean rooms, running sequencing gels, and analyzing genomic mutation markers.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Materials Scientist & Nanotechnologist",
+        salary: "$85,000 - $140,000 / ₹11-24 LPA",
+        growth: "High (10% 10-yr growth)",
+        educationReq: "B.Tech/B.Sc Materials Science or Chemical Engineering",
+        description: "Synthesize next-gen materials: superconductor alloys, quantum dots, carbon nanotubes, and solid-state battery electrolytes.",
+        keySkills: ["X-Ray Diffraction", "Nanofabrication", "Polymer Chemistry", "Electron Microscopy"],
+        dayInLife: "Formulating novel composite wafers, stress-testing thermal resistance, and optimizing semiconductor substrates.",
+        roadmapSlug: "data-scientist"
+      }
+    ]
+  },
+  {
+    id: "medical-healthcare",
+    name: "Medical & Healthcare",
+    icon: "fa-heart-pulse",
+    color: "#34d399",
+    description: "Save lives, diagnose complex diseases, provide surgical interventions, and lead public healthcare missions.",
+    roles: [
+      {
+        title: "Cardiothoracic Surgeon",
+        salary: "$250,000 - $480,000 / ₹35-80 LPA",
+        growth: "Very High (Steady acute demand)",
+        educationReq: "MBBS (5.5 yrs) -> MS General Surgery (3 yrs) -> M.Ch CTVS (3 yrs)",
+        description: "Perform critical surgical repairs on the human heart, bypass arterial blockages, and install artificial heart valves and pacemakers.",
+        keySkills: ["Microsurgery", "Hemodynamic monitoring", "Crisis decision-making", "Anatomical mastery"],
+        dayInLife: "Pre-op rounds in the ICU, performing 4-6 hour open heart surgeries, and overseeing cardiac rehabilitation.",
+        roadmapSlug: "ai-engineer"
+      },
+      {
+        title: "Clinical Neuropsychologist",
+        salary: "$85,000 - $150,000 / ₹9-20 LPA",
+        growth: "Very High (18% 10-yr growth)",
+        educationReq: "BA/B.Sc Psychology -> M.Sc Clinical Psychology -> M.Phil/Psy.D",
+        description: "Assess cognitive dysfunctions, conduct neuropsychological profiling, and rehabilitate patients with traumatic brain injury or ADHD.",
+        keySkills: ["Cognitive Behavioral Therapy (CBT)", "Diagnostic Profiling (WAIS)", "Neuroimaging Analysis"],
+        dayInLife: "Conducting diagnostic battery tests, counseling families, and formulating cognitive rehabilitation routines.",
+        roadmapSlug: "ai-engineer"
+      },
+      {
+        title: "Pharmaceutical R&D Scientist",
+        salary: "$70,000 - $130,000 / ₹8-18 LPA",
+        growth: "High (11% 10-yr growth)",
+        educationReq: "B.Pharm (4 yrs) -> M.Pharm / Ph.D in Pharmacology",
+        description: "Formulate novel chemical molecules into bio-available pills, injectables, and vaccines, validating pharmacokinetic stability.",
+        keySkills: ["HPLC & Chromatography", "Pharmacokinetics", "Clinical Trial Protocol", "GMP Compliance"],
+        dayInLife: "Testing drug dissolution rates, validating batch purity, and preparing FDA submission dossiers.",
+        roadmapSlug: "data-scientist"
+      }
+    ]
+  },
+  {
+    id: "commerce-finance",
+    name: "Commerce & Finance",
+    icon: "fa-coins",
+    color: "#f59e0b",
+    description: "Manage global capital, structure international mergers, assess risk, and drive monetary growth.",
+    roles: [
+      {
+        title: "Investment Banker & M&A Advisor",
+        salary: "$120,000 - $280,000 / ₹20-50 LPA",
+        growth: "High (Lucrative bonus structure)",
+        educationReq: "B.Com / BBA -> Top MBA Finance / CFA Charterholder",
+        description: "Advise Fortune 500 corporations on multi-billion dollar mergers, IPO stock offerings, and corporate debt restructuring.",
+        keySkills: ["Discounted Cash Flow (DCF)", "LBO Modeling", "Pitch Deck Design", "Financial Due Diligence"],
+        dayInLife: "Building complex 3-statement financial models, preparing confidential information memorandums, and pitching to PE funds.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Chartered Accountant (CA) & Tax Strategist",
+        salary: "$70,000 - $140,000 / ₹10-30 LPA",
+        growth: "Constant High Demand",
+        educationReq: "ICAI CA Foundation -> Intermediate -> 2-yr Articleship -> CA Final",
+        description: "Audit corporate financial balance sheets, formulate tax minimization strategies, and ensure statutory corporate governance.",
+        keySkills: ["Statutory Auditing", "IFRS & Ind AS", "Corporate Taxation", "Forensic Accounting"],
+        dayInLife: "Verifying ledger balances, analyzing transfer pricing between global entities, and representing clients before tax authorities.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Quantitative Risk Modeler / Actuary",
+        salary: "$95,000 - $190,000 / ₹14-35 LPA",
+        growth: "Very High (18% 10-yr growth)",
+        educationReq: "B.Sc Math/Stats or B.Com Math -> IAI / IFoA Actuarial Exams",
+        description: "Apply stochastic calculus and statistical probability to calculate life insurance mortality premiums and pension liability reserves.",
+        keySkills: ["Stochastic Modeling", "R & Python", "Survival Analysis", "Monte Carlo Simulation"],
+        dayInLife: "Running stress-test simulations on disaster scenarios, predicting claim frequency distributions, and adjusting reserve capital.",
+        roadmapSlug: "data-scientist"
+      }
+    ]
+  },
+  {
+    id: "business-management",
+    name: "Business & Management",
+    icon: "fa-chart-pie",
+    color: "#fb923c",
+    description: "Lead organizations, steer startup growth, optimize supply chains, and shape corporate strategy.",
+    roles: [
+      {
+        title: "Global Management Consultant",
+        salary: "$110,000 - $220,000 / ₹18-45 LPA",
+        growth: "High (Continuous demand across tech & retail)",
+        educationReq: "Undergraduate Degree -> MBA (IIMs/ISB/Top B-Schools)",
+        description: "Diagnose organizational bottlenecks for Fortune 500 clients, cut operational overheads, and design digital transformation roadmaps.",
+        keySkills: ["Pyramid Principle", "Market Sizing", "Process Optimization", "Executive Stakeholder Management"],
+        dayInLife: "Conducting leadership interviews, analyzing customer churn data, and presenting executive board recommendations.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "Tech Product Manager (PM)",
+        salary: "$105,000 - $210,000 / ₹16-40 LPA",
+        growth: "Very High (16% 10-yr growth)",
+        educationReq: "B.Tech / BBA / BCA -> Product Management Certification / MBA",
+        description: "Stand at the intersection of UX design, engineering, and business metrics to define features and roadmaps for digital apps.",
+        keySkills: ["User Journey Mapping", "Agile/Scrum", "A/B Testing", "PRD Documentation", "SQL Analytics"],
+        dayInLife: "Writing user stories in Jira, analyzing feature drop-off metrics in Mixpanel, and syncing with software engineering leads.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "Growth Marketing & Brand Director",
+        salary: "$80,000 - $160,000 / ₹12-28 LPA",
+        growth: "High (Direct driver of revenue)",
+        educationReq: "B.Com / BA Mass Comm / BBA -> MBA Marketing",
+        description: "Orchestrate multi-channel acquisition campaigns, oversee viral social branding, and optimize customer lifetime value (LTV:CAC).",
+        keySkills: ["Funnel Optimization", "Performance Marketing (Meta/Google)", "Brand Storytelling", "Retention Email Loops"],
+        dayInLife: "Reviewing ROAS dashboards, approving creative video storyboards, and launching seasonal referral campaigns.",
+        roadmapSlug: "product-manager"
+      }
+    ]
+  },
+  {
+    id: "arts-humanities",
+    name: "Arts & Humanities",
+    icon: "fa-feather",
+    color: "#a855f7",
+    description: "Examine cultural evolution, craft compelling narratives, investigate human societies, and preserve historical truth.",
+    roles: [
+      {
+        title: "Investigative Journalist & Media Producer",
+        salary: "$55,000 - $110,000 / ₹7-18 LPA",
+        growth: "Moderate (Rapid shift to digital & podcast journalism)",
+        educationReq: "BA Journalism / Mass Communication / English Literature",
+        description: "Uncover public interest stories, investigate government policy outcomes, verify sources, and produce multimedia podcasts or print exposés.",
+        keySkills: ["Investigative Interviewing", "Media Law & Ethics", "Document Freedom-of-Information (RTI)", "Audio/Video Editing"],
+        dayInLife: "Reviewing court transcripts, conducting deep-background source calls, and recording episode narration.",
+        roadmapSlug: "ui-ux-designer"
+      },
+      {
+        title: "International Relations & Policy Analyst",
+        salary: "$65,000 - $130,000 / ₹9-22 LPA",
+        growth: "High (Think-tanks, diplomatic corps & NGOs)",
+        educationReq: "BA Political Science / International Relations -> Master's in Public Policy (MPP)",
+        description: "Analyze geopolitical trade treaties, monitor regional security developments, and author policy whitepapers for governments.",
+        keySkills: ["Geopolitical Risk Assessment", "Policy Drafting", "Bilateral Trade Law", "Cross-Cultural Negotiation"],
+        dayInLife: "Briefing diplomatic delegates, synthesizing trade agreement texts, and participating in global security panels.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Content Strategist & Creative Director",
+        salary: "$60,000 - $125,000 / ₹8-20 LPA",
+        growth: "Very High (Boom in creator economy & SaaS content)",
+        educationReq: "BA English / Literature / Communications",
+        description: "Build global editorial guidelines, direct high-impact narrative campaigns, and lead teams of writers and creative editors.",
+        keySkills: ["Content Architecture", "SEO & Discoverability", "Voice & Tone Guidelines", "Audience Persona Modeling"],
+        dayInLife: "Developing quarterly thought leadership themes, editing flagship industry reports, and approving brand scripts.",
+        roadmapSlug: "ui-ux-designer"
+      }
+    ]
+  },
+  {
+    id: "law-legal",
+    name: "Law & Legal Services",
+    icon: "fa-scale-balanced",
+    color: "#6366f1",
+    description: "Advocate for justice, defend constitutional rights, structure corporate deals, and arbitrate international disputes.",
+    roles: [
+      {
+        title: "Corporate Legal Counsel / M&A Lawyer",
+        salary: "$90,000 - $210,000 / ₹14-38 LPA",
+        growth: "High (High demand in tech, venture capital & banking)",
+        educationReq: "BA LLB / BBA LLB (5-yr) from National Law University (via CLAT)",
+        description: "Draft international venture capital term sheets, negotiate multi-party shareholder agreements, and navigate anti-trust laws.",
+        keySkills: ["Contract Drafting", "M&A Due Diligence", "Regulatory Compliance", "Negotiation Strategy"],
+        dayInLife: "Marking up indemnification clauses in vendor master agreements, closing funding rounds, and counseling board directors.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "Litigation Advocate & Trial Specialist",
+        salary: "$50,000 - $250,000 / ₹8-60 LPA (Scales with reputation)",
+        growth: "Constant High Demand",
+        educationReq: "LLB -> State Bar Council Enrollment -> High Court / Supreme Court Practice",
+        description: "Represent clients in civil disputes, criminal trials, and constitutional challenges before high courts and tribunals.",
+        keySkills: ["Oral Advocacy & Cross-Examination", "Legal Precedent Research", "Evidence Analysis", "Pleading Drafting"],
+        dayInLife: "Arguing urgent motion hearings in morning court sessions, drafting special leave petitions, and prepping witnesses.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "Cyber Law & Intellectual Property (IP) Attorney",
+        salary: "$75,000 - $160,000 / ₹11-26 LPA",
+        growth: "Very High (22% growth driven by AI & data privacy)",
+        educationReq: "LLB / LLM in Intellectual Property / Cyber Law",
+        description: "Protect tech patents, register global trademarks, defend algorithmic IP, and audit enterprise compliance with GDPR/DPDP privacy acts.",
+        keySkills: ["Patent Prosecution", "Data Privacy Frameworks (GDPR)", "Copyright Infringement", "Licensing Agreements"],
+        dayInLife: "Filing patent claim objections, responding to trademark office actions, and conducting algorithmic liability audits.",
+        roadmapSlug: "cybersecurity-analyst"
+      }
+    ]
+  },
+  {
+    id: "engineering-tech",
+    name: "Engineering & Technology",
+    icon: "fa-laptop-code",
+    color: "#06b6d4",
+    description: "Build digital architectures, design AI systems, engineer smart robotics, and construct modern cyber defenses.",
+    roles: [
+      {
+        title: "AI & Machine Learning Engineer",
+        salary: "$110,000 - $200,000 / ₹15-45 LPA",
+        growth: "Exceptional (32% 10-yr growth)",
+        educationReq: "B.Tech Computer Science / AI / Data Science",
+        description: "Train large language models, build neural recommendation engines, and deploy scalable inference pipelines on cloud infrastructure.",
+        keySkills: ["PyTorch & TensorFlow", "LLMs & RAG Architectures", "Vector Databases", "Python & CUDA"],
+        dayInLife: "Fine-tuning embedding models on specialized datasets, optimizing GPU batch inference latency, and running evaluation benchmarks.",
+        roadmapSlug: "ai-engineer"
+      },
+      {
+        title: "Full Stack Cloud Architect",
+        salary: "$95,000 - $175,000 / ₹14-35 LPA",
+        growth: "High (18% 10-yr growth)",
+        educationReq: "B.Tech / BCA + MCA / Self-taught Portfolio",
+        description: "Architect mission-critical cloud backends, microservices, database clusters, and modern reactive frontends.",
+        keySkills: ["Node.js / Go / Java", "React / Next.js", "Docker & Kubernetes", "PostgreSQL & Redis"],
+        dayInLife: "Reviewing pull requests, designing distributed caching layers, and deploying zero-downtime updates on AWS/GCP.",
+        roadmapSlug: "fullstack-developer"
+      },
+      {
+        title: "Cybersecurity & SOC Defense Architect",
+        salary: "$90,000 - $165,000 / ₹12-32 LPA",
+        growth: "Very High (33% 10-yr growth)",
+        educationReq: "B.Tech Computer Science / Cybersecurity (Certifications: CEH, OSCP, CISSP)",
+        description: "Safeguard cloud infrastructure from zero-day exploits, conduct penetration tests, and remediate ransomware attacks.",
+        keySkills: ["Penetration Testing (Metasploit)", "SIEM & Splunk", "Network Threat Hunting", "Zero Trust Security"],
+        dayInLife: "Analyzing automated intrusion alerts, simulating phishing attack vectors, and auditing API token authentication.",
+        roadmapSlug: "cybersecurity-analyst"
+      }
+    ]
+  },
+  {
+    id: "design-creative",
+    name: "Design & Creative Arts",
+    icon: "fa-palette",
+    color: "#ec4899",
+    description: "Craft visually stunning interfaces, design physical consumer hardware, animate movies, and shape brand identities.",
+    roles: [
+      {
+        title: "UI/UX & Product Experience Designer",
+        salary: "$80,000 - $150,000 / ₹10-28 LPA",
+        growth: "Very High (16% 10-yr growth)",
+        educationReq: "B.Des / B.F.A / Industrial Design (via NID DAT / UCEED) or Design Portfolio",
+        description: "Design intuitive digital app interfaces, conduct user usability studies, build design systems, and prototype interaction physics.",
+        keySkills: ["Figma & Design Systems", "User Wireframing & Usability Testing", "Design Tokens", "Interaction Micro-animations"],
+        dayInLife: "Observing recorded user sessions, drafting high-fidelity mobile prototypes in Figma, and handing off token specs to engineers.",
+        roadmapSlug: "ui-ux-designer"
+      },
+      {
+        title: "3D Motion & Game Environments Artist",
+        salary: "$65,000 - $135,000 / ₹8-22 LPA",
+        growth: "High (Spurred by Unreal Engine 5 & gaming sector)",
+        educationReq: "Degree or Diploma in Animation, Game Design, or VFX",
+        description: "Sculpt photorealistic 3D game worlds, rig character skeletons, and craft real-time lighting shaders in Unreal Engine.",
+        keySkills: ["Blender & Maya", "Unreal Engine 5 / Unity", "Substance Painter Texturing", "Lighting & Shader Graphs"],
+        dayInLife: "Baking ambient occlusion normal maps, rigging facial animation bones, and tuning real-time particle effects.",
+        roadmapSlug: "ui-ux-designer"
+      },
+      {
+        title: "Industrial & Consumer Product Designer",
+        salary: "$70,000 - $140,000 / ₹9-24 LPA",
+        growth: "Moderate to High",
+        educationReq: "B.Des Industrial / Product Design (NID, IIT IDC)",
+        description: "Design ergonomic physical hardware: electric vehicles, smartphones, medical devices, and smart home appliances.",
+        keySkills: ["CAD Modeling (SolidWorks/Rhino)", "Ergonomics", "Rapid 3D Prototyping", "Manufacturing Material Feasibility"],
+        dayInLife: "Sketching form factor concepts, 3D printing SLA prototypes, and inspecting injection molding tolerance with tooling vendors.",
+        roadmapSlug: "ui-ux-designer"
+      }
+    ]
+  },
+  {
+    id: "education-teaching",
+    name: "Education & Teaching",
+    icon: "fa-chalkboard-user",
+    color: "#14b8a6",
+    description: "Shape the next generation, pioneer EdTech pedagogy, lecture in academia, and design personalized curricula.",
+    roles: [
+      {
+        title: "University Professor & Academic Researcher",
+        salary: "$75,000 - $145,000 / ₹10-25 LPA",
+        growth: "Steady (Constant requirement in higher education)",
+        educationReq: "Master's Degree -> UGC NET / CSIR NET -> Ph.D",
+        description: "Lecture undergraduate and post-graduate scholars, mentor thesis dissertations, and secure university research grants.",
+        keySkills: ["Pedagogical Curriculum Design", "Academic Publishing", "Grant Writing", "Public Oratory"],
+        dayInLife: "Delivering advanced lectures, reviewing graduate student research drafts, and conducting department seminars.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "EdTech Instructional Designer & Learning Architect",
+        salary: "$65,000 - $125,000 / ₹8-20 LPA",
+        growth: "Very High (Digital learning transformation)",
+        educationReq: "B.Ed / MA Education / Cognitive Science",
+        description: "Design interactive digital courses, gamified micro-learning quizzes, and measurable assessment rubrics for online learning platforms.",
+        keySkills: ["ADDIE & Bloom's Taxonomy", "Articulate 360", "Gamified Learning Design", "LMS Administration"],
+        dayInLife: "Storyboarding video lesson animations, mapping syllabus learning outcomes, and reviewing completion analytics.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "STEM Educator & Robotics Coach",
+        salary: "$50,000 - $95,000 / ₹6-15 LPA",
+        growth: "High (Boom in experiential school curricula)",
+        educationReq: "B.Sc / B.Tech + B.Ed or STEM training",
+        description: "Teach experimental physics, Arduino robotics, coding, and mathematical puzzles to school students in experiential maker-labs.",
+        keySkills: ["Experiential Learning", "Arduino & Micro:bit", "Scratch & Python for Kids", "Science Fair Mentoring"],
+        dayInLife: "Facilitating hands-on drone building sessions, troubleshooting student code circuits, and organizing inter-school hackathons.",
+        roadmapSlug: "fullstack-developer"
+      }
+    ]
+  },
+  {
+    id: "sports-fitness",
+    name: "Sports & Fitness",
+    icon: "fa-dumbbell",
+    color: "#eab308",
+    description: "Optimize elite human physical performance, manage professional sports leagues, and coach athletic champions.",
+    roles: [
+      {
+        title: "High-Performance Sports Physiotherapist",
+        salary: "$60,000 - $130,000 / ₹8-22 LPA",
+        growth: "High (Franchise cricket, football & Olympic academies)",
+        educationReq: "Bachelor of Physiotherapy (BPT - 4.5 yrs) -> Master of Sports Physiotherapy (MPT)",
+        description: "Diagnose ligament tears, manage acute on-field athletic trauma, and design rehab protocols for national league athletes.",
+        keySkills: ["Kinesiology Taping", "Manual Therapy", "Biomechanical Motion Analysis", "Return-to-Play Protocols"],
+        dayInLife: "Running pitch-side pre-game warmups, dry-needling tight hamstring muscle tissue, and tracking athletic recovery metrics.",
+        roadmapSlug: "ai-engineer"
+      },
+      {
+        title: "Sports Data Analyst & Tactical Scout",
+        salary: "$65,000 - $120,000 / ₹8-19 LPA",
+        growth: "Very High (Data revolution in IPL, Premier League, NBA)",
+        educationReq: "B.Sc Statistics / Data Science / Sports Analytics",
+        description: "Mine GPS tracker telemetry, video heatmaps, and pitch physics to discover undervalued players and formulate game strategies.",
+        keySkills: ["Python & R", "Tableau / PowerBI", "Optical Tracking Data", "Expected Goals (xG) & Metric Modeling"],
+        dayInLife: "Synthesizing opponent penalty tendencies, presenting visual scouting dashboards to head coaches, and running set-piece simulations.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Sports League Operations & Franchise Manager",
+        salary: "$70,000 - $145,000 / ₹9-24 LPA",
+        growth: "High (Rapid commercialization of global sports events)",
+        educationReq: "BBA / Bachelor in Sports Management -> MBA Sports Management",
+        description: "Coordinate stadium broadcast logistics, negotiate player endorsement contracts, and manage matchday crowd experiences.",
+        keySkills: ["Sports Sponsorship Valuation", "Event Operations", "Player Contract Negotiations", "Broadcast Rights Licensing"],
+        dayInLife: "Inspecting stadium hospitality suites, meeting corporate title sponsors, and coordinating security team protocols.",
+        roadmapSlug: "product-manager"
+      }
+    ]
+  },
+  {
+    id: "government-civil",
+    name: "Government & Civil Services",
+    icon: "fa-shield-halved",
+    color: "#64748b",
+    description: "Administer districts, steer national public policy, command armed forces, and uphold public welfare.",
+    roles: [
+      {
+        title: "Civil Services Officer (IAS / IPS / IFS)",
+        salary: "Government Pay Matrix Level 10-17 + Official Perquisites",
+        growth: "Maximum Societal Impact & Prestige",
+        educationReq: "Any Recognized Bachelor's Degree -> UPSC Civil Services Examination (Prelims, Mains, Interview)",
+        description: "Lead district administration, oversee multi-crore welfare schemes, maintain public law and order, or represent the nation in foreign embassies.",
+        keySkills: ["Crisis Administration", "Public Policy Implementation", "Constitutional Law", "Public Leadership"],
+        dayInLife: "Presiding over district development council meetings, conducting surprise hospital inspections, and coordinating disaster relief.",
+        roadmapSlug: "product-manager"
+      },
+      {
+        title: "Commissioned Defense Officer (Army / Navy / Air Force)",
+        salary: "Defense Pay Level 10+ with High Altitude & Flying Allowances",
+        growth: "Prestigious National Service",
+        educationReq: "Class 12 (NDA Exam) or Graduate (CDS / AFCAT Exam) -> SSB Interview -> Military Academy",
+        description: "Command frontline troops, pilot supersonic fighter jets, navigate naval destroyers, and protect sovereign national borders.",
+        keySkills: ["Military Tactics", "Physical & Mental Resilience", "Troop Leadership Under Fire", "Strategic Warfare"],
+        dayInLife: "Leading morning tactical drills, inspecting armament readiness, and coordinating joint-service exercises.",
+        roadmapSlug: "devops-engineer"
+      },
+      {
+        title: "Central Bank & Economic Policy Specialist (RBI Grade B)",
+        salary: "₹18-24 LPA + Central Bank Allowances",
+        growth: "High (Direct macroeconomic influence)",
+        educationReq: "Bachelor's / Master's in Economics / Finance / Engineering -> RBI Grade B Exam",
+        description: "Regulate commercial banks, monitor inflation metrics, formulate foreign exchange reserves policy, and supervise payment systems (UPI).",
+        keySkills: ["Macroeconomic Modeling", "Monetary Policy Analysis", "Banking Regulations (Basel III)", "Forex Reserve Management"],
+        dayInLife: "Drafting monetary policy committee background papers, auditing non-performing bank loans, and tracking repo rate transmissions.",
+        roadmapSlug: "data-scientist"
+      }
+    ]
+  },
+  {
+    id: "agriculture-environment",
+    name: "Agriculture & Environment",
+    icon: "fa-seedling",
+    color: "#22c55e",
+    description: "Innovate sustainable food systems, combat climate change, deploy precision agri-tech, and preserve forest ecosystems.",
+    roles: [
+      {
+        title: "Precision Agritech Specialist",
+        salary: "$65,000 - $125,000 / ₹8-20 LPA",
+        growth: "Very High (Drone farming, IoT sensors & AI crop analytics)",
+        educationReq: "B.Sc Agriculture / B.Tech Agricultural Engineering",
+        description: "Deploy multispectral drone imaging to detect crop pest infestations, automate drip irrigation via IoT, and optimize harvest yields.",
+        keySkills: ["Drone Multispectral Imaging", "Soil Moisture IoT Sensors", "Crop Scouting Algorithms", "Hydroponics"],
+        dayInLife: "Analyzing satellite NDVI crop vigor maps, calibrating automated fertigation solenoids, and advising farmer producer collectives.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Climate Change & Carbon Credit Auditor",
+        salary: "$70,000 - $140,000 / ₹9-22 LPA",
+        growth: "Exceptional (Global net-zero corporate mandates)",
+        educationReq: "B.Sc/M.Sc Environmental Science / Sustainable Engineering",
+        description: "Calculate enterprise greenhouse gas footprints, verify renewable energy carbon offsets, and ensure compliance with global climate pacts.",
+        keySkills: ["GHG Protocol Scope 1-3 Auditing", "Carbon Offset Standards (Verra/Gold Standard)", "LCA Life Cycle Assessment"],
+        dayInLife: "Inspecting solar farm generation records, calculating avoided metric tonnes of CO2e, and certifying carbon credit issuance.",
+        roadmapSlug: "data-scientist"
+      },
+      {
+        title: "Wildlife Biologist & Forest Conservator",
+        salary: "$50,000 - $105,000 / ₹6-16 LPA",
+        growth: "Moderate (Forest departments, WWF, sanctuaries)",
+        educationReq: "B.Sc Forestry / Wildlife Biology -> Indian Forest Service (IFS) / Master's",
+        description: "Track endangered tiger and elephant populations with camera-trap AI, mitigate human-wildlife conflicts, and protect reserve biosphere reserves.",
+        keySkills: ["Camera Trap Population Modeling", "GIS Mapping (QGIS)", "Wildlife Forensics", "Habitat Restoration"],
+        dayInLife: "Checking remote infrared camera traps in reserve forests, mapping migratory corridors in GIS, and coordinating anti-poaching patrols.",
+        roadmapSlug: "data-scientist"
+      }
+    ]
+  }
+];
+
+// ==========================================
+// STAGE 3: COLLEGE & COURSE EXPLORER (25+ Degrees)
+// ==========================================
+
+const COLLEGE_COURSE_DATA = [
+  {
+    id: "btech-cs",
+    degree: "B.Tech in Computer Science & Engineering",
+    stream: "Science (PCM)",
+    duration: "4 Years",
+    eligibility: "10+2 with Physics, Chemistry & Math (Min 60-75%)",
+    entranceExams: ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "MHT CET"],
+    avgFees: "₹4 - 16 Lakhs (Total)",
+    topInstitutes: ["IIT Bombay", "IIT Delhi", "IIT Madras", "BITS Pilani", "NIT Trichy", "IIIT Hyderabad"],
+    careerOpportunities: ["Software Engineer", "AI/ML Engineer", "Full Stack Developer", "Cloud Architect"],
+    pros: "Highest starting packages, immense global mobility, versatile tech roles."
+  },
+  {
+    id: "mbbs",
+    degree: "MBBS (Bachelor of Medicine & Bachelor of Surgery)",
+    stream: "Science (PCB)",
+    duration: "5.5 Years (Includes 1-yr mandatory internship)",
+    eligibility: "10+2 with Physics, Chemistry, Biology & English (Min 50-60% in PCB)",
+    entranceExams: ["NEET UG (Sole National Gateway)"],
+    avgFees: "Govt: ₹50K - ₹3 Lakhs | Private: ₹40 - 90 Lakhs",
+    topInstitutes: ["AIIMS New Delhi", "CMC Vellore", "JIPMER Puducherry", "KGMU Lucknow", "Grant Medical College Mumbai"],
+    careerOpportunities: ["Physician", "Resident Doctor", "Surgeon (Post-MS)", "Medical Officer", "Clinical Researcher"],
+    pros: "Unmatched social respect, recession-proof job security, direct human healing."
+  },
+  {
+    id: "bds",
+    degree: "BDS (Bachelor of Dental Surgery)",
+    stream: "Science (PCB)",
+    duration: "5 Years (Includes 1-yr clinical rotation)",
+    eligibility: "10+2 with Physics, Chemistry & Biology (Min 50%)",
+    entranceExams: ["NEET UG"],
+    avgFees: "₹5 - 20 Lakhs",
+    topInstitutes: ["Maulana Azad Institute of Dental Sciences Delhi", "Manipal College of Dental Sciences", "King George's Lucknow"],
+    careerOpportunities: ["Dental Surgeon", "Orthodontist", "Cosmetic Dentist", "Oral Implantologist"],
+    pros: "Independent private clinic flexibility, regular working hours compared to emergency hospital trauma."
+  },
+  {
+    id: "bpharm",
+    degree: "B.Pharm (Bachelor of Pharmacy)",
+    stream: "Science (PCM or PCB)",
+    duration: "4 Years",
+    eligibility: "10+2 with PCM or PCB (Min 50%)",
+    entranceExams: ["CUET UG", "MHT CET", "BITSAT (Pharma)", "State Pharmacy Entrances"],
+    avgFees: "₹3 - 8 Lakhs",
+    topInstitutes: ["NIPER Mohali", "Jamia Hamdard New Delhi", "ICT Mumbai", "BITS Pilani"],
+    careerOpportunities: ["Drug Formulator", "Quality Assurance Analyst", "Regulatory Affairs Specialist", "Clinical Research Associate"],
+    pros: "Booming global pharmaceutical export industry, solid biotech crossover options."
+  },
+  {
+    id: "bsc-nursing",
+    degree: "B.Sc in Nursing",
+    stream: "Science (PCB)",
+    duration: "4 Years",
+    eligibility: "10+2 with PCB & English (Min 45-50%)",
+    entranceExams: ["NEET UG (For select institutions)", "AIIMS Nursing", "State CETs"],
+    avgFees: "₹2 - 6 Lakhs",
+    topInstitutes: ["AIIMS New Delhi", "CMC Vellore", "RAK College of Nursing Delhi", "PGIMER Chandigarh"],
+    careerOpportunities: ["Critical Care ICU Nurse", "Nurse Practitioner", "Healthcare Administrator", "International Healthcare Staffing (UK, Canada, Gulf)"],
+    pros: "Extreme worldwide shortage with fast-track immigration pathways to US, UK, Australia, and Germany."
+  },
+  {
+    id: "bcom-hons",
+    degree: "B.Com (Honours) - Bachelor of Commerce",
+    stream: "Commerce (with/without Math)",
+    duration: "3 - 4 Years (As per NEP 2020)",
+    eligibility: "10+2 with Commerce/Science (Math preferred for top DU colleges)",
+    entranceExams: ["CUET UG", "Christ University Entrance", "NMIMS NPAT"],
+    avgFees: "₹50K - 4 Lakhs",
+    topInstitutes: ["SRCC Delhi", "Lady Shri Ram College Delhi", "Loyola College Chennai", "St. Xavier's Kolkata", "Narsee Monjee Mumbai"],
+    careerOpportunities: ["Accountant", "Tax Consultant", "Financial Analyst", "Audit Associate", "Pathway to CA / MBA"],
+    pros: "Foundational launchpad for CA, CFA, MBA, and investment banking."
+  },
+  {
+    id: "bba-bms",
+    degree: "BBA / BMS (Bachelor of Business Administration)",
+    stream: "All Streams (Commerce, Science, Arts)",
+    duration: "3 - 4 Years",
+    eligibility: "10+2 in any stream (Min 50-60%)",
+    entranceExams: ["CUET UG", "IPMAT (IIMs)", "NMIMS NPAT", "SET (Symbiosis)"],
+    avgFees: "₹3 - 12 Lakhs",
+    topInstitutes: ["IIM Indore (IPM)", "IIM Rohtak (IPM)", "Shaheed Sukhdev College of Business Studies Delhi", "NMIMS Mumbai", "Symbiosis Pune"],
+    careerOpportunities: ["Business Analyst", "Marketing Associate", "Operations Coordinator", "HR Specialist", "Startup Associate"],
+    pros: "Develops management acumen right after school; IPM programs grant direct 5-year IIM dual-degrees."
+  },
+  {
+    id: "ca-icai",
+    degree: "Chartered Accountancy (CA - ICAI Professional Certification)",
+    stream: "Commerce / Any Stream",
+    duration: "4 - 5 Years (Concurrent with/without College)",
+    eligibility: "Class 12 pass for Foundation; Graduates for Direct Entry",
+    entranceExams: ["CA Foundation (Conducted twice a year by ICAI)"],
+    avgFees: "₹60K - 1.5 Lakhs (Direct ICAI registration + coaching)",
+    topInstitutes: ["Institute of Chartered Accountants of India (ICAI - Statutory Regulatory Body)"],
+    careerOpportunities: ["Chartered Accountant", "Statutory Auditor", "Tax Director", "CFO", "Investment Banker"],
+    pros: "Exceptionally prestigious, globally recognized, zero college attendance requirement, self-directed."
+  },
+  {
+    id: "ba-llb",
+    degree: "BA LLB / BBA LLB (5-Year Integrated Law)",
+    stream: "All Streams (Arts, Commerce, Science)",
+    duration: "5 Years",
+    eligibility: "10+2 in any discipline (Min 45-50%)",
+    entranceExams: ["CLAT UG", "AILET", "SLAT", "MH CET Law"],
+    avgFees: "₹8 - 16 Lakhs (NLUs)",
+    topInstitutes: ["NLSIU Bengaluru", "NALSAR Hyderabad", "WBNUJS Kolkata", "NLU Delhi", "National Law University Jodhpur"],
+    careerOpportunities: ["Corporate Lawyer", "Litigation Advocate", "Judicial Magistrate", "Legal Advisor in Tech/Fintech", "Arbitrator"],
+    pros: "Saves one full academic year compared to 3-year LLB post graduation; opens top tier tier-1 law firm roles."
+  },
+  {
+    id: "bca",
+    degree: "BCA (Bachelor of Computer Applications)",
+    stream: "Commerce / Science / Arts with basic Math/CS",
+    duration: "3 - 4 Years",
+    eligibility: "10+2 with Math or Computer Science preferred (Min 50%)",
+    entranceExams: ["CUET UG", "IPU CET", "Christ University Entrance"],
+    avgFees: "₹2 - 6 Lakhs",
+    topInstitutes: ["Christ University Bengaluru", "Symbiosis Institute Pune", "IP University Colleges Delhi", "Loyola College Chennai"],
+    careerOpportunities: ["Software Developer", "Web Developer", "Database Administrator", "System Support Engineer", "Pathway to MCA"],
+    pros: "Enables non-PCM and commerce students to break directly into computer software engineering careers."
+  },
+  {
+    id: "bdes",
+    degree: "B.Des (Bachelor of Design - UI/UX, Product, Fashion, Communication)",
+    stream: "All Streams (Arts, Science, Commerce)",
+    duration: "4 Years",
+    eligibility: "10+2 in any stream (Creative portfolio & entrance test)",
+    entranceExams: ["UCEED (IITs)", "NID DAT", "NIFT Entrance", "SEAT"],
+    avgFees: "₹8 - 16 Lakhs",
+    topInstitutes: ["NID Ahmedabad", "IDC School of Design (IIT Bombay)", "NIFT New Delhi", "Srishti Institute Bengaluru"],
+    careerOpportunities: ["UI/UX Designer", "Product Designer", "Visual Communication Designer", "Design Researcher"],
+    pros: "Portfolio-based high-growth creative careers with high demand across tech unicorns and agencies."
+  },
+  {
+    id: "barch",
+    degree: "B.Arch (Bachelor of Architecture)",
+    stream: "Science (PCM compulsory)",
+    duration: "5 Years",
+    eligibility: "10+2 with Physics, Chemistry & Math (Min 50%)",
+    entranceExams: ["NATA (National Aptitude Test in Architecture)", "JEE Main Paper 2"],
+    avgFees: "₹5 - 15 Lakhs",
+    topInstitutes: ["IIT Roorkee", "IIT Kharagpur", "SPA New Delhi", "CEPT University Ahmedabad", "NIT Calicut"],
+    careerOpportunities: ["Architect", "Urban Designer", "Landscape Architect", "Interior Architect", "Sustainable Building Consultant"],
+    pros: "Blends creative artistic drafting with civil structural engineering; enables private architectural practice."
+  },
+  {
+    id: "ba-economics",
+    degree: "BA (Honours) in Economics",
+    stream: "Commerce / Humanities / Science (Math compulsory in 12th for top univs)",
+    duration: "3 - 4 Years",
+    eligibility: "10+2 with Mathematics (Min 55-60%)",
+    entranceExams: ["CUET UG"],
+    avgFees: "₹40K - 3 Lakhs",
+    topInstitutes: ["St. Stephen's College Delhi", "SRCC Delhi", "Miranda House", "Loyola College Chennai", "Presidency University Kolkata"],
+    careerOpportunities: ["Economic Consultant", "Data Analyst", "Policy Think-Tank Fellow", "Treasury Analyst", "Pathway to DSE / LSE"],
+    pros: "Highly quantitative humanities degree that rivals computer science in analytical corporate recruiter interest."
+  },
+  {
+    id: "ba-psychology",
+    degree: "BA / B.Sc in Psychology",
+    stream: "Humanities / Science / Commerce",
+    duration: "3 - 4 Years",
+    eligibility: "10+2 in any stream (Min 50%)",
+    entranceExams: ["CUET UG", "Christ University Entrance"],
+    avgFees: "₹60K - 4 Lakhs",
+    topInstitutes: ["Lady Shri Ram College Delhi", "Fergusson College Pune", "St. Xavier's Mumbai", "Christ University Bengaluru"],
+    careerOpportunities: ["Counselor", "Organizational Psychologist", "Human Resources Specialist", "Child Behavioral Therapist (Post-M.Sc)"],
+    pros: "Fastest-growing societal need; crucial across hospitals, schools, and corporate mental wellness programs."
+  },
+  {
+    id: "bsc-agriculture",
+    degree: "B.Sc (Hons) in Agriculture",
+    stream: "Science (PCB or PCM)",
+    duration: "4 Years",
+    eligibility: "10+2 with PCB/PCM/Agriculture (Min 50%)",
+    entranceExams: ["ICAR AIEEA (Now under CUET UG)", "State Agriculture Entrances (KEAM, MHT CET, KCET)"],
+    avgFees: "₹1 - 4 Lakhs",
+    topInstitutes: ["IARI New Delhi", "PAU Ludhiana", "GBPUAT Pantnagar", "TNAU Coimbatore"],
+    careerOpportunities: ["Agricultural Research Scientist", "Agri-Business Manager", "Crop Extension Officer", "Food Safety Auditor"],
+    pros: "High government job quota (NABARD, Agriculture Officer in public sector banks) and rapid agritech expansion."
+  },
+  {
+    id: "bhm",
+    degree: "BHM / B.Sc in Hospitality & Hotel Administration",
+    stream: "All Streams",
+    duration: "3 - 4 Years",
+    eligibility: "10+2 with English as a compulsory subject (Min 50%)",
+    entranceExams: ["NCHMCT JEE (Conducted by NTA)"],
+    avgFees: "₹3 - 7 Lakhs",
+    topInstitutes: ["IHM Pusa New Delhi", "IHM Mumbai", "IHM Bengaluru", "Welcomgroup Graduate School Manipal"],
+    careerOpportunities: ["Hotel General Manager", "Luxury Guest Relations Director", "Cruise Line F&B Manager", "Event & Banquet Director"],
+    pros: "Immediate international placements across Dubai, Singapore, Europe, and global luxury cruise fleets."
+  }
+];
+
+// ==========================================
+// STAGE 4: ENTRANCE EXAM & SCHOLARSHIP DIRECTORY
+// ==========================================
+
+const EXAM_SCHOLARSHIP_DATA = [
+  {
+    id: "jee-main",
+    name: "JEE (Main) - Joint Entrance Examination",
+    type: "exam",
+    category: "Engineering & Architecture",
+    targetAudience: "Class 12 / Droppers (PCM)",
+    conductingBody: "National Testing Agency (NTA)",
+    frequency: "Twice a year (January & April sessions)",
+    eligibility: "Class 12 with Physics, Mathematics & Chemistry/Biotech/Tech Voc.",
+    portalUrl: "https://jeemain.nta.nic.in",
+    description: "Gateway for admission to undergraduate engineering programs (B.Tech/B.Arch) across NITs, IIITs, CFTIs, and qualification filter for JEE Advanced."
+  },
+  {
+    id: "neet-ug",
+    name: "NEET (UG) - National Eligibility cum Entrance Test",
+    type: "exam",
+    category: "Medical & Dental",
+    targetAudience: "Class 12 / Droppers (PCB)",
+    conductingBody: "National Testing Agency (NTA)",
+    frequency: "Once a year (May)",
+    eligibility: "Class 12 with Physics, Chemistry, Biology & English (Min 50% PCB for General).",
+    portalUrl: "https://neet.nta.nic.in",
+    description: "The sole statutory entrance examination for admissions into MBBS, BDS, BAMS, BHMS, and veterinary seats in all medical colleges across India."
+  },
+  {
+    id: "cuet-ug",
+    name: "CUET (UG) - Common University Entrance Test",
+    type: "exam",
+    category: "All Streams (Central & State Universities)",
+    targetAudience: "Class 12 Students (All Streams)",
+    conductingBody: "National Testing Agency (NTA)",
+    frequency: "Once a year (May - June)",
+    eligibility: "Class 12 appearing or passed from any recognized board.",
+    portalUrl: "https://cuetug.ntaonline.in",
+    description: "Single window entrance test for admission to undergraduate courses across all Central Universities including Delhi University, JNU, BHU, and Jamia."
+  },
+  {
+    id: "clat-ug",
+    name: "CLAT (UG) - Common Law Admission Test",
+    type: "exam",
+    category: "Law & Legal Studies",
+    targetAudience: "Class 12 Students (All Streams)",
+    conductingBody: "Consortium of National Law Universities (NLUs)",
+    frequency: "Once a year (December for next academic session)",
+    eligibility: "Class 12 with minimum 45% marks (40% for SC/ST).",
+    portalUrl: "https://consortiumofnlus.ac.in",
+    description: "National entrance exam for 5-year integrated BA LLB, BBA LLB, and B.Com LLB programs across 24 National Law Universities in India."
+  },
+  {
+    id: "nda-na",
+    name: "NDA & NA Exam - National Defence Academy",
+    type: "exam",
+    category: "Defence & Armed Forces",
+    targetAudience: "Class 12 Students / Passouts (Unmarried, 16.5-19.5 yrs)",
+    conductingBody: "Union Public Service Commission (UPSC)",
+    frequency: "Twice a year (April & September)",
+    eligibility: "12th pass (Army wing: any stream; Air Force & Navy: Physics & Math).",
+    portalUrl: "https://upsc.gov.in",
+    description: "Premier tri-service military academy entrance leading to officer commissions in the Indian Army, Indian Navy, and Indian Air Force."
+  },
+  {
+    id: "ca-foundation",
+    name: "CA Foundation Examination",
+    type: "exam",
+    category: "Commerce & Accounting",
+    targetAudience: "Class 12 Students / Passouts",
+    conductingBody: "Institute of Chartered Accountants of India (ICAI)",
+    frequency: "Thrice a year (January, June, September)",
+    eligibility: "Class 12 registered with ICAI Board of Studies.",
+    portalUrl: "https://www.icai.org",
+    description: "Entry-level exam for the prestigious Chartered Accountancy course covering Accounting, Business Law, Quantitative Aptitude, and Economics."
+  },
+  {
+    id: "uceed-nid",
+    name: "UCEED & NID DAT - Design Aptitude Tests",
+    type: "exam",
+    category: "Design, Animation & Creative Arts",
+    targetAudience: "Class 12 Students (All Streams)",
+    conductingBody: "IIT Bombay (UCEED) & National Institute of Design (NID)",
+    frequency: "Once a year (January)",
+    eligibility: "Class 12 in any stream (Science compulsory for B.Des at IIT Delhi/IIT Kanpur).",
+    portalUrl: "https://uceed.iitb.ac.in",
+    description: "Gateway for admission to Bachelor of Design (B.Des) programs at IIT Bombay, IIT Delhi, IIT Guwahati, IIT Hyderabad, IIITDM Jabalpur, and NID campuses."
+  },
+  {
+    id: "inspire-scholarship",
+    name: "INSPIRE Scholarship for Higher Education (SHE)",
+    type: "scholarship",
+    category: "Basic & Natural Sciences",
+    targetAudience: "Top 1% in Class 12 Board Exams pursuing B.Sc/BS/MS",
+    conductingBody: "Department of Science & Technology (DST), Govt of India",
+    frequency: "Annual Call (October - November)",
+    eligibility: "Top 1% in Class 12th board exams enrolling in natural/basic sciences (Math, Physics, Chem, Bio).",
+    portalUrl: "https://online-inspire.gov.in",
+    description: "Offers ₹80,000 per annum (₹60,000 scholarship + ₹20,000 mentorship project grant) to support students pursuing careers in scientific research."
+  },
+  {
+    id: "national-scholarship-portal",
+    name: "National Scholarship Portal (Central Sector Schemes)",
+    type: "scholarship",
+    category: "Merit-cum-Means (All Streams)",
+    targetAudience: "College & University Undergraduate Students",
+    conductingBody: "Ministry of Education & Various Ministries, Govt of India",
+    frequency: "Annual Portal Opening (July - October)",
+    eligibility: "Above 80th percentile in relevant stream in Class 12 with family income < ₹4.5 Lakhs/year.",
+    portalUrl: "https://scholarships.gov.in",
+    description: "Unified national portal offering Central Sector Scheme scholarships of ₹12,000 per year for graduation and ₹20,000 per year for post-graduation."
+  },
+  {
+    id: "reliance-foundation",
+    name: "Reliance Foundation Undergraduate Scholarships",
+    type: "scholarship",
+    category: "Undergraduate Excellence & Need-based",
+    targetAudience: "First-year Full-time Degree Students",
+    conductingBody: "Reliance Foundation",
+    frequency: "Annual Call (August - October)",
+    eligibility: "First-year UG student with minimum 60% in Class 12, family income < ₹15 Lakhs (preference < ₹2.5L).",
+    portalUrl: "https://www.scholarships.reliancefoundation.org",
+    description: "Grants up to ₹2 Lakhs over the course of undergraduate degree alongside mentorship workshops and alumni network support for 5,000 students annually."
+  },
+  {
+    id: "pm-yasasvi",
+    name: "PM YASASVI Central Sector Scholarship",
+    type: "scholarship",
+    category: "School (Class 9-12) & Top College Schemes",
+    targetAudience: "OBC, EBC and DNT Students",
+    conductingBody: "Ministry of Social Justice & Empowerment (NTA)",
+    frequency: "Annual",
+    eligibility: "Class 9 & 11 students with family income less than ₹2.5 Lakhs/year.",
+    portalUrl: "https://yet.nta.ac.in",
+    description: "Provides ₹75,000/yr for Class 9-10 and ₹1,25,000/yr for Class 11-12 to cover tuition, hostel, and educational materials."
+  }
+];
+
+// ==========================================
+// STAGE 5: AI INTEREST & APTITUDE ASSESSMENT (10 Questions)
+// ==========================================
+
+const APTITUDE_ASSESSMENT_QUESTIONS = [
+  {
+    id: "q1",
+    question: "When you are given a weekend free time to build or learn something, what sounds most exciting?",
+    scenario: "Unstructured creative time",
+    options: [
+      {
+        text: "Building a functional gadget, writing a software script, or taking apart electronics to see how they work.",
+        trait: "Technical & Problem Solver",
+        riasec: "Realistic / Investigative",
+        points: { "engineering-tech": 3, "science-research": 2 }
+      },
+      {
+        text: "Conducting a science experiment, reading about black holes, or understanding human genetics and disease.",
+        trait: "Analytical & Research Minded",
+        riasec: "Investigative",
+        points: { "science-research": 3, "medical-healthcare": 2 }
+      },
+      {
+        text: "Sketching digital artwork, editing a video, writing a blog story, or redesigning a room layout.",
+        trait: "Creative & Visual Expresser",
+        riasec: "Artistic",
+        points: { "design-creative": 3, "arts-humanities": 2 }
+      },
+      {
+        text: "Brainstorming a small startup or event, trading stocks, or organizing a debate among friends.",
+        trait: "Enterprising & Commercial Thinker",
+        riasec: "Enterprising",
+        points: { "commerce-finance": 3, "business-management": 2 }
+      }
+    ]
+  },
+  {
+    id: "q2",
+    question: "In school or college group projects, which responsibility do you naturally gravitate toward?",
+    scenario: "Team collaboration role",
+    options: [
+      {
+        text: "Creating the financial budget, resource planning, or pitching the final deck to the teachers.",
+        trait: "Commercial Leader",
+        riasec: "Enterprising / Conventional",
+        points: { "commerce-finance": 2, "business-management": 3 }
+      },
+      {
+        text: "Gathering hard data, validating the accuracy of facts, and solving the hardest calculation problem.",
+        trait: "Data Validator",
+        riasec: "Investigative",
+        points: { "science-research": 3, "engineering-tech": 2 }
+      },
+      {
+        text: "Designing the visual slides, branding, infographics, and making sure the presentation looks stunning.",
+        trait: "Visual Architect",
+        riasec: "Artistic",
+        points: { "design-creative": 3, "arts-humanities": 1 }
+      },
+      {
+        text: "Resolving arguments between teammates, ensuring fair task distribution, and boosting team morale.",
+        trait: "Empathetic Facilitator",
+        riasec: "Social",
+        points: { "education-teaching": 3, "government-civil": 2 }
+      }
+    ]
+  },
+  {
+    id: "q3",
+    question: "Which type of problem would you feel most rewarded solving for society?",
+    scenario: "Societal impact focus",
+    options: [
+      {
+        text: "Curing diseases, rehabilitating injured athletes, or providing mental health therapy.",
+        trait: "Healer & Caregiver",
+        riasec: "Social / Investigative",
+        points: { "medical-healthcare": 3, "sports-fitness": 2 }
+      },
+      {
+        text: "Protecting democratic rights, fighting legal injustice, or formulating fair government laws.",
+        trait: "Justice & Policy Advocate",
+        riasec: "Social / Enterprising",
+        points: { "law-legal": 3, "government-civil": 3 }
+      },
+      {
+        text: "Inventing clean solar power, self-driving cars, or AI tools that automate tedious human work.",
+        trait: "Technological Innovator",
+        riasec: "Realistic / Investigative",
+        points: { "engineering-tech": 3, "agriculture-environment": 2 }
+      },
+      {
+        text: "Halting climate change, restoring endangered wildlife habitats, and building organic precision farms.",
+        trait: "Ecological Conservator",
+        riasec: "Realistic",
+        points: { "agriculture-environment": 3, "science-research": 1 }
+      }
+    ]
+  },
+  {
+    id: "q4",
+    question: "How do you prefer to absorb and master complex new concepts?",
+    scenario: "Learning style preference",
+    options: [
+      {
+        text: "Through step-by-step mathematical proofs, logical formulas, and code debugging.",
+        trait: "Quantitative & Algorithmic",
+        riasec: "Investigative",
+        points: { "engineering-tech": 2, "science-research": 2, "commerce-finance": 2 }
+      },
+      {
+        text: "Through hands-on physical building, practical lab work, and trial-and-error experiments.",
+        trait: "Kinesthetic & Builder",
+        riasec: "Realistic",
+        points: { "engineering-tech": 2, "design-creative": 2, "sports-fitness": 2 }
+      },
+      {
+        text: "Through reading rich contextual history, debating ethical viewpoints, and writing analytical essays.",
+        trait: "Verbal & Critical Thinker",
+        riasec: "Investigative / Social",
+        points: { "arts-humanities": 3, "law-legal": 2 }
+      },
+      {
+        text: "Through real-world case studies of business successes, failures, and financial markets.",
+        trait: "Strategic Thinker",
+        riasec: "Enterprising",
+        points: { "business-management": 3, "commerce-finance": 2 }
+      }
+    ]
+  },
+  {
+    id: "q5",
+    question: "When faced with an unexpected crisis or high-pressure deadline, what is your reaction?",
+    scenario: "Stress & decision style",
+    options: [
+      {
+        text: "Stay calm, command the room, delegate immediate responsibilities, and protect the team.",
+        trait: "Crisis Commander",
+        riasec: "Enterprising / Social",
+        points: { "government-civil": 3, "business-management": 2 }
+      },
+      {
+        text: "Analyze root causes methodically, isolate variables, and fix the underlying system failure.",
+        trait: "Diagnostic Troubleshooter",
+        riasec: "Investigative / Realistic",
+        points: { "engineering-tech": 2, "medical-healthcare": 2 }
+      },
+      {
+        text: "Scrutinize the rules, find the legal or regulatory clauses, and construct an airtight argument.",
+        trait: "Legal Arbitrator",
+        riasec: "Conventional / Investigative",
+        points: { "law-legal": 3, "commerce-finance": 1 }
+      },
+      {
+        text: "Pivot quickly, sketch creative unconventional workarounds, and improvise with what is available.",
+        trait: "Adaptive Innovator",
+        riasec: "Artistic",
+        points: { "design-creative": 2, "business-management": 2 }
+      }
+    ]
+  },
+  {
+    id: "q6",
+    question: "Which of these book titles or YouTube documentary topics would you click on first?",
+    scenario: "Intellectual curiosity",
+    options: [
+      {
+        text: "'How Wall Street Quants and Hedge Funds Predict Global Market Crashes'",
+        trait: "Financial Analyst",
+        riasec: "Conventional / Enterprising",
+        points: { "commerce-finance": 3, "business-management": 1 }
+      },
+      {
+        text: "'Inside the Operating Room: How Surgeons Perform 12-Hour Brain Surgeries'",
+        trait: "Clinical & Biological",
+        riasec: "Investigative / Social",
+        points: { "medical-healthcare": 3, "science-research": 1 }
+      },
+      {
+        text: "'The Design Secrets Behind Apple, Braun, and Iconic 20th Century Products'",
+        trait: "Aesthetics & Ergonomics",
+        riasec: "Artistic / Realistic",
+        points: { "design-creative": 3, "engineering-tech": 1 }
+      },
+      {
+        text: "'The Secret Treaties and Diplomatic Maneuvers That Prevented World War III'",
+        trait: "Geopolitics & History",
+        riasec: "Investigative / Social",
+        points: { "arts-humanities": 3, "government-civil": 2 }
+      }
+    ]
+  },
+  {
+    id: "q7",
+    question: "What kind of work environment makes you feel most energized?",
+    scenario: "Ideal workspace atmosphere",
+    options: [
+      {
+        text: "A dynamic tech lab or flexible workstation with multi-monitor setups and cutting-edge software.",
+        trait: "Digital Creator",
+        riasec: "Realistic / Investigative",
+        points: { "engineering-tech": 3, "design-creative": 2 }
+      },
+      {
+        text: "A professional hospital ward, clinical research lab, or specialized diagnostic center.",
+        trait: "Healthcare Professional",
+        riasec: "Social / Investigative",
+        points: { "medical-healthcare": 3, "science-research": 2 }
+      },
+      {
+        text: "A fast-paced corporate trading floor, executive boardroom, or high-growth startup hub.",
+        trait: "Corporate Leader",
+        riasec: "Enterprising",
+        points: { "commerce-finance": 2, "business-management": 3 }
+      },
+      {
+        text: "Outdoors in nature: forests, organic farms, wildlife sanctuaries, or athletic training grounds.",
+        trait: "Outdoor & Environmental",
+        riasec: "Realistic",
+        points: { "agriculture-environment": 3, "sports-fitness": 3 }
+      }
+    ]
+  },
+  {
+    id: "q8",
+    question: "What is your relationship with numbers and mathematics?",
+    scenario: "Quantitative comfort level",
+    options: [
+      {
+        text: "I love advanced math, calculus, probabilities, and deriving elegant formulas.",
+        trait: "Heavy Quantitative",
+        riasec: "Investigative",
+        points: { "science-research": 3, "engineering-tech": 3, "commerce-finance": 2 }
+      },
+      {
+        text: "I enjoy practical numbers: profit margins, balance sheets, statistics, and business graphs.",
+        trait: "Applied Commercial",
+        riasec: "Conventional / Enterprising",
+        points: { "commerce-finance": 3, "business-management": 2 }
+      },
+      {
+        text: "I can handle basic arithmetic, but I prefer visual design, human psychology, and verbal writing.",
+        trait: "Visual & Qualitative",
+        riasec: "Artistic / Social",
+        points: { "design-creative": 2, "arts-humanities": 3, "law-legal": 2 }
+      },
+      {
+        text: "I prefer biological diagrams, physical biomechanics, or direct hands-on sports coordination.",
+        trait: "Biological & Kinesthetic",
+        riasec: "Realistic / Social",
+        points: { "medical-healthcare": 2, "sports-fitness": 3, "agriculture-environment": 2 }
+      }
+    ]
+  },
+  {
+    id: "q9",
+    question: "If you could shadow any professional for one full week, who would you choose?",
+    scenario: "Role model identification",
+    options: [
+      {
+        text: "A Chief Justice of the Supreme Court or a United Nations Ambassador.",
+        trait: "Jurisprudence & Diplomacy",
+        riasec: "Social / Enterprising",
+        points: { "law-legal": 3, "government-civil": 3 }
+      },
+      {
+        text: "The lead AI Architect at OpenAI or the Chief Rocket Engineer at SpaceX.",
+        trait: "Deep Tech Builder",
+        riasec: "Investigative / Realistic",
+        points: { "engineering-tech": 3, "science-research": 2 }
+      },
+      {
+        text: "The Chief Medical Officer in a premier trauma hospital or a genetic therapy researcher.",
+        trait: "Medical Pioneer",
+        riasec: "Investigative / Social",
+        points: { "medical-healthcare": 3, "science-research": 2 }
+      },
+      {
+        text: "The CEO of an electric vehicle startup or an elite sports franchise owner.",
+        trait: "Visionary Executive",
+        riasec: "Enterprising",
+        points: { "business-management": 3, "sports-fitness": 2 }
+      }
+    ]
+  },
+  {
+    id: "q10",
+    question: "What is your primary long-term definition of a fulfilling career?",
+    scenario: "Personal core value",
+    options: [
+      {
+        text: "Building technological breakthroughs or digital tools that millions of people rely on daily.",
+        trait: "Impact through Technology",
+        riasec: "Realistic / Investigative",
+        points: { "engineering-tech": 3, "design-creative": 1 }
+      },
+      {
+        text: "Directly relieving human suffering, improving health, and safeguarding lives.",
+        trait: "Impact through Healing",
+        riasec: "Social",
+        points: { "medical-healthcare": 3, "education-teaching": 2 }
+      },
+      {
+        text: "Generating wealth, leading major enterprises, and achieving financial independence.",
+        trait: "Impact through Enterprise",
+        riasec: "Enterprising",
+        points: { "commerce-finance": 3, "business-management": 3 }
+      },
+      {
+        text: "Serving the nation, upholding constitutional justice, and shaping public welfare.",
+        trait: "Impact through Service",
+        riasec: "Social / Enterprising",
+        points: { "government-civil": 3, "law-legal": 3 }
+      }
+    ]
+  }
+];
+
+// ==========================================
+// STAGE 6: AI MOCK INTERVIEW PRESETS (12 Domains)
+// ==========================================
+
+const MOCK_INTERVIEW_PRESETS = [
+  {
+    domain: "engineering-tech",
+    label: "Engineering & Software",
+    questions: [
+      {
+        id: "tech-q1",
+        type: "Technical",
+        question: "Explain the difference between synchronous and asynchronous operations in software programming. When would you use a promise or async/await over synchronous execution?",
+        expectedKeyPoints: ["Blocking vs non-blocking I/O", "Event loop & call stack", "Network API calls or database operations", "User experience responsiveness"],
+        difficulty: "Medium",
+        sampleAnswer: "Synchronous operations execute sequentially, blocking subsequent code until current execution finishes. Asynchronous operations allow long-running tasks like network requests or file reads to run in the background without freezing the UI or main thread. We use Promises and async/await when fetching data from third-party APIs to keep web applications interactive."
+      },
+      {
+        id: "tech-q2",
+        type: "Behavioral",
+        question: "Describe a time when your code had a critical bug right before a demo or submission deadline. How did you debug the root cause under pressure?",
+        expectedKeyPoints: ["Structured debugging process", "Console logs or breakpoints", "Staying calm", "Effective communication with team/mentor"],
+        difficulty: "Medium",
+        sampleAnswer: "During a final semester project demo, our authentication token was expiring prematurely. Instead of panicking, I systematically checked network response headers, traced the JWT expiration timestamp logic, found a timezone UTC mismatch, and patched the calculation with 15 minutes to spare."
+      }
+    ]
+  },
+  {
+    domain: "commerce-finance",
+    label: "Commerce & Finance",
+    questions: [
+      {
+        id: "fin-q1",
+        type: "Technical",
+        question: "Walk me through how a $10 increase in depreciation flows through the three financial statements: Income Statement, Cash Flow Statement, and Balance Sheet.",
+        expectedKeyPoints: ["Operating income decreases by $10", "Tax shield savings (at 20% tax, net income drops by $8)", "Cash from operations increases by $2 ($8 net income + $10 non-cash add back)", "PP&E decreases by $10 and Cash increases by $2, balancing with Retained Earnings dropping by $8"],
+        difficulty: "Hard",
+        sampleAnswer: "On the Income Statement, Operating Income decreases by $10. Assuming a 20% tax rate, Net Income drops by $8. On the Cash Flow Statement, Net Income starts at -$8, but Depreciation is a non-cash expense and is added back (+$10), resulting in Cash from Operations increasing by $2. On the Balance Sheet, PP&E decreases by $10, Cash increases by $2 (Net Asset change: -$8), which matches the Equity side where Retained Earnings dropped by $8."
+      },
+      {
+        id: "fin-q2",
+        type: "Behavioral",
+        question: "How do you evaluate whether a company has a sustainable economic moat or competitive advantage before investing capital?",
+        expectedKeyPoints: ["Network effects", "High switching costs", "Brand pricing power", "Cost advantages / economies of scale", "Return on invested capital (ROIC)"],
+        difficulty: "Medium",
+        sampleAnswer: "I look for four primary moat drivers: powerful network effects where value scales with user count, high switching costs that lock in customers, pricing power rooted in brand loyalty, and structural cost advantages. I verify these qualitatively with customer interviews and quantitatively by checking if ROIC consistently outpaces the Weighted Average Cost of Capital (WACC)."
+      }
+    ]
+  },
+  {
+    domain: "medical-healthcare",
+    label: "Medical & Healthcare",
+    questions: [
+      {
+        id: "med-q1",
+        type: "Scenario",
+        question: "How would you handle a situation where a patient or their family refuses a life-saving medical procedure due to fear or misinformation?",
+        expectedKeyPoints: ["Active empathetic listening", "Validating concerns without judgment", "Clear non-technical explanation of risks and benefits", "Respecting patient autonomy while exploring second opinions"],
+        difficulty: "Medium",
+        sampleAnswer: "I begin by listening actively to understand the root cause of their anxiety without sounding dismissive. I avoid dense medical jargon and clearly explain the physiological reality, risks of non-intervention, and alternatives in plain language. If hesitation persists, I offer to bring in trusted family members or arrange an independent second opinion while respecting patient autonomy."
+      },
+      {
+        id: "med-q2",
+        type: "Technical",
+        question: "Explain the physiological difference between Type 1 and Type 2 Diabetes Mellitus, including their standard diagnostic markers.",
+        expectedKeyPoints: ["Autoimmune beta-cell destruction vs peripheral insulin resistance", "Absolute insulin deficiency vs relative deficiency", "Fasting blood glucose >= 126 mg/dL, HbA1c >= 6.5%", "C-peptide test differentiation"],
+        difficulty: "Medium",
+        sampleAnswer: "Type 1 Diabetes is an autoimmune disorder where the immune system destroys pancreatic beta cells, resulting in absolute insulin deficiency requiring lifelong exogenous insulin. Type 2 Diabetes is characterized by peripheral insulin resistance and progressive secretory defect, typically linked to lifestyle and genetics. Diagnostic markers include fasting plasma glucose >= 126 mg/dL, HbA1c >= 6.5%, and C-peptide levels to differentiate endogenous production."
+      }
+    ]
+  },
+  {
+    domain: "law-legal",
+    label: "Law & Legal Services",
+    questions: [
+      {
+        id: "law-q1",
+        type: "Scenario",
+        question: "What is the doctrine of 'Basic Structure' in constitutional law, and how does it balance parliamentary legislative sovereignty with judicial review?",
+        expectedKeyPoints: ["Kesavananda Bharati v. State of Kerala (1973)", "Parliament can amend any part of the Constitution under Article 368 but cannot damage its basic foundation", "Separation of powers, rule of law, fundamental rights", "Check against legislative overreach"],
+        difficulty: "Hard",
+        sampleAnswer: "The Basic Structure doctrine, established in the landmark Kesavananda Bharati case, holds that while Parliament possesses broad constituent powers to amend the Constitution under Article 368, it cannot alter or dismantle its core foundation—such as judicial review, federalism, secularism, and fundamental rights. It strikes an essential equilibrium by allowing constitutional evolution while safeguarding against authoritarian legislative overreach."
+      },
+      {
+        id: "law-q2",
+        type: "Behavioral",
+        question: "When drafting a commercial contract, how do you resolve a deadlock between two parties arguing over an Indemnity clause versus a Limitation of Liability clause?",
+        expectedKeyPoints: ["Distinguishing direct vs consequential damages", "Carve-outs for fraud, gross negligence, and IP infringement", "Capping liability at a multiple of annual contract value", "Commercial compromise balancing risk and deal closing"],
+        difficulty: "Hard",
+        sampleAnswer: "I structure a balanced compromise: we cap general indemnification liabilities at 1x to 2x the annual contract fees, while maintaining standard uncapped carve-outs strictly for third-party intellectual property infringement, data privacy breaches, and willful gross negligence. This protects both sides against catastrophic losses while keeping the deal commercially viable."
+      }
+    ]
+  },
+  {
+    domain: "business-management",
+    label: "Business & Management",
+    questions: [
+      {
+        id: "biz-q1",
+        type: "Scenario",
+        question: "Your core product's user churn increased by 15% this quarter while acquisition costs (CAC) jumped 25%. Walk me through your step-by-step turnaround plan.",
+        expectedKeyPoints: ["Cohort analysis to isolate churned segment", "Customer exit interviews & ticket review", "Pausing inefficient marketing ad spend", "Targeting high-intent referral channels", "Improving 7-day onboarding activation"],
+        difficulty: "Hard",
+        sampleAnswer: "First, I would perform cohort analysis to isolate which user segment is churning—new users within 14 days or long-term accounts. Simultaneously, I would run rapid exit surveys to identify if the issue is pricing, bugs, or competitor migration. On the CAC side, I would immediately pause lowest-performing ad campaigns to curb cash burn and reinvest in high-intent organic and referral loops while redesigning user onboarding to lift day-7 activation."
+      },
+      {
+        id: "biz-q2",
+        type: "Behavioral",
+        question: "Tell me about a time you had to lead a cross-functional team without having formal managerial authority over them.",
+        expectedKeyPoints: ["Leading through influence and shared objectives", "Creating psychological safety", "Aligning on clear KPIs", "Recognizing individual contributions"],
+        difficulty: "Medium",
+        sampleAnswer: "When leading our college fest sponsorship committee, I had no authority over design or tech peers. I unified everyone around a single clear milestone: reaching ₹5 Lakhs in corporate sponsorships to unlock top performers. I mapped out how this would build outstanding portfolio pieces for every individual contributor, scheduled brief 15-minute syncs, and gave full public credit during sponsor wins."
+      }
+    ]
+  },
+  {
+    domain: "design-creative",
+    label: "Design & Creative Arts",
+    questions: [
+      {
+        id: "des-q1",
+        type: "Technical",
+        question: "How do you defend a design decision to a product manager who wants to clutter a clean user onboarding screen with three additional marketing banners?",
+        expectedKeyPoints: ["Hick's Law (decision fatigue)", "Conversion funnel metrics vs banner impressions", "A/B testing proposal", "Focusing on core user activation value"],
+        difficulty: "Medium",
+        sampleAnswer: "I anchor the conversation on user metrics rather than subjective aesthetic opinions. I cite Hick's Law: cognitive overload directly decreases first-time user completion rates. I demonstrate how three competing calls-to-action dilute conversion on the primary onboarding goal. I propose an A/B test or offer to introduce contextual progressive disclosure tooltips after the user has successfully completed sign-up."
+      },
+      {
+        id: "des-q2",
+        type: "Technical",
+        question: "What is the difference between Accessibility (a11y) compliance (WCAG AA) and general visual polish in modern digital design?",
+        expectedKeyPoints: ["Color contrast ratios (4.5:1 for normal text)", "Screen reader semantic tags", "Keyboard focus states", "Designing for diverse abilities rather than only 20/20 vision"],
+        difficulty: "Medium",
+        sampleAnswer: "Visual polish focuses on visual aesthetics, typography hierarchy, and delight, whereas accessibility ensures digital interfaces are perceivable, operable, and understandable by everyone, including users with visual or motor impairments. This requires maintaining minimum WCAG 4.5:1 color contrast ratios, designing clear keyboard focus outlines, and providing semantic alt-text."
+      }
+    ]
+  },
+  {
+    domain: "science-research",
+    label: "Science & Research",
+    questions: [
+      {
+        id: "sci-q1",
+        type: "Technical",
+        question: "What is the scientific method, and why is the concept of 'falsifiability' essential when formulating a research hypothesis?",
+        expectedKeyPoints: ["Observation, hypothesis, experiment, analysis, conclusion", "Karl Popper's criterion of falsifiability", "A hypothesis must have a conceivable outcome that proves it wrong", "Separates empirical science from dogma"],
+        difficulty: "Medium",
+        sampleAnswer: "The scientific method is a rigorous cycle of observation, formulating testable hypotheses, running controlled experiments, and drawing evidence-based conclusions. Falsifiability, established by Karl Popper, dictates that for a hypothesis to be genuinely scientific, there must exist an empirical test that could potentially refute it. Without falsifiability, claims cannot be tested or validated."
+      }
+    ]
+  },
+  {
+    domain: "government-civil",
+    label: "Government & Civil Services",
+    questions: [
+      {
+        id: "gov-q1",
+        type: "Scenario",
+        question: "As a District Magistrate, you receive a distress report of severe flash flooding in a rural sub-division during midnight. What are your first three actions?",
+        expectedKeyPoints: ["Immediate emergency response & NDRF/SDRF mobilization", "Setting up an Incident Command Center & evacuation to high shelters", "Ensuring drinking water, food packets, and medical triage teams"],
+        difficulty: "Hard",
+        sampleAnswer: "First, I immediately activate the District Disaster Management Authority and mobilize SDRF/NDRF teams with motorized rescue boats toward vulnerable coordinates. Second, I establish an emergency 24/7 Incident Command Center to establish satellite communication with sub-divisional officers and coordinate evacuation to pre-designated high-ground cyclone shelters. Third, I direct civil supplies and medical teams to dispatch clean water purifiers, dry rations, and antivenom kits to prevent post-flood epidemics."
+      }
+    ]
+  },
+  {
+    domain: "arts-humanities",
+    label: "Arts & Humanities",
+    questions: [
+      {
+        id: "art-q1",
+        type: "Behavioral",
+        question: "How do you verify whether a viral news story or social media document is authentic before using it as a primary source for an article?",
+        expectedKeyPoints: ["Reverse image search", "Metadata checking", "Multiple corroborating primary sources", "Reviewing official registries or public filings"],
+        difficulty: "Medium",
+        sampleAnswer: "I follow a rigorous verification workflow: running reverse image and video metadata checks to detect recirculated footage, contacting named sources or institutions directly for corroboration on record, checking official government gazettes or court filings, and requiring at least two independent credible sources before publishing."
+      }
+    ]
+  },
+  {
+    domain: "education-teaching",
+    label: "Education & Teaching",
+    questions: [
+      {
+        id: "edu-q1",
+        type: "Scenario",
+        question: "How do you teach an abstract, difficult concept to a classroom where half the students are disengaged and struggling?",
+        expectedKeyPoints: ["Scaffolding and relatable real-world analogies", "Interactive micro-activities or hands-on demos", "Differentiated instruction", "Checking for understanding with low-stakes polls"],
+        difficulty: "Medium",
+        sampleAnswer: "I replace abstract mathematical or scientific formulas with concrete, everyday analogies that relate to their daily lives. I break down the concept into three digestible micro-steps using Bloom's taxonomy, integrate a quick 2-minute interactive pair-exercise to re-energize the room, and provide differentiated tiered tasks so struggling students gain confidence while advanced students remain challenged."
+      }
+    ]
+  },
+  {
+    domain: "sports-fitness",
+    label: "Sports & Fitness",
+    questions: [
+      {
+        id: "spt-q1",
+        type: "Technical",
+        question: "Explain the difference between aerobic and anaerobic metabolic pathways in athletes, and how you would train each for an elite soccer player.",
+        expectedKeyPoints: ["Oxygen utilization vs glycolysis/creatine phosphate", "Slow-twitch endurance vs fast-twitch explosive power", "Continuous tempo runs vs High-Intensity Interval Training (HIIT) sprint repeats"],
+        difficulty: "Medium",
+        sampleAnswer: "Aerobic metabolism uses oxygen to burn carbohydrates and fats for sustained, low-to-moderate intensity efforts, essential for a soccer player covering 10-12 km per match. Anaerobic metabolism produces rapid ATP through glycolysis and phosphocreatine without oxygen for explosive sprints, tackles, and jumps. For training, I prescribe 70-80% Zone 2 base runs for aerobic stamina paired with High-Intensity Interval Training (HIIT) sprint repeats (e.g. 15s all-out, 30s rest) to train rapid lactate clearance."
+      }
+    ]
+  },
+  {
+    domain: "agriculture-environment",
+    label: "Agriculture & Environment",
+    questions: [
+      {
+        id: "agr-q1",
+        type: "Scenario",
+        question: "How can smallholder farmers transition from chemical-heavy conventional farming to regenerative organic agriculture without suffering a catastrophic yield collapse?",
+        expectedKeyPoints: ["Phased transition over 3-4 years", "Cover cropping and bio-fertilizers", "Integrated Pest Management (IPM)", "Direct-to-consumer farmgate price premiums"],
+        difficulty: "Medium",
+        sampleAnswer: "A successful transition requires a phased, 3-year biological approach rather than an abrupt overnight switch. In Year 1, farmers reduce synthetic nitrogen by 30% while introducing green manure cover crops and bio-fertilizers (such as mycorrhizae and vermicompost) to regenerate soil microbiology. By Year 2, Integrated Pest Management (IPM) with biological predator insects is deployed. By Year 3, certified organic harvest commands a 20-30% market price premium, offsetting initial transitional yield dips."
+      }
+    ]
+  }
+];
+
+if (typeof window !== 'undefined') {
+  window.STREAM_GUIDE_DATA = STREAM_GUIDE_DATA;
+  window.CAREER_EXPLORER_DATA = CAREER_EXPLORER_DATA;
+  window.COLLEGE_COURSE_DATA = COLLEGE_COURSE_DATA;
+  window.EXAM_SCHOLARSHIP_DATA = EXAM_SCHOLARSHIP_DATA;
+  window.APTITUDE_ASSESSMENT_QUESTIONS = APTITUDE_ASSESSMENT_QUESTIONS;
+  window.MOCK_INTERVIEW_PRESETS = MOCK_INTERVIEW_PRESETS;
+}
+
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { CAREER_TEMPLATES, RESUME_PARSER_SKILLS, MOCK_JOBS, SAMPLE_JOBS };
+  module.exports = {
+    CAREER_TEMPLATES,
+    RESUME_PARSER_SKILLS,
+    MOCK_JOBS,
+    SAMPLE_JOBS,
+    STREAM_GUIDE_DATA,
+    CAREER_EXPLORER_DATA,
+    COLLEGE_COURSE_DATA,
+    EXAM_SCHOLARSHIP_DATA,
+    APTITUDE_ASSESSMENT_QUESTIONS,
+    MOCK_INTERVIEW_PRESETS
+  };
 }

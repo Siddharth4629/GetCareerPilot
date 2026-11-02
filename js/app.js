@@ -13,7 +13,23 @@ let state = {
   analyzerMode: "llm", // "llm" or "local"
   selectedInterests: ["AI & Large Language Models", "Full-Stack Web Applications"],
   activeGuidanceJob: null,
-  authMode: "login"
+  authMode: "login",
+  academicStage: "College",
+  activeQuizIndex: 0,
+  assessmentAnswers: [],
+  assessmentResults: null,
+  explorerSelectedDomain: "all",
+  collegeSubTab: "degrees",
+  mockDomain: "engineering-tech",
+  mockQuestionIndex: 0,
+  dailyTasks: [
+    { id: "task-1", text: "Review key concept fundamentals and notes", category: "Roadmap", time: "45m", completed: true, date: new Date().toDateString() },
+    { id: "task-2", text: "Complete practice problem set or challenge", category: "Project", time: "1h", completed: false, date: new Date().toDateString() },
+    { id: "task-3", text: "Attempt 1 AI Mock Interview question", category: "Exam Prep", time: "30m", completed: false, date: new Date().toDateString() }
+  ],
+  pomodoroSeconds: 1500,
+  pomodoroRunning: false,
+  pomodoroTimerId: null
 };
 
 // Initialization on DOM Load
@@ -50,6 +66,12 @@ function loadStateFromLocalStorage() {
   if (savedChat) state.chatHistory = JSON.parse(savedChat);
   if (savedApiKey) state.apiKey = savedApiKey;
   if (savedStreak) state.streakCount = parseInt(savedStreak) || 1;
+  const savedStage = localStorage.getItem("devpath_academic_stage");
+  if (savedStage) state.academicStage = savedStage;
+  const savedTasks = localStorage.getItem("devpath_daily_tasks");
+  if (savedTasks) state.dailyTasks = JSON.parse(savedTasks);
+  const savedResults = localStorage.getItem("devpath_assessment_results");
+  if (savedResults) state.assessmentResults = JSON.parse(savedResults);
   if (savedLastDate) state.lastActiveDate = savedLastDate;
 
   const savedRecs = localStorage.getItem("devpath_career_recommendations");
@@ -73,6 +95,11 @@ function saveStateToLocalStorage() {
     localStorage.setItem("devpath_career_recommendations", JSON.stringify(state.careerRecommendations));
   }
   localStorage.setItem("devpath_analyzer_mode", state.analyzerMode);
+  localStorage.setItem("devpath_academic_stage", state.academicStage || "College");
+  localStorage.setItem("devpath_daily_tasks", JSON.stringify(state.dailyTasks || []));
+  if (state.assessmentResults) {
+    localStorage.setItem("devpath_assessment_results", JSON.stringify(state.assessmentResults));
+  }
 
   // Sync to registered accounts repository if active user exists
   if (state.user && state.user.email) {
@@ -187,6 +214,8 @@ function setAuthMode(mode) {
     if (loginTab) loginTab.classList.remove("active");
     if (signupTab) signupTab.classList.add("active");
     if (nameGroup) nameGroup.style.display = "block";
+    const stageGroup = document.getElementById("auth-stage-group");
+    if (stageGroup) stageGroup.style.display = "block";
     if (usernameInput) usernameInput.setAttribute("required", "required");
     if (submitBtn) submitBtn.innerHTML = `<i data-lucide="user-plus"></i> Create AI Profile`;
     if (switchText) switchText.innerHTML = `Already have an account? <a href="javascript:void(0)" onclick="setAuthMode('login')" style="color: var(--color-teal); font-weight: 600;">Sign In</a>`;
@@ -196,6 +225,8 @@ function setAuthMode(mode) {
     if (signupTab) signupTab.classList.remove("active");
     if (loginTab) loginTab.classList.add("active");
     if (nameGroup) nameGroup.style.display = "none";
+    const stageGroup = document.getElementById("auth-stage-group");
+    if (stageGroup) stageGroup.style.display = "none";
     if (usernameInput) usernameInput.removeAttribute("required");
     if (submitBtn) submitBtn.innerHTML = `<i data-lucide="log-in"></i> Sign In to Account`;
     if (switchText) switchText.innerHTML = `Don't have an account? <a href="javascript:void(0)" onclick="setAuthMode('signup')" style="color: var(--color-teal); font-weight: 600;">Create Account</a>`;
@@ -2544,3 +2575,1074 @@ styleSheet.innerText = `
 }
 `;
 document.head.appendChild(styleSheet);
+
+
+// ==========================================
+// 8. STAGE-ADAPTIVE PERSONALIZATION ENGINE
+// ==========================================
+
+function onStageChange(stage) {
+  state.academicStage = stage;
+  localStorage.setItem("devpath_academic_stage", stage);
+
+  // Sync header dropdown if triggered programmatically
+  const select = document.getElementById("stage-select-global");
+  if (select && select.value !== stage) {
+    select.value = stage;
+  }
+
+  // Update User Profile object if logged in
+  if (state.user) {
+    state.user.academicStage = stage;
+    saveStateToLocalStorage();
+    if (window.ApiClient && ApiClient.saveProfile) {
+      ApiClient.saveProfile({ academicStage: stage }).catch(() => {});
+    }
+  }
+
+  updateStageUI(stage);
+  showToast(`Switched perspective to ${stage === "Class 10" ? "Class 9 & 10 (School)" : stage === "Class 12" ? "Class 11 & 12 (Higher Sec)" : "College & Graduate"}`, "info");
+}
+
+function updateStageUI(stage) {
+  // Update sidebar active highlights
+  const schoolTag = document.querySelector(".stage-tag-school");
+  const higherSecTag = document.querySelector(".stage-tag-higher-sec");
+
+  if (stage === "Class 10") {
+    if (schoolTag) schoolTag.style.borderLeft = "3px solid #38bdf8";
+    if (higherSecTag) higherSecTag.style.borderLeft = "none";
+  } else if (stage === "Class 12") {
+    if (higherSecTag) higherSecTag.style.borderLeft = "3px solid #f59e0b";
+    if (schoolTag) schoolTag.style.borderLeft = "none";
+  } else {
+    if (schoolTag) schoolTag.style.borderLeft = "none";
+    if (higherSecTag) higherSecTag.style.borderLeft = "none";
+  }
+
+  // Adaptive Dashboard Hero Banner
+  const heroTitle = document.querySelector(".ai-glow-card h3");
+  const heroSubtitle = document.querySelector(".ai-glow-card p");
+  const heroBtn = document.querySelector(".ai-glow-card button");
+
+  if (heroTitle && heroSubtitle && heroBtn) {
+    if (stage === "Class 10") {
+      heroTitle.innerText = "Class 9-10 Stream & Subject Selection Hub";
+      heroSubtitle.innerText = "Discover your cognitive strengths with our 10-question quiz, compare Science PCM/PCB vs Commerce vs Humanities, and map your 11th track.";
+      heroBtn.innerHTML = `Explore Stream Guide <i data-lucide="arrow-right"></i>`;
+      heroBtn.setAttribute("onclick", "switchTab('stream-guide')");
+    } else if (stage === "Class 12") {
+      heroTitle.innerText = "Class 11-12 College, Exam & Scholarship Explorer";
+      heroSubtitle.innerText = "Evaluate 25+ undergraduate degrees, track JEE/NEET/CUET/CLAT deadlines, and discover central merit scholarships.";
+      heroBtn.innerHTML = `Explore Colleges & Exams <i data-lucide="arrow-right"></i>`;
+      heroBtn.setAttribute("onclick", "switchTab('college-explorer')");
+    } else {
+      heroTitle.innerText = "Universal Career Discovery & Development Platform";
+      heroSubtitle.innerText = "AI roadmaps across 12 industries, resume gap audits, AI mock interviews, and daily study planning.";
+      heroBtn.innerHTML = `Explore Career Matches <i data-lucide="arrow-right"></i>`;
+      heroBtn.setAttribute("onclick", "switchTab('advisor')");
+    }
+  }
+
+  lucide.createIcons();
+}
+
+// ==========================================
+// 9. AI INTEREST & APTITUDE ASSESSMENT
+// ==========================================
+
+function renderAssessment() {
+  const questions = typeof APTITUDE_ASSESSMENT_QUESTIONS !== 'undefined' ? APTITUDE_ASSESSMENT_QUESTIONS : [];
+  if (!questions.length) return;
+
+  // If results exist and not currently retaking, show results
+  const resultsContainer = document.getElementById("quiz-results-container");
+  const activeCard = document.getElementById("quiz-active-card");
+
+  if (state.assessmentResults && resultsContainer && resultsContainer.innerHTML.trim() !== "" && resultsContainer.style.display !== "none") {
+    activeCard.style.display = "none";
+    resultsContainer.style.display = "block";
+    return;
+  }
+
+  activeCard.style.display = "block";
+  if (resultsContainer) resultsContainer.style.display = "none";
+
+  const qIndex = state.activeQuizIndex || 0;
+  const currentQ = questions[qIndex];
+
+  // Update progress bar & badge
+  const progressBadge = document.getElementById("quiz-progress-badge");
+  const progressBar = document.getElementById("quiz-progress-bar");
+  if (progressBadge) progressBadge.innerText = `Question ${qIndex + 1} of ${questions.length}`;
+  if (progressBar) progressBar.style.width = `${((qIndex + 1) / questions.length) * 100}%`;
+
+  // Update scenario & title
+  const scenarioTag = document.getElementById("quiz-scenario-tag");
+  const titleEl = document.getElementById("quiz-question-title");
+  if (scenarioTag) scenarioTag.innerText = currentQ.scenario || "Scenario";
+  if (titleEl) titleEl.innerText = currentQ.question;
+
+  // Render 4 options
+  const optionsList = document.getElementById("quiz-options-list");
+  if (!optionsList) return;
+
+  const currentAnswer = state.assessmentAnswers[qIndex];
+
+  optionsList.innerHTML = currentQ.options.map((opt, idx) => {
+    const isSelected = currentAnswer && currentAnswer.text === opt.text;
+    return `
+      <div class="card quiz-option-card ${isSelected ? 'selected' : ''}" onclick="selectQuizOption(${idx})" style="padding: 16px 20px; cursor: pointer; border: 1px solid ${isSelected ? 'var(--color-teal)' : 'var(--border-glass)'}; background: ${isSelected ? 'rgba(20, 184, 166, 0.08)' : 'rgba(15, 23, 42, 0.5)'}; border-radius: 12px; transition: all 0.2s ease;">
+        <div style="display: flex; align-items: flex-start; gap: 14px;">
+          <div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid ${isSelected ? 'var(--color-teal)' : 'var(--border-glass)'}; background: ${isSelected ? 'var(--color-teal)' : 'transparent'}; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0;">
+            ${isSelected ? '<i data-lucide="check" style="width: 14px; height: 14px; color: #fff;"></i>' : ''}
+          </div>
+          <div>
+            <div style="font-size: 14px; color: #fff; font-weight: 500; line-height: 1.45;">${opt.text}</div>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.3);">${opt.trait}</span>
+              <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-muted);">Holland: ${opt.riasec}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Navigation button states
+  const prevBtn = document.getElementById("quiz-prev-btn");
+  const nextBtn = document.getElementById("quiz-next-btn");
+  const submitBtn = document.getElementById("quiz-submit-btn");
+
+  if (prevBtn) prevBtn.style.display = qIndex > 0 ? "inline-flex" : "none";
+  if (nextBtn) nextBtn.style.display = qIndex < questions.length - 1 ? "inline-flex" : "none";
+  if (submitBtn) submitBtn.style.display = qIndex === questions.length - 1 ? "inline-flex" : "none";
+
+  lucide.createIcons();
+}
+
+function selectQuizOption(optIndex) {
+  const questions = typeof APTITUDE_ASSESSMENT_QUESTIONS !== 'undefined' ? APTITUDE_ASSESSMENT_QUESTIONS : [];
+  const currentQ = questions[state.activeQuizIndex];
+  if (!currentQ) return;
+
+  state.assessmentAnswers[state.activeQuizIndex] = currentQ.options[optIndex];
+  renderAssessment();
+}
+
+function nextQuizQuestion() {
+  const questions = typeof APTITUDE_ASSESSMENT_QUESTIONS !== 'undefined' ? APTITUDE_ASSESSMENT_QUESTIONS : [];
+  if (!state.assessmentAnswers[state.activeQuizIndex]) {
+    showToast("Please choose an option to continue.", "warning");
+    return;
+  }
+  if (state.activeQuizIndex < questions.length - 1) {
+    state.activeQuizIndex++;
+    renderAssessment();
+  }
+}
+
+function prevQuizQuestion() {
+  if (state.activeQuizIndex > 0) {
+    state.activeQuizIndex--;
+    renderAssessment();
+  }
+}
+
+async function submitAssessment() {
+  const questions = typeof APTITUDE_ASSESSMENT_QUESTIONS !== 'undefined' ? APTITUDE_ASSESSMENT_QUESTIONS : [];
+  // Auto-fill any unanswered questions with first option to prevent crash
+  for (let i = 0; i < questions.length; i++) {
+    if (!state.assessmentAnswers[i]) {
+      state.assessmentAnswers[i] = questions[i].options[0];
+    }
+  }
+
+  showToast("Synthesizing your cognitive aptitude profile with AI...", "info");
+
+  const results = AIService.analyzeInterestAssessment(
+    state.assessmentAnswers,
+    state.academicStage || "College"
+  );
+
+  state.assessmentResults = results;
+  saveStateToLocalStorage();
+
+  // Save to Supabase
+  if (window.ApiClient && ApiClient.saveProfile) {
+    ApiClient.saveProfile({ assessmentResults: results }).catch(() => {});
+  }
+
+  renderAssessmentResults(results);
+}
+
+function renderAssessmentResults(res) {
+  const activeCard = document.getElementById("quiz-active-card");
+  const container = document.getElementById("quiz-results-container");
+  if (!container) return;
+
+  if (activeCard) activeCard.style.display = "none";
+  container.style.display = "block";
+
+  const domainNames = {
+    "science-research": "Science & Fundamental Research",
+    "medical-healthcare": "Medical & Clinical Healthcare",
+    "commerce-finance": "Commerce, Banking & High Finance",
+    "business-management": "Business Strategy & Management",
+    "arts-humanities": "Humanities, Policy & Creative Writing",
+    "law-legal": "Law, Advocacy & Corporate Legal",
+    "engineering-tech": "Engineering & Software Architecture",
+    "design-creative": "Design, UI/UX & Digital Creative Arts",
+    "education-teaching": "Education, Pedagogy & Research",
+    "sports-fitness": "Sports Science & High Performance",
+    "government-civil": "Civil Services & Public Administration",
+    "agriculture-environment": "Agritech & Environmental Sustainability"
+  };
+
+  container.innerHTML = `
+    <div class="card col-12" style="padding: 30px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(20, 184, 166, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div>
+          <div style="font-size: 11.5px; text-transform: uppercase; font-weight: 700; color: var(--color-teal); letter-spacing: 0.08em; margin-bottom: 4px;">
+            Aptitude & Strengths Archetype
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: #fff;">
+            ${res.archetypeTitle}
+          </h2>
+          <p style="font-size: 14px; color: var(--text-secondary); max-width: 650px; line-height: 1.55; margin-top: 8px;">
+            ${res.archetypeDesc}
+          </p>
+        </div>
+        <button class="btn btn-secondary" onclick="restartAssessment()" style="padding: 8px 16px; font-size: 12.5px;">
+          <i data-lucide="rotate-ccw"></i> Retake Evaluation
+        </button>
+      </div>
+
+      <!-- RIASEC Personality Traits -->
+      <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
+          <span style="font-size: 11px; color: var(--text-muted); display: block;">Primary Holland Trait</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--color-teal);">${res.primaryTrait}</span>
+        </div>
+        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
+          <span style="font-size: 11px; color: var(--text-muted); display: block;">Secondary Trait</span>
+          <span style="font-size: 14px; font-weight: 700; color: #38bdf8;">${res.secondaryTrait}</span>
+        </div>
+        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
+          <span style="font-size: 11px; color: var(--text-muted); display: block;">Key Strengths</span>
+          <span style="font-size: 13px; font-weight: 600; color: #fff;">${res.keyTraits.slice(0, 3).join(" • ")}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage-Adaptive Action Box -->
+    <div class="card col-12" style="padding: 24px; margin-bottom: 24px; border-left: 4px solid var(--color-teal);">
+      <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="compass" style="width: 20px; height: 20px; color: var(--color-teal);"></i> Recommended Next Step for ${state.academicStage || "Your Academic Level"}
+      </h3>
+      <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+        ${res.stageAdvice}
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        ${(res.recommendedStreamsOrDegrees || []).map(item => `
+          <span style="padding: 6px 14px; border-radius: 20px; background: rgba(99, 102, 241, 0.15); color: #fff; font-size: 12.5px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.4);">
+            ✨ ${item}
+          </span>
+        `).join("")}
+      </div>
+    </div>
+
+    <!-- Top 3 Sector Matches -->
+    <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px;">
+      Top Recommended Industry Sectors
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 24px;">
+      ${res.topDomains.map((dom, i) => `
+        <div class="card" style="padding: 20px; border-top: 3px solid ${i === 0 ? 'var(--color-teal)' : i === 1 ? '#38bdf8' : '#ec4899'};">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Match Rank #${i + 1}</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--color-teal);">${dom.score * 10}% Compatibility</span>
+          </div>
+          <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">
+            ${domainNames[dom.id] || dom.id}
+          </h4>
+          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 16px;">
+            Strong alignment with your ${res.primaryTrait} problem-solving approach and natural interests.
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" onclick="exploreSectorFromQuiz('${dom.id}')" style="flex: 1; padding: 7px 12px; font-size: 12px;">
+              View Careers <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 10px;">
+      <button class="btn btn-secondary" onclick="switchTab('stream-guide')" style="padding: 10px 20px;">
+        <i data-lucide="layers"></i> View Stream Guide (Class 9-10)
+      </button>
+      <button class="btn btn-secondary" onclick="switchTab('college-explorer')" style="padding: 10px 20px;">
+        <i data-lucide="graduation-cap"></i> View Colleges & Exams (Class 11-12)
+      </button>
+      <button class="btn btn-pink" onclick="switchTab('generator')" style="padding: 10px 24px;">
+        <i data-lucide="route"></i> Build Custom Roadmap
+      </button>
+    </div>
+  `;
+
+  lucide.createIcons();
+}
+
+function restartAssessment() {
+  state.activeQuizIndex = 0;
+  state.assessmentAnswers = [];
+  state.assessmentResults = null;
+  localStorage.removeItem("devpath_assessment_results");
+  renderAssessment();
+}
+
+function exploreSectorFromQuiz(domainId) {
+  state.explorerSelectedDomain = domainId;
+  switchTab("explorer");
+}
+
+// ==========================================
+// 10. UNIVERSAL CAREER EXPLORER CONTROLLER
+// ==========================================
+
+function renderCareerExplorer() {
+  const data = typeof CAREER_EXPLORER_DATA !== 'undefined' ? CAREER_EXPLORER_DATA : [];
+  if (!data.length) return;
+
+  // Render Domain Filter Chips
+  const chipsContainer = document.getElementById("explorer-domain-chips");
+  if (chipsContainer) {
+    const allChip = `
+      <button class="interest-chip ${state.explorerSelectedDomain === 'all' ? 'selected' : ''}" onclick="selectExplorerDomain('all')">
+        All Sectors (${data.length})
+      </button>
+    `;
+
+    const domainChips = data.map(dom => `
+      <button class="interest-chip ${state.explorerSelectedDomain === dom.id ? 'selected' : ''}" onclick="selectExplorerDomain('${dom.id}')">
+        ${dom.name}
+      </button>
+    `).join("");
+
+    chipsContainer.innerHTML = allChip + domainChips;
+  }
+
+  filterCareers();
+}
+
+function selectExplorerDomain(domainId) {
+  state.explorerSelectedDomain = domainId;
+  renderCareerExplorer();
+}
+
+function filterCareers() {
+  const data = typeof CAREER_EXPLORER_DATA !== 'undefined' ? CAREER_EXPLORER_DATA : [];
+  const searchInput = document.getElementById("explorer-search-input");
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const grid = document.getElementById("explorer-cards-grid");
+  if (!grid) return;
+
+  let rolesList = [];
+
+  data.forEach(domain => {
+    if (state.explorerSelectedDomain === "all" || state.explorerSelectedDomain === domain.id) {
+      domain.roles.forEach(role => {
+        rolesList.push({
+          ...role,
+          domainId: domain.id,
+          domainName: domain.name,
+          domainIcon: domain.icon,
+          domainColor: domain.color
+        });
+      });
+    }
+  });
+
+  if (query) {
+    rolesList = rolesList.filter(r => 
+      r.title.toLowerCase().includes(query) ||
+      r.domainName.toLowerCase().includes(query) ||
+      r.description.toLowerCase().includes(query) ||
+      (r.keySkills || []).some(s => s.toLowerCase().includes(query))
+    );
+  }
+
+  if (!rolesList.length) {
+    grid.innerHTML = `
+      <div class="card col-12" style="padding: 40px; text-align: center; grid-column: 1 / -1;">
+        <i data-lucide="search-x" style="width: 40px; height: 40px; color: var(--text-muted); margin: 0 auto 12px;"></i>
+        <h4 style="font-family: var(--font-heading); font-size: 16px; color: #fff;">No careers found matching "${query}"</h4>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Try searching for a different skill, title, or sector chip.</p>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  grid.innerHTML = rolesList.map(r => `
+    <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid ${r.domainColor || 'var(--color-indigo)'};">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${r.domainColor || 'var(--color-teal)'};">
+            ${r.domainName}
+          </span>
+          <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 600;">
+            ${r.growth}
+          </span>
+        </div>
+
+        <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+          ${r.title}
+        </h3>
+
+        <div style="font-size: 13px; font-weight: 600; color: var(--color-teal); margin-bottom: 12px;">
+          💰 ${r.salary}
+        </div>
+
+        <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+          ${r.description}
+        </p>
+
+        <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 14px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
+          <strong style="color: #fff;">🎓 Path:</strong> ${r.educationReq}
+        </div>
+
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;">
+          ${(r.keySkills || []).slice(0, 4).map(sk => `
+            <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--text-primary); border: 1px solid rgba(99, 102, 241, 0.25);">
+              ${sk}
+            </span>
+          `).join("")}
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; border-top: 1px solid var(--border-glass); padding-top: 14px;">
+        <button class="btn btn-secondary" onclick="openCareerDetailModal('${r.domainId}', '${r.title.replace(/'/g, "\\'")}')" style="flex: 1; padding: 8px; font-size: 12px;">
+          <i data-lucide="info"></i> Details
+        </button>
+        <button class="btn btn-pink" onclick="launchRoadmapFromRole('${r.title.replace(/'/g, "\\'")}', '${r.roadmapSlug || 'software-engineer'}')" style="flex: 1.2; padding: 8px; font-size: 12px;">
+          <i data-lucide="route"></i> Roadmap
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  lucide.createIcons();
+}
+
+function openCareerDetailModal(domainId, roleTitle) {
+  const data = typeof CAREER_EXPLORER_DATA !== 'undefined' ? CAREER_EXPLORER_DATA : [];
+  const domain = data.find(d => d.id === domainId);
+  if (!domain) return;
+  const role = domain.roles.find(r => r.title === roleTitle);
+  if (!role) return;
+
+  const modal = document.getElementById("career-detail-modal");
+  const modalTitle = document.getElementById("career-modal-title");
+  const modalDomain = document.getElementById("career-modal-domain");
+  const modalBody = document.getElementById("career-modal-body");
+
+  if (modalTitle) modalTitle.innerText = role.title;
+  if (modalDomain) modalDomain.innerText = domain.name;
+
+  if (modalBody) {
+    modalBody.innerHTML = `
+      <div style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.7); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-glass); margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Global Compensation Range</div>
+            <div style="font-size: 16px; font-weight: 800; color: var(--color-teal); margin-top: 2px;">${role.salary}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">10-Year Growth Rate</div>
+            <div style="font-size: 14px; font-weight: 700; color: #34d399; margin-top: 2px;">${role.growth}</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Role Overview</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px;">
+          ${role.description}
+        </p>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">A Day in the Life</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px; background: rgba(99, 102, 241, 0.08); padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--color-indigo);">
+          "${role.dayInLife}"
+        </p>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Recommended Academic & Degree Pathway</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+          ${role.educationReq}
+        </p>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Essential Competencies & Frameworks</h4>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px;">
+          ${(role.keySkills || []).map(sk => `
+            <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: rgba(20, 184, 166, 0.12); color: var(--color-teal); border: 1px solid rgba(20, 184, 166, 0.3);">
+              ${sk}
+            </span>
+          `).join("")}
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+          <button class="btn btn-secondary" onclick="closeCareerDetailModal()">Close</button>
+          <button class="btn btn-pink" onclick="closeCareerDetailModal(); launchRoadmapFromRole('${role.title.replace(/'/g, "\\'")}', '${role.roadmapSlug || 'software-engineer'}')">
+            <i data-lucide="route"></i> Launch Personalized Roadmap
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  if (modal) modal.style.display = "flex";
+  lucide.createIcons();
+}
+
+function closeCareerDetailModal() {
+  const modal = document.getElementById("career-detail-modal");
+  if (modal) modal.style.display = "none";
+}
+
+function launchRoadmapFromRole(roleTitle, fallbackSlug) {
+  switchTab("generator");
+  const careerSelect = document.getElementById("wizard-career");
+  if (careerSelect) {
+    let exists = false;
+    for (let i = 0; i < careerSelect.options.length; i++) {
+      if (careerSelect.options[i].text.toLowerCase().includes(roleTitle.toLowerCase()) || 
+          careerSelect.options[i].value === fallbackSlug) {
+        careerSelect.selectedIndex = i;
+        exists = true;
+        break;
+      }
+    }
+    if (!exists) {
+      careerSelect.value = fallbackSlug || "fullstack-developer";
+    }
+  }
+  showToast(`Configured Roadmap Builder for ${roleTitle}`, "info");
+}
+
+// ==========================================
+// 11. STREAM & SUBJECT SELECTION GUIDE (Class 9-10)
+// ==========================================
+
+function renderStreamGuide() {
+  const streams = typeof STREAM_GUIDE_DATA !== 'undefined' ? STREAM_GUIDE_DATA : [];
+  if (!streams.length) return;
+
+  // Comparison Matrix Rows
+  const tbody = document.getElementById("stream-matrix-tbody");
+  if (tbody) {
+    tbody.innerHTML = streams.map(s => `
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s ease;">
+        <td style="padding: 14px; font-weight: 700; color: #fff;">
+          <span style="color: ${s.color};">●</span> ${s.title}
+        </td>
+        <td style="padding: 14px; color: var(--text-secondary); max-width: 220px;">${s.badge}</td>
+        <td style="padding: 14px; color: var(--text-secondary);">${s.workload.split('(')[0]}</td>
+        <td style="padding: 14px; color: ${s.mathRequirement.includes('Very High') ? '#f43f5e' : s.mathRequirement.includes('High') ? '#f59e0b' : '#34d399'}; font-weight: 600;">${s.mathRequirement}</td>
+        <td style="padding: 14px; color: var(--text-muted); font-size: 12px;">${s.entranceExams.slice(0, 3).join(", ")}</td>
+        <td style="padding: 14px; color: var(--color-teal); font-weight: 500;">${s.careerPaths[0]}</td>
+      </tr>
+    `).join("");
+  }
+
+  // Detailed Stream Cards
+  const cardsContainer = document.getElementById("stream-cards-container");
+  if (cardsContainer) {
+    cardsContainer.innerHTML = streams.map(s => `
+      <div class="card" style="padding: 24px; border-top: 3px solid ${s.color}; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: ${s.color}; border: 1px solid rgba(99, 102, 241, 0.3);">
+              ${s.badge}
+            </span>
+          </div>
+
+          <h3 style="font-family: var(--font-heading); font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;">
+            ${s.title}
+          </h3>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+            ${s.subtitle}
+          </div>
+
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+            ${s.overview}
+          </p>
+
+          <div style="margin-bottom: 14px; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Core Compulsory Subjects:</div>
+            <div style="font-size: 12px; color: var(--color-teal); line-height: 1.4;">${s.coreSubjects.join(" • ")}</div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Popular Electives:</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">${s.electiveSubjects.join(", ")}</div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Direct Career Trajectories:</div>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+              ${s.careerPaths.slice(0, 4).map(cp => `<li>${cp}</li>`).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 14px; display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="switchTab('college-explorer')" style="flex: 1; padding: 8px; font-size: 12px;">
+            Matching Colleges
+          </button>
+          <button class="btn btn-pink" onclick="switchTab('assessment')" style="flex: 1; padding: 8px; font-size: 12px;">
+            Test Fit Quiz
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  lucide.createIcons();
+}
+
+// ==========================================
+// 12. COLLEGE & SCHOLARSHIP EXPLORER (Class 11-12)
+// ==========================================
+
+function setCollegeSubTab(subTab) {
+  state.collegeSubTab = subTab;
+  const btnDegrees = document.getElementById("college-subtab-degrees");
+  const btnExams = document.getElementById("college-subtab-exams");
+  const containerDegrees = document.getElementById("college-degrees-container");
+  const containerExams = document.getElementById("college-exams-container");
+
+  if (subTab === "degrees") {
+    if (btnDegrees) { btnDegrees.className = "btn"; }
+    if (btnExams) { btnExams.className = "btn btn-secondary"; }
+    if (containerDegrees) containerDegrees.style.display = "grid";
+    if (containerExams) containerExams.style.display = "none";
+  } else {
+    if (btnExams) { btnExams.className = "btn"; }
+    if (btnDegrees) { btnDegrees.className = "btn btn-secondary"; }
+    if (containerExams) containerExams.style.display = "grid";
+    if (containerDegrees) containerDegrees.style.display = "none";
+  }
+
+  filterColleges();
+}
+
+function renderCollegeExplorer() {
+  setCollegeSubTab(state.collegeSubTab || "degrees");
+}
+
+function filterColleges() {
+  const searchInput = document.getElementById("college-search-input");
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const streamFilter = document.getElementById("college-stream-filter");
+  const selectedStream = streamFilter ? streamFilter.value : "all";
+
+  if (state.collegeSubTab === "degrees") {
+    const courses = typeof COLLEGE_COURSE_DATA !== 'undefined' ? COLLEGE_COURSE_DATA : [];
+    const container = document.getElementById("college-degrees-container");
+    if (!container) return;
+
+    let filtered = courses;
+    if (selectedStream !== "all") {
+      filtered = filtered.filter(c => c.stream.includes(selectedStream) || c.stream.includes("All Streams"));
+    }
+    if (query) {
+      filtered = filtered.filter(c => 
+        c.degree.toLowerCase().includes(query) ||
+        c.stream.toLowerCase().includes(query) ||
+        (c.topInstitutes || []).some(inst => inst.toLowerCase().includes(query)) ||
+        (c.careerOpportunities || []).some(opp => opp.toLowerCase().includes(query))
+      );
+    }
+
+    if (!filtered.length) {
+      container.innerHTML = `<div class="card col-12" style="padding: 30px; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-muted);">No degree programs found matching "${query}".</p></div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(c => `
+      <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600;">
+              ${c.stream}
+            </span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
+              ⏳ ${c.duration}
+            </span>
+          </div>
+
+          <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px;">
+            ${c.degree}
+          </h3>
+
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
+            <strong style="color: #fff;">Eligibility:</strong> ${c.eligibility}
+          </div>
+
+          <div style="font-size: 12px; color: var(--color-teal); font-weight: 600; margin-bottom: 10px;">
+            💵 Avg Fees: ${c.avgFees}
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+            <strong style="color: #fff;">Gateway Entrances:</strong> ${c.entranceExams.join(", ")}
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+            <strong style="color: #fff;">Top Institutes:</strong> ${c.topInstitutes.slice(0, 4).join(" • ")}
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
+          <p style="font-size: 11.5px; color: var(--text-muted); margin: 0 0 10px 0; font-style: italic;">
+            ✨ ${c.pros}
+          </p>
+          <button class="btn btn-secondary" onclick="switchTab('generator')" style="width: 100%; padding: 7px; font-size: 12px;">
+            <i data-lucide="route"></i> Build Roadmap for this Degree
+          </button>
+        </div>
+      </div>
+    `).join("");
+
+  } else {
+    // Exams & Scholarships View
+    const items = typeof EXAM_SCHOLARSHIP_DATA !== 'undefined' ? EXAM_SCHOLARSHIP_DATA : [];
+    const container = document.getElementById("college-exams-container");
+    if (!container) return;
+
+    let filtered = items;
+    if (query) {
+      filtered = filtered.filter(item => 
+        item.name.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query) ||
+        item.conductingBody.toLowerCase().includes(query)
+      );
+    }
+
+    container.innerHTML = filtered.map(item => `
+      <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'};">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: ${item.type === 'scholarship' ? 'rgba(20, 184, 166, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'}; font-weight: 700; text-transform: uppercase;">
+              ${item.type === 'scholarship' ? 'Scholarship Grant' : 'National Entrance'}
+            </span>
+            <span style="font-size: 11.5px; color: var(--text-muted);">
+              ${item.frequency}
+            </span>
+          </div>
+
+          <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+            ${item.name}
+          </h3>
+
+          <div style="font-size: 12px; color: #38bdf8; margin-bottom: 10px; font-weight: 500;">
+            🏛️ Conducting: ${item.conductingBody}
+          </div>
+
+          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
+            ${item.description}
+          </p>
+
+          <div style="font-size: 12px; color: var(--text-muted); background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px; margin-bottom: 16px;">
+            <strong style="color: #fff;">Eligibility:</strong> ${item.eligibility}
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
+          <a href="${item.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; font-size: 12.5px; padding: 8px;">
+            <span>Visit Official Portal</span>
+            <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  lucide.createIcons();
+}
+
+// ==========================================
+// 13. AI MOCK INTERVIEW SIMULATOR CONTROLLER
+// ==========================================
+
+function onMockDomainChange(domain) {
+  state.mockDomain = domain;
+  state.mockQuestionIndex = 0;
+  renderMockInterview();
+}
+
+function renderMockInterview() {
+  const presets = typeof MOCK_INTERVIEW_PRESETS !== 'undefined' ? MOCK_INTERVIEW_PRESETS : [];
+  const domainData = presets.find(p => p.domain === state.mockDomain) || presets[0];
+  if (!domainData || !domainData.questions.length) return;
+
+  const currentQ = domainData.questions[state.mockQuestionIndex % domainData.questions.length];
+
+  // Set select value
+  const select = document.getElementById("mock-domain-select");
+  if (select && select.value !== state.mockDomain) select.value = state.mockDomain;
+
+  // Set Question Info
+  const typeBadge = document.getElementById("mock-type-badge");
+  const diffBadge = document.getElementById("mock-difficulty-badge");
+  const questionText = document.getElementById("mock-question-text");
+  const expectedList = document.getElementById("mock-expected-points");
+
+  if (typeBadge) typeBadge.innerText = `${currentQ.type} Question`;
+  if (diffBadge) diffBadge.innerText = `Difficulty: ${currentQ.difficulty || 'Medium'}`;
+  if (questionText) questionText.innerText = currentQ.question;
+
+  if (expectedList) {
+    expectedList.innerHTML = (currentQ.expectedKeyPoints || []).map(kp => `<li>${kp}</li>`).join("");
+  }
+
+  // Clear answer area if switching question
+  const answerArea = document.getElementById("mock-answer-input");
+  if (answerArea && !answerArea.value) {
+    updateMockWordCount();
+  }
+
+  lucide.createIcons();
+}
+
+function updateMockWordCount() {
+  const answerArea = document.getElementById("mock-answer-input");
+  const wordCountEl = document.getElementById("mock-word-count");
+  if (!answerArea || !wordCountEl) return;
+
+  const words = answerArea.value.trim().split(/\s+/).filter(Boolean);
+  wordCountEl.innerText = `${words.length} words`;
+}
+
+function fillMockSampleAnswer() {
+  const presets = typeof MOCK_INTERVIEW_PRESETS !== 'undefined' ? MOCK_INTERVIEW_PRESETS : [];
+  const domainData = presets.find(p => p.domain === state.mockDomain) || presets[0];
+  const currentQ = domainData.questions[state.mockQuestionIndex % domainData.questions.length];
+
+  const answerArea = document.getElementById("mock-answer-input");
+  if (answerArea && currentQ && currentQ.sampleAnswer) {
+    answerArea.value = currentQ.sampleAnswer;
+    updateMockWordCount();
+    showToast("Filled sample model response. Click 'Evaluate with AI' to analyze!", "info");
+  }
+}
+
+function loadNextMockQuestion() {
+  state.mockQuestionIndex++;
+  const answerArea = document.getElementById("mock-answer-input");
+  if (answerArea) answerArea.value = "";
+  renderMockInterview();
+}
+
+async function submitMockInterview() {
+  const presets = typeof MOCK_INTERVIEW_PRESETS !== 'undefined' ? MOCK_INTERVIEW_PRESETS : [];
+  const domainData = presets.find(p => p.domain === state.mockDomain) || presets[0];
+  const currentQ = domainData.questions[state.mockQuestionIndex % domainData.questions.length];
+  const answerArea = document.getElementById("mock-answer-input");
+  const answer = answerArea ? answerArea.value.trim() : "";
+
+  if (!answer) {
+    showToast("Please write or speak an answer before submitting for evaluation.", "warning");
+    return;
+  }
+
+  const evalBtn = document.getElementById("mock-evaluate-btn");
+  if (evalBtn) {
+    evalBtn.disabled = true;
+    evalBtn.innerHTML = `<i data-lucide="loader-2" class="spin"></i> Evaluating...`;
+  }
+
+  try {
+    const evaluation = await AIService.evaluateMockInterviewAnswer(
+      domainData.label || state.mockDomain,
+      currentQ,
+      answer,
+      state.apiKey
+    );
+
+    // Update Scorecard Cockpit
+    const scoreVal = document.getElementById("mock-score-val");
+    const scoreLabel = document.getElementById("mock-score-label");
+    const gauge = document.getElementById("mock-score-gauge");
+    const statusPill = document.getElementById("mock-status-pill");
+    const feedbackText = document.getElementById("mock-feedback-text");
+    const strengthsList = document.getElementById("mock-strengths-list");
+    const improvementsList = document.getElementById("mock-improvements-list");
+    const modelAnswerText = document.getElementById("mock-model-answer");
+
+    if (scoreVal) scoreVal.innerText = evaluation.score;
+    if (scoreLabel) {
+      scoreLabel.innerText = evaluation.score >= 80 ? "Superior Candidate" : evaluation.score >= 65 ? "Proficient Candidate" : "Developing Candidate";
+      scoreLabel.style.color = evaluation.score >= 80 ? "var(--color-teal)" : evaluation.score >= 65 ? "#38bdf8" : "#f59e0b";
+    }
+    if (gauge) {
+      gauge.style.background = `conic-gradient(${evaluation.score >= 80 ? 'var(--color-teal)' : evaluation.score >= 65 ? '#38bdf8' : '#f59e0b'} ${evaluation.score * 3.6}deg, rgba(255,255,255,0.1) 0deg)`;
+    }
+    if (statusPill) {
+      statusPill.innerText = "Evaluated";
+      statusPill.style.background = "rgba(52, 211, 153, 0.2)";
+      statusPill.style.color = "#34d399";
+    }
+    if (feedbackText) feedbackText.innerText = evaluation.feedback;
+    if (strengthsList) {
+      strengthsList.innerHTML = (evaluation.strengths || []).map(s => `<li>${s}</li>`).join("");
+    }
+    if (improvementsList) {
+      improvementsList.innerHTML = (evaluation.areasToImprove || []).map(gap => `<li>${gap}</li>`).join("");
+    }
+    if (modelAnswerText) modelAnswerText.innerText = evaluation.modelAnswer || currentQ.sampleAnswer;
+
+    showToast(`Evaluation complete: Score ${evaluation.score}/100`, "success");
+  } catch (err) {
+    console.error("Mock Interview error:", err);
+    showToast("Evaluation error. Check console or try again.", "error");
+  } finally {
+    if (evalBtn) {
+      evalBtn.disabled = false;
+      evalBtn.innerHTML = `<i data-lucide="sparkles"></i> Evaluate with AI`;
+      lucide.createIcons();
+    }
+  }
+}
+
+// ==========================================
+// 14. DAILY LEARNING PLANNER & HABIT TRACKER
+// ==========================================
+
+function renderDailyPlanner() {
+  const tasks = state.dailyTasks || [];
+  const list = document.getElementById("planner-task-list");
+  const streakCountEl = document.getElementById("planner-streak-count");
+  const completionRateEl = document.getElementById("planner-completion-rate");
+
+  if (streakCountEl) {
+    streakCountEl.innerText = `${state.streakCount || 1} Days`;
+  }
+
+  const completedCount = tasks.filter(t => t.completed).length;
+  const pct = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
+  if (completionRateEl) {
+    completionRateEl.innerText = `${completedCount} of ${tasks.length} Completed (${pct}%)`;
+  }
+
+  if (!list) return;
+
+  if (!tasks.length) {
+    list.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px;">No targets set for today. Add your first goal above!</p>`;
+    return;
+  }
+
+  list.innerHTML = tasks.map(task => `
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 8px; transition: all 0.2s ease;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="togglePlannerTarget('${task.id}')" style="width: 18px; height: 18px; accent-color: var(--color-teal); cursor: pointer;">
+        <div>
+          <span style="font-size: 13.5px; color: ${task.completed ? 'var(--text-muted)' : '#fff'}; text-decoration: ${task.completed ? 'line-through' : 'none'}; font-weight: 500;">
+            ${task.text}
+          </span>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <span style="font-size: 10px; padding: 1px 6px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--color-teal);">${task.category}</span>
+            <span style="font-size: 10px; color: var(--text-muted);">⏱️ ${task.time}</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="deletePlannerTarget('${task.id}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;" title="Delete Task">
+        <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+      </button>
+    </div>
+  `).join("");
+
+  lucide.createIcons();
+}
+
+function addPlannerTarget() {
+  const textInput = document.getElementById("planner-input-text");
+  const catInput = document.getElementById("planner-input-category");
+  const timeInput = document.getElementById("planner-input-time");
+
+  const text = textInput ? textInput.value.trim() : "";
+  if (!text) return;
+
+  const newTask = {
+    id: "task-" + Date.now(),
+    text,
+    category: catInput ? catInput.value : "Roadmap",
+    time: timeInput ? timeInput.value : "45m",
+    completed: false,
+    date: new Date().toDateString()
+  };
+
+  state.dailyTasks.push(newTask);
+  saveStateToLocalStorage();
+  if (textInput) textInput.value = "";
+  renderDailyPlanner();
+  showToast("Learning target added to daily schedule!", "success");
+}
+
+function togglePlannerTarget(taskId) {
+  const task = state.dailyTasks.find(t => t.id === taskId);
+  if (task) {
+    task.completed = !task.completed;
+    saveStateToLocalStorage();
+    renderDailyPlanner();
+  }
+}
+
+function deletePlannerTarget(taskId) {
+  state.dailyTasks = state.dailyTasks.filter(t => t.id !== taskId);
+  saveStateToLocalStorage();
+  renderDailyPlanner();
+}
+
+// Pomodoro Timer Logic
+function updatePomodoroDisplay() {
+  const display = document.getElementById("pomodoro-timer-display");
+  if (!display) return;
+  const mins = Math.floor(state.pomodoroSeconds / 60);
+  const secs = state.pomodoroSeconds % 60;
+  display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function togglePomodoro() {
+  const btn = document.getElementById("pomodoro-start-btn");
+  if (state.pomodoroRunning) {
+    // Pause
+    clearInterval(state.pomodoroTimerId);
+    state.pomodoroRunning = false;
+    if (btn) btn.innerText = "Resume Sprint";
+  } else {
+    // Start
+    state.pomodoroRunning = true;
+    if (btn) btn.innerText = "Pause Sprint";
+    state.pomodoroTimerId = setInterval(() => {
+      if (state.pomodoroSeconds > 0) {
+        state.pomodoroSeconds--;
+        updatePomodoroDisplay();
+      } else {
+        clearInterval(state.pomodoroTimerId);
+        state.pomodoroRunning = false;
+        state.pomodoroSeconds = 1500;
+        updatePomodoroDisplay();
+        if (btn) btn.innerText = "Start Sprint";
+        showToast("🎉 Pomodoro Sprint Complete! Take a 5-minute break.", "success");
+      }
+    }, 1000);
+  }
+}
+
+function resetPomodoro() {
+  clearInterval(state.pomodoroTimerId);
+  state.pomodoroRunning = false;
+  state.pomodoroSeconds = 1500;
+  const btn = document.getElementById("pomodoro-start-btn");
+  if (btn) btn.innerText = "Start Sprint";
+  updatePomodoroDisplay();
+}

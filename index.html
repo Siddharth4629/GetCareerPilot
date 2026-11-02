@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GetCareerPilot - Cyber Career Bot</title>
+  <title>GetCareerPilot - AI Career Discovery & Development Platform</title>
   <!-- Google Meta Tags & SEO -->
   <meta name="description" content="GetCareerPilot analyzes your skills, detects resume gaps, customizes learning roadmaps, schedules weekly tasks, and matches you with career mentors using Gemini AI.">
   <meta name="robots" content="index, follow">
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/styles.css?v=2026_5">
+  <link rel="stylesheet" href="css/styles.css?v=2026_9">
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Client-side PDF & DOCX Document Extraction Engines -->
@@ -37,7 +37,7 @@
           <i data-lucide="compass"></i>
         </div>
         <h2 class="logo-title">GetCareerPilot</h2>
-        <p class="logo-subtitle" id="auth-subtitle">Your Intelligent Career Growth Companion</p>
+        <p class="logo-subtitle" id="auth-subtitle">Discover. Explore. Plan. Achieve.</p>
         <div id="db-status-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 10px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--color-teal);">
           <span id="db-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-teal); box-shadow: 0 0 8px var(--color-teal);"></span>
           <span id="db-status-text">Database Connected</span>
@@ -59,6 +59,21 @@
         <div class="input-group" id="auth-name-group" style="display: none;">
           <label class="input-label" for="auth-username">User Profile Name</label>
           <input type="text" id="auth-username" class="input-field" placeholder="e.g., Jane Doe">
+        </div>
+
+        
+        <!-- Academic Level / Stage (shown on Sign Up) -->
+        <div class="input-group" id="auth-stage-group" style="display: none;">
+          <label class="input-label" for="auth-stage">Current Academic Stage</label>
+          <select id="auth-stage" class="input-field" style="background: rgba(15, 23, 42, 0.8); color: var(--text-primary);">
+            <option value="Class 9">Class 9 (School - Pre-Stream Selection)</option>
+            <option value="Class 10" selected>Class 10 (School - Stream Selection)</option>
+            <option value="Class 11">Class 11 (Higher Secondary - Course Exploration)</option>
+            <option value="Class 12">Class 12 (Higher Secondary - Entrances & Colleges)</option>
+            <option value="Undergraduate">Undergraduate (College Degree)</option>
+            <option value="Postgraduate">Postgraduate / Master's</option>
+            <option value="Graduate">Graduate / Job Seeker</option>
+          </select>
         </div>
 
         <!-- Email Address -->
@@ -122,24 +137,48 @@
         </button>
       </div>
 
-      <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
         <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')" data-tooltip="Dashboard" title="Dashboard">
           <a href="#"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
         </li>
+        <li id="nav-assessment" class="sidebar-item" onclick="switchTab('assessment')" data-tooltip="Aptitude & Interest Quiz" title="Aptitude & Interest Quiz">
+          <a href="#"><i data-lucide="sparkles"></i><span>AI Aptitude Quiz</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        </li>
+        <li id="nav-explorer" class="sidebar-item" onclick="switchTab('explorer')" data-tooltip="12 Industries Explorer" title="12 Industries Explorer">
+          <a href="#"><i data-lucide="compass"></i><span>Career Explorer</span></a>
+        </li>
+
+        <!-- Tier A: School Students (Class 9 & 10) -->
+        <li id="nav-stream-guide" class="sidebar-item stage-tag-school" onclick="switchTab('stream-guide')" data-tooltip="Stream & Subject Guide" title="Stream & Subject Guide (Class 9-10)">
+          <a href="#"><i data-lucide="layers"></i><span>Stream Guide</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; margin-left: auto; border: 1px solid rgba(56, 189, 248, 0.3);">9-10</span></a>
+        </li>
+
+        <!-- Tier B: Higher Secondary (Class 11 & 12) -->
+        <li id="nav-college-explorer" class="sidebar-item stage-tag-higher-sec" onclick="switchTab('college-explorer')" data-tooltip="College & Exams" title="College & Exams (Class 11-12)">
+          <a href="#"><i data-lucide="graduation-cap"></i><span>Colleges & Exams</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; margin-left: auto; border: 1px solid rgba(245, 158, 11, 0.3);">11-12</span></a>
+        </li>
+
+        <!-- Tier C: College & Career Builders -->
         <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')" data-tooltip="AI Career Advisor" title="AI Career Advisor">
-          <a href="#"><i data-lucide="compass"></i><span>AI Career Advisor</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+          <a href="#"><i data-lucide="crosshair"></i><span>AI Career Matches</span></a>
         </li>
         <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')" data-tooltip="Roadmap Builder" title="Roadmap Builder">
           <a href="#"><i data-lucide="route"></i><span>Roadmap Builder</span></a>
         </li>
         <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')" data-tooltip="Skill Gap Analyzer" title="Skill Gap Analyzer">
-          <a href="#"><i data-lucide="sparkles"></i><span>Skill Gap Analyzer</span></a>
+          <a href="#"><i data-lucide="file-text"></i><span>Resume Analyzer</span></a>
+        </li>
+        <li id="nav-mock-interview" class="sidebar-item" onclick="switchTab('mock-interview')" data-tooltip="AI Mock Interview" title="AI Mock Interview">
+          <a href="#"><i data-lucide="mic"></i><span>Mock Interview</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        </li>
+        <li id="nav-planner" class="sidebar-item" onclick="switchTab('planner')" data-tooltip="Daily Learning Planner" title="Daily Learning Planner">
+          <a href="#"><i data-lucide="calendar-check"></i><span>Daily Planner</span></a>
         </li>
         <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')" data-tooltip="AI Mentor Chat" title="AI Mentor Chat">
           <a href="#"><i data-lucide="messages-square"></i><span>AI Mentor Chat</span></a>
         </li>
         <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')" data-tooltip="Tracker & Jobs" title="Tracker & Jobs">
-          <a href="#"><i data-lucide="check-square"></i><span>Tracker & Jobs</span></a>
+          <a href="#"><i data-lucide="check-square"></i><span>Job Opportunities</span></a>
         </li>
         <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')" data-tooltip="Settings" title="Settings">
           <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
@@ -172,20 +211,484 @@
             <p id="view-subtitle">Monitor your professional growth and skills metrics</p>
           </div>
         </div>
-        <div class="header-actions">
-          <button class="btn btn-secondary" onclick="switchTab('advisor')" style="padding: 10px 16px; font-size: 14px; border-color: rgba(99, 102, 241, 0.4);">
-            <i data-lucide="compass" style="width: 16px; height: 16px; color: var(--color-teal);"></i> Career Advisor
+        <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+          <!-- Stage Selector Dropdown -->
+          <div style="display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border-glass); padding: 4px 10px; border-radius: 10px;">
+            <i data-lucide="graduation-cap" style="width: 16px; height: 16px; color: var(--color-teal);"></i>
+            <select id="stage-select-global" onchange="onStageChange(this.value)" style="background: transparent; border: none; color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer; outline: none;">
+              <option value="Class 10" style="background: #0f172a;">🎓 Class 9-10 (School)</option>
+              <option value="Class 12" style="background: #0f172a;">🏛️ Class 11-12 (Higher Sec)</option>
+              <option value="College" selected style="background: #0f172a;">💼 College & Graduate</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary" onclick="switchTab('assessment')" style="padding: 8px 14px; font-size: 13px; border-color: rgba(99, 102, 241, 0.4);">
+            <i data-lucide="sparkles" style="width: 15px; height: 15px; color: var(--color-teal);"></i> Aptitude Quiz
           </button>
-          <button class="btn btn-secondary" onclick="switchTab('settings')" style="padding: 10px 16px; font-size: 14px;">
-            <i data-lucide="key" style="width: 16px; height: 16px;"></i> API Key
+          <button class="btn btn-secondary" onclick="switchTab('advisor')" style="padding: 8px 14px; font-size: 13px;">
+            <i data-lucide="compass" style="width: 15px; height: 15px; color: var(--color-teal);"></i> Matches
           </button>
-          <button class="btn btn-pink" onclick="switchTab('generator')" style="padding: 10px 16px; font-size: 14px;">
-            <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Build Roadmap
+          <button class="btn btn-pink" onclick="switchTab('generator')" style="padding: 8px 14px; font-size: 13px;">
+            <i data-lucide="plus" style="width: 15px; height: 15px;"></i> Roadmap
           </button>
         </div>
       </header>
 
       <!-- ========================================== -->
+      
+      <!-- ========================================== -->
+      <!-- TAB: AI INTEREST & APTITUDE ASSESSMENT     -->
+      <!-- ========================================== -->
+      <section id="tab-assessment" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.09), rgba(20, 184, 166, 0.05));">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--color-indigo); display: flex; align-items: center; justify-content: center; color: var(--color-teal);">
+                <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">AI Interest & Aptitude Evaluation</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+                  10 comprehensive questions mapping your cognitive strengths, Holland RIASEC work styles, and recommended career tracks.
+                </p>
+              </div>
+            </div>
+            <div id="quiz-progress-badge" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: rgba(20, 184, 166, 0.15); color: var(--color-teal); border: 1px solid rgba(20, 184, 166, 0.3);">
+              Question 1 of 10
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; margin-top: 18px; overflow: hidden;">
+            <div id="quiz-progress-bar" style="width: 10%; height: 100%; background: linear-gradient(90deg, var(--color-indigo), var(--color-teal)); border-radius: 10px; transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-active-card" class="card col-12" style="padding: 30px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <span id="quiz-scenario-tag" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--color-teal); background: rgba(20, 184, 166, 0.1); padding: 3px 10px; border-radius: 6px;">
+              Scenario
+            </span>
+          </div>
+          <h2 id="quiz-question-title" style="font-family: var(--font-heading); font-size: 20px; font-weight: 600; color: #fff; line-height: 1.4; margin-bottom: 24px;">
+            Question Loading...
+          </h2>
+          
+          <div id="quiz-options-list" style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-glass);">
+            <button id="quiz-prev-btn" class="btn btn-secondary" onclick="prevQuizQuestion()" style="padding: 8px 18px; font-size: 13px; display: none;">
+              <i data-lucide="chevron-left"></i> Previous
+            </button>
+            <div style="margin-left: auto; display: flex; gap: 12px;">
+              <button id="quiz-next-btn" class="btn btn-pink" onclick="nextQuizQuestion()" style="padding: 10px 24px; font-size: 14px;">
+                Next Question <i data-lucide="chevron-right"></i>
+              </button>
+              <button id="quiz-submit-btn" class="btn btn-pink" onclick="submitAssessment()" style="padding: 10px 24px; font-size: 14px; display: none;">
+                Generate Profile Analysis <i data-lucide="sparkles"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Results Container (Hidden by default) -->
+        <div id="quiz-results-container" style="display: none;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: CAREER EXPLORER (12 Industries)       -->
+      <!-- ========================================== -->
+      <section id="tab-explorer" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff;">Universal Career Explorer</h2>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                Discover top career paths across 12 major sectors: Science, Medicine, Finance, Law, Tech, Design, Arts, and Civil Services.
+              </p>
+            </div>
+            <!-- Search bar -->
+            <div style="position: relative; width: 320px; max-width: 100%;">
+              <input type="text" id="explorer-search-input" oninput="filterCareers()" placeholder="Search careers, skills, degrees..." class="input-field" style="padding-left: 38px; font-size: 13px;">
+              <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+            </div>
+          </div>
+
+          <!-- Domain Filter Chips -->
+          <div id="explorer-domain-chips" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+
+        <!-- Career Cards Grid -->
+        <div id="explorer-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: STREAM & SUBJECT GUIDE (Class 9-10)   -->
+      <!-- ========================================== -->
+      <section id="tab-stream-guide" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 24px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(99, 102, 241, 0.05));">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: #38bdf8;">
+                <i data-lucide="layers" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">Stream & Subject Selection Guide (Class 9 & 10)</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+                  Understand the academic rigor, subject combinations, pros, and direct career paths for every stream before choosing your 11th track.
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-secondary" onclick="switchTab('assessment')" style="padding: 8px 16px; font-size: 13px;">
+              <i data-lucide="sparkles"></i> Take Stream Aptitude Quiz
+            </button>
+          </div>
+        </div>
+
+        <!-- Side-by-Side Comparison Matrix -->
+        <div class="card col-12" style="margin-bottom: 24px; overflow-x: auto; padding: 20px;">
+          <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="table" style="width: 18px; height: 18px; color: var(--color-teal);"></i> Stream Comparison Matrix
+          </h4>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 12px; text-transform: uppercase;">
+                <th style="padding: 12px 14px;">Stream Track</th>
+                <th style="padding: 12px 14px;">Core Focus</th>
+                <th style="padding: 12px 14px;">Workload</th>
+                <th style="padding: 12px 14px;">Math Intensity</th>
+                <th style="padding: 12px 14px;">Key Entrance Exams</th>
+                <th style="padding: 12px 14px;">Top Careers</th>
+              </tr>
+            </thead>
+            <tbody id="stream-matrix-tbody">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Detailed Stream Cards -->
+        <div id="stream-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: COLLEGE & SCHOLARSHIP EXPLORER        -->
+      <!-- ========================================== -->
+      <section id="tab-college-explorer" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff;">College & Scholarship Explorer (Class 11-12)</h2>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                Explore 25+ undergraduate degrees, top institutions, fee structures, national entrance exams, and central scholarship schemes.
+              </p>
+            </div>
+            <!-- Sub tabs: Degrees vs Exams & Scholarships -->
+            <div style="display: flex; background: rgba(15, 23, 42, 0.7); padding: 4px; border-radius: 8px; border: 1px solid var(--border-glass);">
+              <button id="college-subtab-degrees" class="btn" onclick="setCollegeSubTab('degrees')" style="padding: 6px 16px; font-size: 13px;">
+                🎓 Degrees Directory (25+)
+              </button>
+              <button id="college-subtab-exams" class="btn btn-secondary" onclick="setCollegeSubTab('exams')" style="padding: 6px 16px; font-size: 13px;">
+                🏛️ Entrance Exams & Scholarships
+              </button>
+            </div>
+          </div>
+
+          <!-- Search and filters -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="position: relative; flex: 1; min-width: 260px;">
+              <input type="text" id="college-search-input" oninput="filterColleges()" placeholder="Filter degrees, exams, institutions..." class="input-field" style="padding-left: 38px; font-size: 13px;">
+              <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+            </div>
+            <select id="college-stream-filter" onchange="filterColleges()" class="input-field" style="width: auto; font-size: 13px;">
+              <option value="all">All Academic Streams</option>
+              <option value="Science (PCM)">Science (PCM)</option>
+              <option value="Science (PCB)">Science (PCB)</option>
+              <option value="Commerce">Commerce</option>
+              <option value="All Streams">Open to All Streams</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Degrees View Container -->
+        <div id="college-degrees-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+
+        <!-- Exams & Scholarships Container -->
+        <div id="college-exams-container" style="display: none; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: AI MOCK INTERVIEW SIMULATOR           -->
+      <!-- ========================================== -->
+      <section id="tab-mock-interview" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(236, 72, 153, 0.06));">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--color-indigo); display: flex; align-items: center; justify-content: center; color: var(--color-pink);">
+                <i data-lucide="mic" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">AI Mock Interview Cockpit</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+                  Real-time technical, scenario, and behavioral interview simulation across all 12 industries with instant scoring and model answers.
+                </p>
+              </div>
+            </div>
+            <!-- Domain selector -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12.5px; color: var(--text-muted);">Target Domain:</span>
+              <select id="mock-domain-select" onchange="onMockDomainChange(this.value)" class="input-field" style="width: auto; font-size: 13px; font-weight: 600;">
+                <option value="engineering-tech">Engineering & Software</option>
+                <option value="commerce-finance">Commerce & Finance</option>
+                <option value="medical-healthcare">Medical & Healthcare</option>
+                <option value="law-legal">Law & Legal Services</option>
+                <option value="business-management">Business & Management</option>
+                <option value="design-creative">Design & Creative Arts</option>
+                <option value="science-research">Science & Research</option>
+                <option value="government-civil">Government & Civil Services</option>
+                <option value="arts-humanities">Arts & Humanities</option>
+                <option value="education-teaching">Education & Teaching</option>
+                <option value="sports-fitness">Sports & Fitness</option>
+                <option value="agriculture-environment">Agriculture & Environment</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start;">
+          <!-- Interview Question & Input Area -->
+          <div class="card" style="padding: 26px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span id="mock-type-badge" style="font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: rgba(99, 102, 241, 0.2); color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.4);">
+                Technical Question
+              </span>
+              <span id="mock-difficulty-badge" style="font-size: 11px; font-weight: 600; color: var(--text-muted);">
+                Difficulty: Medium
+              </span>
+            </div>
+
+            <h3 id="mock-question-text" style="font-family: var(--font-heading); font-size: 17px; font-weight: 600; color: #fff; line-height: 1.45; margin-bottom: 16px;">
+              Loading Question...
+            </h3>
+
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px 14px; margin-bottom: 18px;">
+              <div style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">
+                💡 Expected Key Points & Concepts:
+              </div>
+              <ul id="mock-expected-points" style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <label class="input-label" for="mock-answer-input" style="display: flex; justify-content: space-between;">
+              <span>Your Spoken / Written Response:</span>
+              <span id="mock-word-count" style="font-size: 11px; color: var(--text-muted);">0 words</span>
+            </label>
+            <textarea id="mock-answer-input" oninput="updateMockWordCount()" class="input-field" rows="6" placeholder="Type or paste your answer here... (Tip: Follow the STAR method - Situation, Task, Action, Result)"></textarea>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary" onclick="fillMockSampleAnswer()" style="padding: 8px 14px; font-size: 12px;">
+                  <i data-lucide="edit-3"></i> Fill Sample Answer
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadNextMockQuestion()" style="padding: 8px 14px; font-size: 12px;">
+                  <i data-lucide="shuffle"></i> Next Question
+                </button>
+              </div>
+              <button id="mock-evaluate-btn" class="btn btn-pink" onclick="submitMockInterview()" style="padding: 9px 22px; font-size: 13.5px;">
+                <i data-lucide="sparkles"></i> Evaluate with AI
+              </button>
+            </div>
+          </div>
+
+          <!-- Evaluation Results Cockpit -->
+          <div class="card" id="mock-results-card" style="padding: 26px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid var(--border-glass); padding-bottom: 14px;">
+              <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="gauge" style="width: 18px; height: 18px; color: var(--color-teal);"></i> AI Interview Scorecard
+              </h4>
+              <span id="mock-status-pill" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.06); color: var(--text-muted);">
+                Awaiting Response
+              </span>
+            </div>
+
+            <!-- Score Display -->
+            <div id="mock-score-section" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px; padding: 16px; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--border-glass);">
+              <div id="mock-score-gauge" style="width: 64px; height: 64px; border-radius: 50%; background: conic-gradient(var(--color-teal) 0deg, rgba(255,255,255,0.1) 0deg); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #fff;">
+                <span id="mock-score-val">--</span>
+              </div>
+              <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Performance Rating</div>
+                <div id="mock-score-label" style="font-family: var(--font-heading); font-size: 15px; font-weight: 600; color: var(--color-teal); margin-top: 2px;">
+                  Submit answer to score
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback Summary -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px;">Evaluation Feedback:</div>
+              <p id="mock-feedback-text" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                Input your response on the left and click "Evaluate with AI" to receive an in-depth breakdown of strengths, missing keywords, and recruiter impressions.
+              </p>
+            </div>
+
+            <!-- Strengths List -->
+            <div style="margin-bottom: 14px;">
+              <div style="font-size: 12px; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="check-circle-2" style="width: 14px; height: 14px;"></i> Strengths & Highlights:
+              </div>
+              <ul id="mock-strengths-list" style="margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                <li>Clear technical vocabulary</li>
+                <li>Addressed core question premise</li>
+              </ul>
+            </div>
+
+            <!-- Gaps to Improve -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i> Areas to Improve:
+              </div>
+              <ul id="mock-improvements-list" style="margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                <li>Include measurable metrics and concrete outcomes</li>
+                <li>Elaborate on real-world troubleshooting steps</li>
+              </ul>
+            </div>
+
+            <!-- Recommended Model Answer -->
+            <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; padding: 14px;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--color-teal); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> Benchmark Model Answer:
+              </div>
+              <p id="mock-model-answer" style="font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin: 0;">
+                Click evaluate to reveal the benchmark recruiter response.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: DAILY LEARNING PLANNER & HABIT TRACKER-->
+      <!-- ========================================== -->
+      <section id="tab-planner" class="tab-view">
+        <div class="card col-12" style="margin-bottom: 24px; padding: 22px; background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(99, 102, 241, 0.06));">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(20, 184, 166, 0.15); border: 1px solid var(--color-teal); display: flex; align-items: center; justify-content: center; color: var(--color-teal);">
+                <i data-lucide="calendar-check" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">Daily Learning Planner & Habit Tracker</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+                  Set daily micro-milestones, maintain study streaks, and execute focused learning sprints.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Streak counter badge -->
+            <div style="display: flex; align-items: center; gap: 10px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-glass); padding: 8px 16px; border-radius: 12px;">
+              <span style="font-size: 22px;">🔥</span>
+              <div>
+                <div id="planner-streak-count" style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: #fff;">5 Days</div>
+                <div style="font-size: 10.5px; text-transform: uppercase; color: var(--color-teal); font-weight: 700;">Current Study Streak</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: start;">
+          <!-- Left: Task Checklist & Add Target -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff; margin: 0;">
+                Today's Learning Targets
+              </h4>
+              <span id="planner-completion-rate" style="font-size: 12px; font-weight: 700; color: var(--color-teal);">
+                0 of 0 Completed (0%)
+              </span>
+            </div>
+
+            <!-- Add Target Bar -->
+            <form id="planner-add-form" onsubmit="event.preventDefault(); addPlannerTarget();" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+              <input type="text" id="planner-input-text" placeholder="Add study target (e.g. Master Linear Regression week 2 notes)..." class="input-field" style="flex: 2; min-width: 200px; font-size: 13px;" required>
+              <select id="planner-input-category" class="input-field" style="width: auto; font-size: 12px;">
+                <option value="Roadmap">Roadmap</option>
+                <option value="Exam Prep">Exam Prep</option>
+                <option value="Project">Project</option>
+                <option value="Reading">Reading</option>
+              </select>
+              <select id="planner-input-time" class="input-field" style="width: auto; font-size: 12px;">
+                <option value="30m">30 mins</option>
+                <option value="45m" selected>45 mins</option>
+                <option value="1h">1 hour</option>
+                <option value="2h">2 hours</option>
+              </select>
+              <button type="submit" class="btn btn-pink" style="padding: 8px 16px; font-size: 13px;">
+                <i data-lucide="plus"></i> Add
+              </button>
+            </form>
+
+            <!-- Tasks List -->
+            <div id="planner-task-list" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Right: Pomodoro Sprint & Stats -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Pomodoro Timer Card -->
+            <div class="card" style="padding: 24px; text-align: center;">
+              <h4 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="timer" style="width: 16px; height: 16px; color: var(--color-pink);"></i> Focus Sprint (Pomodoro)
+              </h4>
+              <div id="pomodoro-timer-display" style="font-family: var(--font-heading); font-size: 42px; font-weight: 800; color: #fff; letter-spacing: 2px; margin: 12px 0;">
+                25:00
+              </div>
+              <div style="display: flex; justify-content: center; gap: 10px;">
+                <button id="pomodoro-start-btn" class="btn btn-pink" onclick="togglePomodoro()" style="padding: 8px 20px; font-size: 13px;">
+                  Start Sprint
+                </button>
+                <button class="btn btn-secondary" onclick="resetPomodoro()" style="padding: 8px 16px; font-size: 13px;">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Weekly Momentum Card -->
+            <div class="card" style="padding: 22px;">
+              <h4 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 14px;">
+                Weekly Study Momentum
+              </h4>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
+                <span>Weekly Goal: 12 Hours</span>
+                <span id="planner-weekly-hours" style="color: var(--color-teal); font-weight: 700;">8.5 Hours Logged</span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; margin-bottom: 16px;">
+                <div style="width: 70%; height: 100%; background: linear-gradient(90deg, var(--color-indigo), var(--color-teal)); border-radius: 10px;"></div>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 0;">
+                Tip: Completing just 45 minutes of deliberate practice daily outperforms weekend cramming by 3.2x in long-term skill retention.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- TAB A: DASHBOARD VIEW                      -->
       <!-- ========================================== -->
       <section id="tab-dashboard" class="tab-view active">
@@ -1160,12 +1663,39 @@
 
   </div>
 
+  
+  <!-- ========================================== -->
+  <!-- CAREER EXPLORER DETAIL MODAL               -->
+  <!-- ========================================== -->
+  <div id="career-detail-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="career-modal-icon-wrap" style="width: 42px; height: 42px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.3);">
+            <i data-lucide="compass" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3 id="career-modal-title" style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">Career Title</h3>
+            <p id="career-modal-domain" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Domain</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeCareerDetailModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div id="career-modal-body" style="padding: 20px 0;">
+        <!-- Dynamically populated by app.js -->
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="js/data-templates.js?v=2026_8"></script>
-  <script src="js/resume-analyzer.js?v=2026_8"></script>
-  <script src="js/ai-service.js?v=2026_8"></script>
-  <script src="js/api-client.js?v=2026_8"></script>
-  <script src="js/app.js?v=2026_8"></script>
+  <script src="js/data-templates.js?v=2026_9"></script>
+  <script src="js/resume-analyzer.js?v=2026_9"></script>
+  <script src="js/ai-service.js?v=2026_9"></script>
+  <script src="js/api-client.js?v=2026_9"></script>
+  <script src="js/app.js?v=2026_9"></script>
   <!-- ========================================== -->
   <!-- AI CAREER GUIDANCE & INTERVIEW PREP MODAL   -->
   <!-- ========================================== -->

@@ -894,6 +894,267 @@ For a **${careerName}**, leaders and recruiters are prioritizing:
 
 What specific topic or challenge would you like to dive into today?`;
   }
+
+  // ==========================================
+  // 6. AI MOCK INTERVIEW EVALUATOR (ALL 12 DOMAINS)
+  // ==========================================
+
+  /**
+   * Evaluates candidate's written or spoken interview answer against domain rubrics.
+   */
+  static async evaluateMockInterviewAnswer(domain, question, answer, apiKey = "") {
+    if (!answer || answer.trim().length < 5) {
+      return {
+        score: 25,
+        strengths: ["Attempted response"],
+        areasToImprove: ["Answer is too brief to evaluate. Provide concrete details and examples."],
+        feedback: "Please provide a more detailed answer demonstrating your thought process and domain knowledge.",
+        modelAnswer: question.sampleAnswer || "Structure your answer using the STAR method: Situation, Task, Action, and Result."
+      };
+    }
+
+    if (apiKey && apiKey.trim() !== "") {
+      try {
+        const prompt = `You are an Expert Technical & Behavioral Interviewer in the domain of "${domain}".
+Evaluate the following candidate's answer to this interview question:
+
+Question: "${question.question}"
+Question Type: ${question.type || "Technical"}
+Expected Key Points: ${(question.expectedKeyPoints || []).join(", ")}
+
+Candidate's Answer:
+"${answer}"
+
+Evaluate the answer thoroughly and return ONLY a valid JSON object matching this schema:
+{
+  "score": number (between 0 and 100),
+  "feedback": "string (2-3 sentences concise professional evaluation)",
+  "strengths": ["string (1-3 distinct positive elements)"],
+  "areasToImprove": ["string (1-3 actionable gaps or missing depth)"],
+  "modelAnswer": "string (the ideal model answer the candidate should learn from)"
+}`;
+
+        const response = await fetch(`${this.getGeminiURL()}?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
+              temperature: 0.3
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            return JSON.parse(text);
+          }
+        }
+      } catch (err) {
+        console.warn("Gemini Mock Interview API failed, using intelligent fallback rubric:", err);
+      }
+    }
+
+    // Intelligent Offline Scoring Rubric
+    return this.evaluateMockInterviewOffline(domain, question, answer);
+  }
+
+  static evaluateMockInterviewOffline(domain, question, answer) {
+    const text = answer.trim();
+    const words = text.split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
+
+    let score = 50;
+    const strengths = [];
+    const areasToImprove = [];
+
+    // Length assessment
+    if (wordCount >= 40 && wordCount <= 180) {
+      score += 15;
+      strengths.push("Well-proportioned response length that maintains interviewer attention.");
+    } else if (wordCount < 25) {
+      score -= 15;
+      areasToImprove.push("Answer is rather brief. Expand on the rationale and concrete steps taken.");
+    } else if (wordCount > 220) {
+      score -= 5;
+      areasToImprove.push("Response is quite lengthy. Practice concise delivery to keep answers punchy.");
+    }
+
+    // Key points match
+    const expected = question.expectedKeyPoints || [];
+    let matchedCount = 0;
+    expected.forEach(kp => {
+      const tokens = kp.toLowerCase().split(/\W+/).filter(t => t.length > 3);
+      const hasToken = tokens.some(tok => text.toLowerCase().includes(tok));
+      if (hasToken) matchedCount++;
+    });
+
+    if (expected.length > 0) {
+      const matchRatio = matchedCount / expected.length;
+      score += Math.round(matchRatio * 25);
+      if (matchRatio >= 0.5) {
+        strengths.push(`Identified key industry concepts (${matchedCount}/${expected.length} core themes addressed).`);
+      } else {
+        areasToImprove.push(`Incorporate core domain concepts such as: ${expected.slice(0, 2).join(", ")}.`);
+      }
+    }
+
+    // Structure & Framing
+    const hasStructureWords = /because|for example|specifically|resulted in|led to|first|second|finally|situation|task|action/i.test(text);
+    if (hasStructureWords) {
+      score += 10;
+      strengths.push("Logical structure with causal links and illustrative examples.");
+    } else {
+      areasToImprove.push("Structure your reasoning using markers like 'For example', 'Specifically', and 'As a result'.");
+    }
+
+    // Final score clamping
+    score = Math.max(35, Math.min(96, score));
+
+    return {
+      score,
+      feedback: score >= 80 
+        ? "Excellent response! Clear technical precision, confident framing, and direct relevance." 
+        : score >= 65 
+        ? "Solid answer with good foundations. Adding more quantifiable outcomes will make it stand out." 
+        : "Fair attempt. Focus on incorporating specific industry terminology and real-world examples.",
+      strengths: strengths.length ? strengths : ["Demonstrated familiarity with the topic."],
+      areasToImprove: areasToImprove.length ? areasToImprove : ["Add concrete metrics or specific project references."],
+      modelAnswer: question.sampleAnswer || "State the premise clearly, provide a concrete real-world example, and conclude with the measurable outcome."
+    };
+  }
+
+  // ==========================================
+  // 7. AI INTEREST & APTITUDE ASSESSMENT ENGINE
+  // ==========================================
+
+  /**
+   * Analyzes student assessment responses across 10 RIASEC questions.
+   * Generates personality archetype, top sectors, and stage-tailored recommendations.
+   */
+  static analyzeInterestAssessment(answers, stage = "Class 10") {
+    // Domain points accumulator
+    const domainScores = {
+      "science-research": 0,
+      "medical-healthcare": 0,
+      "commerce-finance": 0,
+      "business-management": 0,
+      "arts-humanities": 0,
+      "law-legal": 0,
+      "engineering-tech": 0,
+      "design-creative": 0,
+      "education-teaching": 0,
+      "sports-fitness": 0,
+      "government-civil": 0,
+      "agriculture-environment": 0
+    };
+
+    const riasecScores = {
+      Realistic: 0,
+      Investigative: 0,
+      Artistic: 0,
+      Social: 0,
+      Enterprising: 0,
+      Conventional: 0
+    };
+
+    const traits = [];
+
+    // Accumulate points
+    answers.forEach(ans => {
+      if (ans.points) {
+        Object.entries(ans.points).forEach(([dom, pts]) => {
+          if (domainScores[dom] !== undefined) domainScores[dom] += pts;
+        });
+      }
+      if (ans.riasec) {
+        ans.riasec.split("/").forEach(r => {
+          const key = r.trim();
+          if (riasecScores[key] !== undefined) riasecScores[key] += 2;
+        });
+      }
+      if (ans.trait) traits.push(ans.trait);
+    });
+
+    // Rank domains
+    const sortedDomains = Object.entries(domainScores)
+      .sort((a, b) => b[1] - a[1])
+      .map(([id, score]) => ({ id, score }));
+
+    const topDomains = sortedDomains.slice(0, 3);
+
+    // Rank RIASEC traits
+    const sortedRiasec = Object.entries(riasecScores)
+      .sort((a, b) => b[1] - a[1])
+      .map(([trait, score]) => ({ trait, score }));
+
+    const primaryRiasec = sortedRiasec[0]?.trait || "Investigative";
+    const secondaryRiasec = sortedRiasec[1]?.trait || "Realistic";
+
+    // Archetype definitions
+    const archetypes = {
+      "Investigative": { title: "The Deep Thinker & Analyst", desc: "Driven by curiosity, analytical precision, research, and solving complex problems with scientific or quantitative rigor." },
+      "Artistic": { title: "The Creative Visionary", desc: "Thrives in expressive, original environments, translating abstract concepts into compelling visual, literary, or experiential forms." },
+      "Realistic": { title: "The Hands-on Builder & Technologist", desc: "Practical, action-oriented, and kinesthetic. Enjoys building systems, working with physical materials, code, or outdoor environments." },
+      "Social": { title: "The Empathetic Catalyst & Mentor", desc: "Dedicated to human betterment, education, healing, counseling, and bringing people together to solve societal issues." },
+      "Enterprising": { title: "The Strategic Leader & Pioneer", desc: "Energetic, persuasive, and ambitious. Natural leader drawn to market opportunities, leadership, management, and high-impact growth." },
+      "Conventional": { title: "The Methodical Organizer & Strategist", desc: "Organized, detail-oriented, and dependable. Excels at financial systems, corporate structures, data integrity, and compliance." }
+    };
+
+    const archetype = archetypes[primaryRiasec] || archetypes["Investigative"];
+
+    // Stage-specific guidance
+    let stageAdvice = "";
+    let recommendedStreamsOrDegrees = [];
+
+    if (stage === "Class 9" || stage === "Class 10") {
+      stageAdvice = "Focus on exploring subject strengths before locking in your Class 11 stream. Balance board exams with hands-on hobby projects.";
+      if (["engineering-tech", "science-research"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["Science (PCM) with Computer Science", "Science (PCM) with Economics"];
+      } else if (["medical-healthcare", "agriculture-environment"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["Science (PCB) with Psychology", "Science (PCMB) for dual eligibility"];
+      } else if (["commerce-finance", "business-management"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["Commerce with Applied Mathematics", "Commerce with Entrepreneurship"];
+      } else if (["law-legal", "arts-humanities", "government-civil"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["Humanities & Social Sciences with Legal Studies / Pol Sci", "Commerce w/ Math"];
+      } else {
+        recommendedStreamsOrDegrees = ["Vocational & Applied Arts", "Humanities with Fine Arts/Design"];
+      }
+    } else if (stage === "Class 11" || stage === "Class 12") {
+      stageAdvice = "Align your 12th board preparation with targeted entrance exams. Start mapping out scholarship timelines and top university cutoff criteria.";
+      if (["engineering-tech"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["B.Tech (Computer Science / AI)", "BCA / Integrated MCA (CUET)"];
+      } else if (["medical-healthcare"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["MBBS / BDS (NEET UG)", "B.Pharm / B.Sc Nursing"];
+      } else if (["commerce-finance"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["B.Com (Honours) at top Central Univs", "CA Foundation (ICAI)", "IPMAT (IIM Integrated Management)"];
+      } else if (["law-legal"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["BA LLB / BBA LLB (5-Year Integrated via CLAT)"];
+      } else if (["design-creative"].includes(topDomains[0].id)) {
+        recommendedStreamsOrDegrees = ["B.Des (NID DAT / UCEED)", "B.F.A / Animation"];
+      } else {
+        recommendedStreamsOrDegrees = ["BA (Economics / Psychology via CUET)", "BBA / BMS (NPAT / SET)"];
+      }
+    } else {
+      stageAdvice = "Bridge the skill gap between your degree and high-paying jobs. Build a proof-of-work portfolio, practice mock interviews, and land target internships.";
+      recommendedStreamsOrDegrees = ["Portfolio Capstone Projects", "Industry Certifications", "AI Mock Interview Practice", "Targeted Internship Applications"];
+    }
+
+    return {
+      archetypeTitle: archetype.title,
+      archetypeDesc: archetype.desc,
+      primaryTrait: primaryRiasec,
+      secondaryTrait: secondaryRiasec,
+      topDomains,
+      stageAdvice,
+      recommendedStreamsOrDegrees,
+      keyTraits: traits.slice(0, 5)
+    };
+  }
+
 }
 
 if (typeof module !== 'undefined' && module.exports) {
