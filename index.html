@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GetCareerPilot - Cyber Career Bot</title>
+  <!-- Google Meta Tags & SEO -->
+  <meta name="description" content="GetCareerPilot analyzes your skills, detects resume gaps, customizes learning roadmaps, schedules weekly tasks, and matches you with career mentors using Gemini AI.">
+  <meta name="robots" content="index, follow">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Client-side PDF & DOCX Document Extraction Engines -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Floating Cyber Ambient Blobs -->
+  <div class="cyber-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+  <!-- ========================================== -->
+  <!-- 1. AUTHENTICATION VIEW (Default display) -->
+  <!-- ========================================== -->
+  <div id="auth-view" class="auth-container">
+    <div class="auth-card">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <i data-lucide="compass"></i>
+        </div>
+        <h2 class="logo-title">GetCareerPilot</h2>
+        <p class="logo-subtitle" id="auth-subtitle">Your Intelligent Career Growth Companion</p>
+      </div>
+
+      <!-- Auth Mode Switch Tabs: Sign In / Create Account -->
+      <div class="auth-tabs">
+        <button type="button" id="tab-login-btn" class="auth-tab-btn active" onclick="setAuthMode('login')">
+          <i data-lucide="log-in"></i> Sign In
+        </button>
+        <button type="button" id="tab-signup-btn" class="auth-tab-btn" onclick="setAuthMode('signup')">
+          <i data-lucide="user-plus"></i> Create Account
+        </button>
+      </div>
+
+      <form id="auth-form" onsubmit="event.preventDefault(); handleAuth();">
+        <!-- Profile Name (only shown on Sign Up) -->
+        <div class="input-group" id="auth-name-group" style="display: none;">
+          <label class="input-label" for="auth-username">User Profile Name</label>
+          <input type="text" id="auth-username" class="input-field" placeholder="e.g., Jane Doe">
+        </div>
+
+        <!-- Email Address -->
+        <div class="input-group">
+          <label class="input-label" for="auth-email">Email Address</label>
+          <input type="email" id="auth-email" class="input-field" placeholder="e.g., alex@getcareerpilot.com" required>
+        </div>
+
+        <!-- Password -->
+        <div class="input-group" style="margin-bottom: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="input-label" for="auth-password" style="margin-bottom: 0;">Password</label>
+            <span id="auth-demo-shortcut" style="font-size: 11px; color: var(--color-teal); cursor: pointer; text-decoration: underline;" onclick="fillDemoCredentials()">Fill Demo</span>
+          </div>
+          <input type="password" id="auth-password" class="input-field" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="btn">
+          <i data-lucide="log-in"></i> Sign In to Account
+        </button>
+      </form>
+
+      <div class="auth-footer" style="margin-top: 22px;">
+        <p id="auth-switch-text" style="margin-bottom: 8px;">
+          Don't have an account? <a href="javascript:void(0)" onclick="setAuthMode('signup')" style="color: var(--color-teal); font-weight: 600;">Create Account</a>
+        </p>
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Or explore instantly: <a href="javascript:void(0)" onclick="showDemoLogin()" style="color: var(--color-indigo); font-weight: 600;">Load Demo Account</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->  <!-- ========================================== -->
+  <!-- 2. MAIN APP WORKSPACE (Hidden by default)  -->
+  <!-- ========================================== -->
+  <div id="app-workspace" class="dashboard-wrapper" style="display: none;">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <i data-lucide="compass"></i>
+        </div>
+        <span class="sidebar-logo-text">GetCareerPilot</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')">
+          <a href="#"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+        </li>
+        <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')">
+          <a href="#"><i data-lucide="compass"></i><span>AI Career Advisor</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        </li>
+        <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')">
+          <a href="#"><i data-lucide="route"></i><span>Roadmap Builder</span></a>
+        </li>
+        <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')">
+          <a href="#"><i data-lucide="sparkles"></i><span>Skill Gap Analyzer</span></a>
+        </li>
+        <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')">
+          <a href="#"><i data-lucide="messages-square"></i><span>AI Mentor Chat</span></a>
+        </li>
+        <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')">
+          <a href="#"><i data-lucide="check-square"></i><span>Tracker & Jobs</span></a>
+        </li>
+        <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')">
+          <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
+        </li>
+      </nav>
+
+      <div class="sidebar-user">
+        <div id="user-avatar" class="user-avatar">JD</div>
+        <div class="user-info">
+          <div id="user-display-name" class="user-name">Jane Doe</div>
+          <div id="user-display-career" class="user-role">Unconfigured Career</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">
+          <i data-lucide="log-out"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="content-header">
+        <div class="header-title">
+          <h1 id="view-title">Dashboard Overview</h1>
+          <p id="view-subtitle">Monitor your professional growth and skills metrics</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="switchTab('advisor')" style="padding: 10px 16px; font-size: 14px; border-color: rgba(99, 102, 241, 0.4);">
+            <i data-lucide="compass" style="width: 16px; height: 16px; color: var(--color-teal);"></i> Career Advisor
+          </button>
+          <button class="btn btn-secondary" onclick="switchTab('settings')" style="padding: 10px 16px; font-size: 14px;">
+            <i data-lucide="key" style="width: 16px; height: 16px;"></i> API Key
+          </button>
+          <button class="btn btn-pink" onclick="switchTab('generator')" style="padding: 10px 16px; font-size: 14px;">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Build Roadmap
+          </button>
+        </div>
+      </header>
+
+      <!-- ========================================== -->
+      <!-- TAB A: DASHBOARD VIEW                      -->
+      <!-- ========================================== -->
+      <section id="tab-dashboard" class="tab-view active">
+        <!-- AI Career Guidance Hero Banner -->
+        <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 20px 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(20, 184, 166, 0.05)); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--color-indigo); display: flex; align-items: center; justify-content: center; color: var(--color-teal);">
+              <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff;">Get Personalized AI Career Recommendations</h3>
+                <span class="ai-badge">Gemini 2.5 Flash</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
+                Input your background and interests. Our LLM evaluates 2026 tech market demands to recommend custom career trajectories.
+              </p>
+            </div>
+          </div>
+          <button class="btn" onclick="switchTab('advisor')" style="width: auto; padding: 10px 22px; font-size: 13px;">
+            Explore Career Matches <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-icon indigo">
+              <i data-lucide="route"></i>
+            </div>
+            <div class="metric-info">
+              <span id="metric-career" class="metric-value">-</span>
+              <span class="metric-label">Active Career Target</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="metric-info">
+              <span id="metric-progress" class="metric-value">0%</span>
+              <span class="metric-label">Roadmap Completion</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon pink">
+              <i data-lucide="alert-circle"></i>
+            </div>
+            <div class="metric-info">
+              <span id="metric-gaps" class="metric-value">0</span>
+              <span class="metric-label">Detected Skill Gaps</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">
+              <i data-lucide="flame"></i>
+            </div>
+            <div class="metric-info">
+              <span id="metric-streak" class="metric-value">1 Day</span>
+              <span class="metric-label">Daily Study Streak</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-container">
+          <!-- Active Roadmap Card -->
+          <div class="card col-8">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="calendar"></i> Weekly Roadmap Tasks</h3>
+              <button class="btn btn-secondary" onclick="switchTab('generator')" style="padding: 6px 12px; font-size: 12px; width: auto;">
+                View Timeline
+              </button>
+            </div>
+            <div id="dashboard-active-roadmap-content">
+              <!-- Dynamically populated tasks checklist -->
+              <p class="text-secondary" style="font-size: 14px; text-align: center; padding: 40px 0;">
+                No active roadmap configured. Click the "Build Roadmap" button above to get started!
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Alerts -->
+          <div class="card col-4">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="activity"></i> Quick Commands</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <div style="background: rgba(20, 184, 166, 0.05); border: 1px dashed rgba(20, 184, 166, 0.2); padding: 15px; border-radius: 10px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-teal); display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> Skill Gap Analyzer
+                </h4>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
+                  Upload a resume and job description to identify missing tools and inject them into your schedule.
+                </p>
+                <button class="btn" onclick="switchTab('analyzer')" style="margin-top: 12px; padding: 8px 12px; font-size: 12px;">
+                  Analyze Gaps <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
+                </button>
+              </div>
+
+              <div style="background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.2); padding: 15px; border-radius: 10px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-indigo); display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="messages-square" style="width: 16px; height: 16px;"></i> Career Mentor Chat
+                </h4>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
+                  Get advice on portfolios, resume structure, or complex technical bugs from your mentor.
+                </p>
+                <button class="btn btn-secondary" onclick="switchTab('mentor')" style="margin-top: 12px; padding: 8px 12px; font-size: 12px; border-color: rgba(99, 102, 241, 0.3);">
+                  Ask Mentor <i data-lucide="message-square" style="width: 12px; height: 12px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB: AI CAREER ADVISOR & RECOMMENDATIONS (ALL FIELDS) -->
+      <!-- ========================================== -->
+      <section id="tab-advisor" class="tab-view">
+        <div class="grid-container">
+          <div class="card col-12 ai-glow-card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700;">AI Career Guidance & Recommendations</h2>
+                  <span class="ai-badge">Universal AI Advisor</span>
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                  Personalized 2026 guidance for students and professionals across ALL disciplines: Tech, Business, Finance, Design, Healthcare, Engineering & Law.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Sample Profiles:</span>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('tech')" style="width: auto; padding: 5px 10px; font-size: 11px;">💻 Tech/AI</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('finance')" style="width: auto; padding: 5px 10px; font-size: 11px;">📈 Finance</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('business')" style="width: auto; padding: 5px 10px; font-size: 11px;">💼 Business</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('design')" style="width: auto; padding: 5px 10px; font-size: 11px;">🎨 Design</button>
+                <button type="button" class="btn btn-secondary" onclick="loadAdvisorDemoProfile('healthcare')" style="width: auto; padding: 5px 10px; font-size: 11px;">🩺 Healthcare</button>
+              </div>
+            </div>
+
+            <!-- Questionnaire Form -->
+            <form id="advisor-form" onsubmit="event.preventDefault(); generateCareerRecommendations();">
+              <div class="grid-container" style="margin-top: 15px;">
+                
+                <!-- 1. Background -->
+                <div class="col-6">
+                  <div class="input-group">
+                    <label class="input-label" for="advisor-background">Academic / Professional Background</label>
+                    <input type="text" id="advisor-background" class="input-field" placeholder="e.g. B.Com Finance / B.Tech / MBBS / B.A. Psychology / BBA / High School / Arts / Self-Taught" required>
+                  </div>
+                </div>
+
+                <!-- 2. Work Style & Ambition -->
+                <div class="col-6">
+                  <div class="input-group">
+                    <label class="input-label" for="advisor-ambition">Career Ambition & Priority</label>
+                    <select id="advisor-ambition" class="input-field">
+                      <option value="High-growth tech, AI innovations & software development">High-growth tech, AI innovations & software development</option>
+                      <option value="Corporate leadership, product management & business strategy">Corporate leadership, product management & business strategy</option>
+                      <option value="Finance, investment banking, valuation & wealth advisory">Finance, investment banking, valuation & wealth advisory</option>
+                      <option value="Creative design, media, UI/UX & digital arts">Creative design, media, UI/UX & digital arts</option>
+                      <option value="Healthcare, biomedical sciences & clinical practice">Healthcare, biomedical sciences & clinical practice</option>
+                      <option value="Marketing, brand growth, SEO & digital entrepreneurship">Marketing, brand growth, SEO & digital entrepreneurship</option>
+                      <option value="Core engineering, manufacturing, robotics & physical systems">Core engineering, manufacturing, robotics & physical systems</option>
+                      <option value="Law, corporate governance, civil services & public policy">Law, corporate governance, civil services & public policy</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 3. Current Skills -->
+                <div class="col-12">
+                  <div class="input-group">
+                    <label class="input-label" for="advisor-skills">Current Known Skills & Capabilities</label>
+                    <input type="text" id="advisor-skills" class="input-field" placeholder="e.g. Python, Financial Modeling, Graphic Design, Excel, Public Speaking, Anatomy, AutoCAD, SQL (comma-separated)">
+                  </div>
+                </div>
+
+                <!-- 4. Disciplines / Passions -->
+                <div class="col-12">
+                  <div class="input-group">
+                    <label class="input-label">Fields & Core Passions of Interest (Click to toggle)</label>
+                    <div id="advisor-interest-chips" class="interest-chips-grid">
+                      <div class="interest-chip selected" onclick="toggleInterestChip(this, 'Software & Artificial Intelligence')">
+                        <i data-lucide="brain-circuit" style="width: 14px; height: 14px;"></i> Tech & AI
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Data Science & Analytics')">
+                        <i data-lucide="database" style="width: 14px; height: 14px;"></i> Data & Analytics
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'UI/UX & Visual Design')">
+                        <i data-lucide="palette" style="width: 14px; height: 14px;"></i> UI/UX & Design
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Product & Business Management')">
+                        <i data-lucide="briefcase" style="width: 14px; height: 14px;"></i> Business & Product
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Finance & Investment Banking')">
+                        <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> Finance & Banking
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Marketing, SEO & Content Strategy')">
+                        <i data-lucide="megaphone" style="width: 14px; height: 14px;"></i> Marketing & Growth
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Healthcare & Biomedical Sciences')">
+                        <i data-lucide="heart-pulse" style="width: 14px; height: 14px;"></i> Healthcare & Medicine
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Mechanical & Core Engineering')">
+                        <i data-lucide="cog" style="width: 14px; height: 14px;"></i> Core Engineering
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Law, Public Policy & Civil Services')">
+                        <i data-lucide="scale" style="width: 14px; height: 14px;"></i> Law & Public Policy
+                      </div>
+                      <div class="interest-chip" onclick="toggleInterestChip(this, 'Psychology & Human Resources')">
+                        <i data-lucide="users" style="width: 14px; height: 14px;"></i> Psychology & HR
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5. Experience Level -->
+                <div class="col-6">
+                  <div class="input-group">
+                    <label class="input-label" for="advisor-level">Current Experience Tier</label>
+                    <select id="advisor-level" class="input-field">
+                      <option value="beginner">Beginner (Foundations & Syntax)</option>
+                      <option value="intermediate" selected>Intermediate (Built projects / internships, ready to level up)</option>
+                      <option value="advanced">Advanced (Production architectures, executive execution)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-6" style="display: flex; align-items: flex-end; justify-content: flex-end;">
+                  <button type="submit" id="btn-generate-advisor" class="btn" style="width: 100%; padding: 13px 25px; margin-bottom: 20px;">
+                    <i data-lucide="sparkles" style="color: var(--color-teal);"></i> Synthesize AI Recommendations
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Loader UI inside Advisor -->
+            <div id="advisor-loading" style="display: none; text-align: center; padding: 40px 0;">
+              <div style="width: 44px; height: 44px; border: 4px solid var(--border-glass); border-top-color: var(--color-indigo); border-right-color: var(--color-teal); border-radius: 50%; animation: spin 0.9s infinite linear; margin: 0 auto 16px;"></div>
+              <h4 style="font-family: var(--font-heading); font-size: 16px; color: var(--text-primary);">Synthesizing Personalized Career Recommendations...</h4>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Querying Google Gemini structured JSON schema & benchmarking 2026 industry demand across all domains</p>
+            </div>
+          </div>
+
+          <!-- Advisor Results Display Area -->
+          <div id="advisor-results-container" class="col-12" style="display: none;">
+            <div class="card" style="margin-bottom: 25px; background: rgba(99, 102, 241, 0.04); border-color: rgba(99, 102, 241, 0.25);">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-teal); box-shadow: 0 0 10px var(--color-teal);"></div>
+                <h4 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff;">AI Profile Synthesis</h4>
+              </div>
+              <p id="advisor-summary-text" style="font-size: 14px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6;">
+                <!-- Dynamic AI Summary -->
+              </p>
+            </div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="target" style="color: var(--color-teal);"></i> Top Recommended Career Paths (2026)
+            </h3>
+
+            <div id="advisor-cards-grid" class="recommendations-grid">
+              <!-- Dynamic recommendation cards inserted here -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- TAB B: ROADMAP GENERATOR VIEW              -->
+      <!-- ========================================== -->
+      <section id="tab-generator" class="tab-view">
+        <div class="grid-container">
+          <div class="card col-12">
+            <!-- Step Indicators -->
+            <div class="step-indicator">
+              <div id="step-dot-1" class="indicator-dot active">1</div>
+              <div id="step-dot-2" class="indicator-dot">2</div>
+              <div id="step-dot-3" class="indicator-dot">3</div>
+            </div>
+
+            <!-- Step 1: Select Career (Multi-Disciplinary) -->
+            <div id="generator-step-1" class="form-step active">
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Select Target Career</h2>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">Choose your career path across any discipline, or enter any custom career.</p>
+
+              <div style="background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.3); padding: 14px 18px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <i data-lucide="compass" style="color: var(--color-teal); width: 20px; height: 20px;"></i>
+                  <span style="font-size: 13px; color: var(--text-secondary);">
+                    Not sure which career fits your background best? <strong style="color: #fff;">AI Career Advisor</strong> evaluates your profile to recommend the top matches.
+                  </span>
+                </div>
+                <button class="btn btn-secondary" onclick="switchTab('advisor')" style="width: auto; padding: 6px 14px; font-size: 12px; border-color: rgba(99, 102, 241, 0.4);">
+                  ✨ Get Recommendations
+                </button>
+              </div>
+
+              <!-- Domain Filter Bar -->
+              <div class="domain-filter-bar">
+                <button type="button" class="domain-pill active" onclick="filterCareerCards('all', this)">🌟 All Disciplines</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('tech', this)">💻 Tech & AI</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('data', this)">📊 Data & Analytics</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('business', this)">💼 Business & Product</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('design', this)">🎨 Design & Creative</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('finance', this)">📈 Finance & Banking</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('healthcare', this)">🩺 Healthcare & Science</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('engineering', this)">⚙️ Core Engineering</button>
+                <button type="button" class="domain-pill" onclick="filterCareerCards('law', this)">⚖️ Law & Policy</button>
+              </div>
+              
+              <!-- Multi-Disciplinary Career Cards Grid -->
+              <div class="career-selector-grid" id="career-selector-grid">
+                <div class="career-option selected" data-domain="tech" onclick="selectCareer('frontend-developer')">
+                  <div class="career-option-icon"><i data-lucide="monitor"></i></div>
+                  <h4 class="career-option-title">Frontend Developer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Web & User Interfaces</span>
+                </div>
+                <div class="career-option" data-domain="tech" onclick="selectCareer('ai-ml-engineer')">
+                  <div class="career-option-icon"><i data-lucide="brain-circuit"></i></div>
+                  <h4 class="career-option-title">AI / ML Engineer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">LLMs & Neural Systems</span>
+                </div>
+                <div class="career-option" data-domain="data" onclick="selectCareer('data-scientist')">
+                  <div class="career-option-icon"><i data-lucide="database"></i></div>
+                  <h4 class="career-option-title">Data Scientist</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Analytics & ML Models</span>
+                </div>
+                <div class="career-option" data-domain="business" onclick="selectCareer('product-manager')">
+                  <div class="career-option-icon"><i data-lucide="briefcase"></i></div>
+                  <h4 class="career-option-title">Product Manager</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Strategy & PRD Execution</span>
+                </div>
+                <div class="career-option" data-domain="design" onclick="selectCareer('ui-ux-designer')">
+                  <div class="career-option-icon"><i data-lucide="palette"></i></div>
+                  <h4 class="career-option-title">UI/UX Designer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Figma & Product Design</span>
+                </div>
+                <div class="career-option" data-domain="finance" onclick="selectCareer('financial-analyst')">
+                  <div class="career-option-icon"><i data-lucide="trending-up"></i></div>
+                  <h4 class="career-option-title">Financial Analyst</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Valuation & 3-Statement</span>
+                </div>
+                <div class="career-option" data-domain="business" onclick="selectCareer('digital-marketer')">
+                  <div class="career-option-icon"><i data-lucide="megaphone"></i></div>
+                  <h4 class="career-option-title">Digital Marketer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Growth, SEO & Ads</span>
+                </div>
+                <div class="career-option" data-domain="healthcare" onclick="selectCareer('biomedical-scientist')">
+                  <div class="career-option-icon"><i data-lucide="heart-pulse"></i></div>
+                  <h4 class="career-option-title">Biomedical Scientist</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Clinical Trials & Genomics</span>
+                </div>
+                <div class="career-option" data-domain="engineering" onclick="selectCareer('mechanical-engineer')">
+                  <div class="career-option-icon"><i data-lucide="cog"></i></div>
+                  <h4 class="career-option-title">Mechanical Engineer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">SolidWorks, FEA & CAD</span>
+                </div>
+                <div class="career-option" data-domain="law" onclick="selectCareer('corporate-lawyer')">
+                  <div class="career-option-icon"><i data-lucide="scale"></i></div>
+                  <h4 class="career-option-title">Corporate Legal</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">Contracts & Compliance</span>
+                </div>
+                <div class="career-option" data-domain="tech" onclick="selectCareer('cybersecurity-analyst')">
+                  <div class="career-option-icon"><i data-lucide="shield-check"></i></div>
+                  <h4 class="career-option-title">Cybersecurity Analyst</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">SOC, SIEM & Networks</span>
+                </div>
+                <div class="career-option" data-domain="tech" onclick="selectCareer('fullstack-developer')">
+                  <div class="career-option-icon"><i data-lucide="layers"></i></div>
+                  <h4 class="career-option-title">Fullstack Developer</h4>
+                  <span style="font-size: 11px; color: var(--text-muted);">React, Node & Cloud</span>
+                </div>
+              </div>
+
+              <!-- Custom Career Entry Box (Any Field!) -->
+              <div class="custom-career-box" id="custom-career-box">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="sparkles" style="color: var(--color-teal); width: 18px; height: 18px;"></i>
+                    <strong style="color: #fff; font-size: 14px;">Pursuing a different career or field?</strong>
+                  </div>
+                  <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">
+                    Type ANY field or career title (e.g. Clinical Psychologist, Aerospace Engineer, Chartered Accountant, Fashion Designer, Architect, Civil Services Aspirant). Our AI will build a personalized 4-week roadmap!
+                  </p>
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%; max-width: 480px;">
+                  <input type="text" id="custom-career-input" class="custom-career-input" placeholder="Type any career (e.g. Aerospace Engineer)...">
+                  <button type="button" class="btn" onclick="applyCustomCareer()" style="width: auto; padding: 10px 18px; font-size: 13px; white-space: nowrap;">
+                    Set Career <i data-lucide="check"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; margin-top: 25px;">
+                <button class="btn" onclick="nextStep(2)" style="width: auto; padding: 12px 30px;">
+                  Continue <i data-lucide="chevron-right"></i>
+                </button>
+              </div>
+            </div>
+            <!-- Step 2: Custom Skill Tag Picker -->
+            <div id="generator-step-2" class="form-step">
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Enter Current Skills</h2>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Add technologies you already know. The AI will bypass these in your custom roadmap.</p>
+              
+              <div class="input-group">
+                <label class="input-label">Current Mastered Skills</label>
+                <div class="tags-input-container">
+                  <div id="selected-skills-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                  <input type="text" id="skills-input-text" class="tags-input-field" placeholder="Type a skill and press Enter (e.g. Git, CSS)...">
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">Suggested Skills (Click to add)</label>
+                <div id="skills-suggestions-box" class="tag-suggestions"></div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="nextStep(1)" style="width: auto; padding: 12px 30px;">
+                  <i data-lucide="chevron-left"></i> Back
+                </button>
+                <button class="btn" onclick="nextStep(3)" style="width: auto; padding: 12px 30px;">
+                  Continue <i data-lucide="chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 3: Logistics & Options -->
+            <div id="generator-step-3" class="form-step">
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">Roadmap Logistics</h2>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 25px;">Provide details to scale your weekly schedules correctly.</p>
+
+              <div class="grid-container">
+                <div class="input-group col-6">
+                  <label class="input-label" for="logistics-level">Experience Level</label>
+                  <select id="logistics-level" class="input-field" style="appearance: none; background: rgba(10, 10, 15, 0.6) url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'6 9 12 15 18 9\'></polyline></svg>\') no-repeat right 16px center; background-size: 18px;">
+                    <option value="beginner">Beginner (No prior coding knowledge)</option>
+                    <option value="intermediate" selected>Intermediate (Familiar with foundations, looking to specialize)</option>
+                    <option value="advanced">Advanced (Experienced developer, seeking architectural mastery)</option>
+                  </select>
+                </div>
+
+                <div class="input-group col-6">
+                  <label class="input-label" for="logistics-hours">Available Hours / Week: <span id="hours-display-val" style="color: var(--color-teal); font-weight: 600;">15h</span></label>
+                  <input type="range" id="logistics-hours" min="5" max="40" value="15" step="5" class="input-field" style="padding: 5px 0; accent-color: var(--color-teal);" oninput="document.getElementById('hours-display-val').innerText = this.value + 'h';">
+                </div>
+              </div>
+
+              <!-- Loader UI inside wizard -->
+              <div id="generator-loading" style="display: none; text-align: center; padding: 30px 0; margin-top: 20px;">
+                <div style="width: 40px; height: 40px; border: 4px solid var(--border-glass); border-top-color: var(--color-teal); border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 15px;"></div>
+                <h4 style="font-family: var(--font-heading); font-size: 16px; color: var(--text-primary);">Assembling Custom AI Learning Path...</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Analyzing skill gaps and arranging schedule milestones</p>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button id="btn-generator-back" class="btn btn-secondary" onclick="nextStep(2)" style="width: auto; padding: 12px 30px;">
+                  <i data-lucide="chevron-left"></i> Back
+                </button>
+                <button id="btn-generator-build" class="btn" onclick="buildRoadmap()" style="width: auto; padding: 12px 30px;">
+                  Generate Roadmap <i data-lucide="sparkles"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generated Roadmap Visualizer (Initially Hidden) -->
+        <div id="roadmap-output-container" class="grid-container" style="display: none;">
+          <!-- Left side: Roadmap structure -->
+          <div class="card col-8">
+            <div class="roadmap-view-header">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                <div>
+                  <h2 id="roadmap-out-title" style="font-family: var(--font-heading); font-size: 22px; font-weight: 700;">Career Target Roadmap</h2>
+                  <p id="roadmap-out-desc" style="font-size: 14px; color: var(--text-secondary); margin-top: 6px;"></p>
+                </div>
+                <div id="roadmap-out-meta" style="display: flex; gap: 10px;"></div>
+              </div>
+            </div>
+
+            <!-- Timeline accordion -->
+            <div id="roadmap-weeks-timeline" class="timeline-container">
+              <!-- Dynamically populated weeks -->
+            </div>
+          </div>
+
+          <!-- Right side: Master skills checklist and progressive projects list -->
+          <div class="col-4" style="display: flex; flex-direction: column; gap: 25px;">
+            <!-- Tech stack summary -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="code-2"></i> Tech Stack to Master</h3>
+              </div>
+              <div id="roadmap-out-skills" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <!-- Tags to master -->
+              </div>
+            </div>
+
+            <!-- Pre-defined Projects -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="folder-git-2"></i> Recommended Projects</h3>
+              </div>
+              <div id="roadmap-out-projects" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Projects lists -->
+              </div>
+            </div>
+
+            <!-- Interview prep snapshot -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="book-open"></i> Interview Preparation</h3>
+              </div>
+              <div id="roadmap-out-interview" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Interview categories and questions preview -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB C: SKILL GAP ANALYZER VIEW             -->
+      <!-- ========================================== -->
+      <section id="tab-analyzer" class="tab-view">
+        <div class="grid-container">
+          <!-- Text Inputs Section -->
+          <div class="card col-12">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+              <div>
+                <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 6px;">Upload Resume & Job Description</h2>
+                <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">Compare your resume text directly with a target job description to compute core gaps.</p>
+              </div>
+              <div class="mode-toggle-group">
+                <button id="toggle-analyzer-llm" class="mode-toggle-btn active" onclick="setAnalyzerMode('llm')">
+                  <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Gemini LLM Mode
+                </button>
+                <button id="toggle-analyzer-local" class="mode-toggle-btn" onclick="setAnalyzerMode('local')">
+                  <i data-lucide="cpu" style="width: 14px; height: 14px;"></i> Local Regex Match
+                </button>
+              </div>
+            </div>
+
+<!-- Multi-Disciplinary Sample Pairs -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; padding: 10px 16px; background: rgba(99, 102, 241, 0.04); border: 1px dashed rgba(99, 102, 241, 0.25); border-radius: 10px;">
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;"><i data-lucide="sparkles" style="width: 13px; height: 13px; color: var(--color-teal); vertical-align: middle;"></i> Load Sample Pair:</span>
+              <button type="button" class="btn btn-secondary" onclick="loadDemoResume('tech'); loadDemoJD('tech');" style="width: auto; padding: 4px 10px; font-size: 11px;">💻 Tech/AI</button>
+              <button type="button" class="btn btn-secondary" onclick="loadDemoResume('finance'); loadDemoJD('finance');" style="width: auto; padding: 4px 10px; font-size: 11px;">📈 Finance</button>
+              <button type="button" class="btn btn-secondary" onclick="loadDemoResume('design'); loadDemoJD('design');" style="width: auto; padding: 4px 10px; font-size: 11px;">🎨 Design</button>
+              <button type="button" class="btn btn-secondary" onclick="loadDemoResume('healthcare'); loadDemoJD('healthcare');" style="width: auto; padding: 4px 10px; font-size: 11px;">🩺 Healthcare</button>
+            </div>
+
+            <div class="grid-container">
+              <!-- Resume input -->
+              <div class="col-6" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                  <label class="input-label" style="font-weight: 600; margin: 0;">Candidate Resume</label>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary" onclick="triggerResumeUpload()" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(20, 184, 166, 0.4); color: var(--color-teal); display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Device / File
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleDriveInput('resume')" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(99, 102, 241, 0.4); color: var(--color-indigo); display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="cloud" style="width: 12px; height: 12px;"></i> Drive / URL
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="loadDemoResume()" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(255,255,255,0.1);">
+                      Sample
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Hidden file input for resume -->
+                <input type="file" id="resume-file-input" accept=".pdf,.docx,.doc,.txt,.md,.rtf" onchange="handleResumeFileSelect(event)" style="display: none;">
+
+                <!-- Google Drive / URL import input (collapsible) -->
+                <div id="resume-drive-import-box" style="display: none; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px; padding: 12px;">
+                  <span style="font-size: 11px; font-weight: 700; color: var(--color-teal); display: block; margin-bottom: 6px;">Import from Google Drive / Cloud Link</span>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="url" id="resume-drive-url" class="input-field" placeholder="Paste Google Drive share link or document URL..." style="padding: 8px 12px; font-size: 12px;">
+                    <button type="button" class="btn" onclick="importFromDriveOrUrl('resume')" style="width: auto; padding: 8px 14px; font-size: 12px; white-space: nowrap;">
+                      Import
+                    </button>
+                  </div>
+                  <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;">Supports public Google Docs/Drive links, raw GitHub files, or public PDF URLs.</span>
+                </div>
+
+                <!-- Drag & Drop Interactive Zone -->
+                <div id="resume-drop-zone" class="drag-drop-zone" onclick="triggerResumeUpload()" style="padding: 20px; margin-bottom: 0;">
+                  <i data-lucide="upload-cloud" class="drop-icon" style="width: 28px; height: 28px; margin-bottom: 6px; color: var(--color-teal);"></i>
+                  <p class="drop-text" style="font-size: 13px; font-weight: 600; color: #fff;">Drag & drop resume here, or <span style="color: var(--color-teal); text-decoration: underline;">browse from device</span></p>
+                  <p class="drop-subtext" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Supports PDF, DOCX, TXT, Markdown files from local storage</p>
+                </div>
+
+                <!-- Uploaded File Info Badge -->
+                <div id="resume-file-badge" style="display: none; align-items: center; justify-content: space-between; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); border-radius: 8px; padding: 8px 12px;">
+                  <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                    <i data-lucide="file-check" style="width: 16px; height: 16px; color: var(--color-teal); flex-shrink: 0;"></i>
+                    <span id="resume-file-name" style="font-size: 12px; font-weight: 600; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">resume.pdf</span>
+                    <span id="resume-file-meta" style="font-size: 11px; color: var(--text-secondary); flex-shrink: 0;">(120 KB)</span>
+                  </div>
+                  <button type="button" onclick="clearUploadedFile('resume')" style="background: none; border: none; color: var(--color-pink); cursor: pointer; padding: 2px 6px; font-size: 12px;" title="Remove file">
+                    <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+
+                <!-- Textarea -->
+                <textarea id="analyzer-resume-text" class="input-field" style="height: 140px; resize: none; font-family: var(--font-body); font-size: 12px;" placeholder="Extracted resume text appears here automatically on upload. You can also paste directly..."></textarea>
+              </div>
+
+              <!-- JD input -->
+              <div class="col-6" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                  <label class="input-label" style="font-weight: 600; margin: 0;">Target Job Description</label>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary" onclick="triggerJDUpload()" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(99, 102, 241, 0.4); color: var(--color-indigo); display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Device / File
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleDriveInput('jd')" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(99, 102, 241, 0.4); color: var(--color-indigo); display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="cloud" style="width: 12px; height: 12px;"></i> Drive / URL
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="loadDemoJD()" style="padding: 4px 10px; font-size: 11px; width: auto; border-color: rgba(255,255,255,0.1);">
+                      Sample
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Hidden file input for JD -->
+                <input type="file" id="jd-file-input" accept=".pdf,.docx,.doc,.txt,.md,.rtf" onchange="handleJDFileSelect(event)" style="display: none;">
+
+                <!-- JD Drive / URL import input (collapsible) -->
+                <div id="jd-drive-import-box" style="display: none; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px; padding: 12px;">
+                  <span style="font-size: 11px; font-weight: 700; color: var(--color-indigo); display: block; margin-bottom: 6px;">Import JD from Google Drive / Web Link</span>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="url" id="jd-drive-url" class="input-field" placeholder="Paste job posting link or document URL..." style="padding: 8px 12px; font-size: 12px;">
+                    <button type="button" class="btn" onclick="importFromDriveOrUrl('jd')" style="width: auto; padding: 8px 14px; font-size: 12px; white-space: nowrap;">
+                      Import
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Drag & Drop Interactive Zone for JD -->
+                <div id="jd-drop-zone" class="drag-drop-zone" onclick="triggerJDUpload()" style="padding: 20px; margin-bottom: 0;">
+                  <i data-lucide="briefcase" class="drop-icon" style="width: 28px; height: 28px; margin-bottom: 6px; color: var(--color-indigo);"></i>
+                  <p class="drop-text" style="font-size: 13px; font-weight: 600; color: #fff;">Drag & drop JD file here, or <span style="color: var(--color-indigo); text-decoration: underline;">browse from device</span></p>
+                  <p class="drop-subtext" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Supports PDF, DOCX, TXT files from local storage</p>
+                </div>
+
+                <!-- Uploaded JD File Info Badge -->
+                <div id="jd-file-badge" style="display: none; align-items: center; justify-content: space-between; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; padding: 8px 12px;">
+                  <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                    <i data-lucide="file-check" style="width: 16px; height: 16px; color: var(--color-indigo); flex-shrink: 0;"></i>
+                    <span id="jd-file-name" style="font-size: 12px; font-weight: 600; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">job_posting.pdf</span>
+                    <span id="jd-file-meta" style="font-size: 11px; color: var(--text-secondary); flex-shrink: 0;">(85 KB)</span>
+                  </div>
+                  <button type="button" onclick="clearUploadedFile('jd')" style="background: none; border: none; color: var(--color-pink); cursor: pointer; padding: 2px 6px; font-size: 12px;" title="Remove file">
+                    <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                  </button>
+                </div>
+
+                <!-- Textarea for JD -->
+                <textarea id="analyzer-jd-text" class="input-field" style="height: 140px; resize: none; font-family: var(--font-body); font-size: 12px;" placeholder="Extracted job description text appears here. You can also paste directly..."></textarea>
+              </div>
+            </div>
+
+            <!-- Loader UI inside Analyzer -->
+            <div id="analyzer-loading" style="display: none; text-align: center; padding: 20px 0; margin-top: 15px;">
+              <div style="width: 36px; height: 36px; border: 4px solid var(--border-glass); border-top-color: var(--color-pink); border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 12px;"></div>
+              <h4 style="font-family: var(--font-heading); font-size: 15px; color: var(--text-primary);">Scanning Skill Intersection Matrices...</h4>
+              <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Mapping synonyms, checking categories, and prioritising gaps</p>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 25px;">
+              <button class="btn btn-pink" onclick="runAnalysis()" style="width: auto; padding: 12px 35px;">
+                Analyze Skill Gaps <i data-lucide="activity"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analyzer Results Panel (Initially Hidden) -->
+        <div id="analyzer-results-container" class="grid-container" style="display: none;">
+          <!-- AI Recruiter Verdict Banner -->
+          <div id="analyzer-verdict-card" class="card col-12 ai-glow-card" style="display: none; margin-bottom: 15px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(20, 184, 166, 0.04));">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span class="ai-badge"><i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> LLM Semantic Recruiter Verdict</span>
+              <span id="analyzer-engine-tag" style="font-size: 11px; color: var(--text-muted);">Gemini 2.5 Flash</span>
+            </div>
+            <p id="analyzer-verdict-text" style="font-size: 14px; color: var(--text-primary); line-height: 1.6; margin: 0;"></p>
+          </div>
+
+          <!-- Left side: Score and suggestions -->
+          <div class="col-4" style="display: flex; flex-direction: column; gap: 25px;">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="gauge"></i> Overall Compatibility</h3>
+              </div>
+              <div class="match-score-widget">
+                <div class="score-circle">
+                  <span id="analyzer-match-score" class="score-number">0%</span>
+                  <span class="score-label">Match Score</span>
+                </div>
+                <div id="analyzer-weak-areas-box" style="text-align: left; padding: 10px 5px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Auto text assessment -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Core Mastered items -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title" style="color: var(--color-teal);"><i data-lucide="check-circle-2"></i> Matching Skills</h3>
+              </div>
+              <div id="analyzer-matched-skills" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <!-- Tags matched -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: Gaps lists -->
+          <div class="card col-8">
+            <div class="card-header">
+              <h3 class="card-title" style="color: var(--color-pink);"><i data-lucide="alert-triangle"></i> Missing Core Competencies</h3>
+              <button class="btn" id="btn-add-gaps-roadmap" onclick="addGapsToRoadmap()" style="padding: 6px 12px; font-size: 12px; width: auto;">
+                Inject Gaps to Roadmap <i data-lucide="plus-circle"></i>
+              </button>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+              The following skills are specified in the job requirements but were not detected in your resume. Learn them priority-wise:
+            </p>
+
+            <div id="analyzer-missing-skills-list" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Dynamic Gap Rows -->
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid var(--border-glass); padding-top: 20px;">
+              <h4 style="font-family: var(--font-heading); font-size: 15px; font-weight: 600; margin-bottom: 15px; color: var(--text-primary);">Suggested Actions</h4>
+              <div id="analyzer-suggested-actions" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Priorities actions rows -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB D: AI MENTOR CHAT VIEW                 -->
+      <!-- ========================================== -->
+      <section id="tab-mentor" class="tab-view">
+        <div class="grid-container">
+          <div class="card col-12" style="padding: 0;">
+            
+            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: space-between; background: rgba(99, 102, 241, 0.03);">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--color-teal); box-shadow: 0 0 8px var(--color-teal);"></div>
+                <div>
+                  <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700;">GetCareerPilot Mentor</h3>
+                  <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Ask about interview tactics, domain frameworks, career milestones or projects.</p>
+                </div>
+              </div>
+              <button class="btn btn-secondary" onclick="clearChatHistory()" style="padding: 6px 12px; font-size: 12px; width: auto; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i> Clear Chat
+              </button>
+            </div>
+
+            <!-- Messages Window -->
+            <div class="chat-container">
+              <div id="chat-messages-window" class="chat-messages">
+                <!-- Chat Bubbles -->
+              </div>
+              
+              <!-- Suggested Preset questions -->
+              <div class="chat-presets">
+                <button class="preset-btn" onclick="sendPresetChat('Suggest a progressive project idea to build next')">Suggest Project Idea</button>
+                <button class="preset-btn" onclick="sendPresetChat('What are the top skills in demand right now for my career?')">In-demand Skills</button>
+                <button class="preset-btn" onclick="sendPresetChat('Give me a quick roadmap optimization check')">Optimize My Path</button>
+                <button class="preset-btn" onclick="sendPresetChat('How can I prepare effectively for domain interviews in my field?')">Interview Strategy</button>
+              </div>
+
+              <!-- Message input row -->
+              <form id="chat-input-form" class="chat-input-bar" onsubmit="event.preventDefault(); sendChatMessage();">
+                <input type="text" id="chat-input-field" class="chat-input" placeholder="Ask your mentor a question...">
+                <button type="submit" class="btn" style="width: auto; padding: 0 24px; border-radius: 8px;">
+                  Send <i data-lucide="send"></i>
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB E: PROGRESS TRACKER VIEW               -->
+      <!-- ========================================== -->
+      <section id="tab-tracker" class="tab-view">
+        <!-- Intelligent Job-Matching Workflow Pipeline -->
+        <div class="workflow-pipeline">
+          <div class="workflow-step active">
+            <div class="workflow-step-num">1</div>
+            <div class="workflow-step-text">
+              <span class="workflow-step-title">Profile Extracted</span>
+              <span class="workflow-step-desc">Skills & Roadmap</span>
+            </div>
+          </div>
+          <div class="workflow-arrow"><i data-lucide="arrow-right"></i></div>
+          <div class="workflow-step active">
+            <div class="workflow-step-num">2</div>
+            <div class="workflow-step-text">
+              <span class="workflow-step-title">Compatibility Engine</span>
+              <span class="workflow-step-desc">Weighted Tag Match</span>
+            </div>
+          </div>
+          <div class="workflow-arrow"><i data-lucide="arrow-right"></i></div>
+          <div class="workflow-step active">
+            <div class="workflow-step-num">3</div>
+            <div class="workflow-step-text">
+              <span class="workflow-step-title">Gaps Identified</span>
+              <span class="workflow-step-desc">Critical vs Secondary</span>
+            </div>
+          </div>
+          <div class="workflow-arrow"><i data-lucide="arrow-right"></i></div>
+          <div class="workflow-step active">
+            <div class="workflow-step-num" style="background: rgba(20, 184, 166, 0.2); color: var(--color-teal); border-color: var(--color-teal);"><i data-lucide="sparkles" style="width: 14px; height: 14px;"></i></div>
+            <div class="workflow-step-text">
+              <span class="workflow-step-title" style="color: var(--color-teal);">AI Career Guidance</span>
+              <span class="workflow-step-desc">Bespoke Interview Prep</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-container">
+          <!-- Main Checklist progress list -->
+          <div class="card col-8">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="check-square"></i> Milestone Tasks Checklist</h3>
+              <div id="tracker-progress-badge" class="week-duration-badge" style="background: rgba(20, 184, 166, 0.1); color: var(--color-teal);">
+                0 / 0 Tasks
+              </div>
+            </div>
+            
+            <div class="progress-container" style="margin-bottom: 25px;">
+              <div class="progress-header">
+                <span>Course Completion Progress</span>
+                <span id="tracker-progress-pct" style="color: var(--color-teal); font-weight: 600;">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="tracker-progress-bar" class="progress-fill"></div>
+              </div>
+            </div>
+
+            <div id="tracker-checklist-box" class="tasks-checklist">
+              <!-- Dynamically populated items checklist -->
+              <p class="text-secondary" style="font-size: 14px; text-align: center; padding: 40px 0;">
+                Create a roadmap to populate the progress tracker checklist!
+              </p>
+            </div>
+          </div>
+
+          <!-- Unlocked badges / Job recommend -->
+          <div class="col-4" style="display: flex; flex-direction: column; gap: 25px;">
+            <!-- Unlocked achievements -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trophy"></i> Unlocked Milestones</h3>
+              </div>
+              <div id="tracker-achievements-box" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Dynamic milestones badges -->
+              </div>
+            </div>
+
+            <!-- Job Board Matches -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="briefcase"></i> Tailored Job Openings</h3>
+              </div>
+              <div id="tracker-jobs-box" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Recommended Jobs list -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB F: SETTINGS VIEW                       -->
+      <!-- ========================================== -->
+      <section id="tab-settings" class="tab-view">
+        <div class="grid-container">
+          <div class="card col-12">
+            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 8px;">System Configuration</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 30px;">Manage your profile preferences, local database cache, and secure API connections.</p>
+
+            <div class="tabs-navigation">
+              <button class="tab-btn active" id="settings-tab-profile" onclick="switchSettingsSection('profile')">User Profile</button>
+              <button class="tab-btn" id="settings-tab-api" onclick="switchSettingsSection('api')">Gemini AI Key</button>
+              <button class="tab-btn" id="settings-tab-system" onclick="switchSettingsSection('system')">Cache Settings</button>
+            </div>
+
+            <!-- Profile Settings Panel -->
+            <div id="settings-sect-profile" style="display: block;">
+              <form id="settings-profile-form" onsubmit="event.preventDefault(); saveUserProfile();" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="grid-container">
+                  <div class="input-group col-6">
+                    <label class="input-label" for="set-username">Profile Name</label>
+                    <input type="text" id="set-username" class="input-field">
+                  </div>
+                  <div class="input-group col-6">
+                    <label class="input-label" for="set-email">Email Address</label>
+                    <input type="email" id="set-email" class="input-field" disabled>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button type="submit" class="btn" style="width: auto; padding: 12px 30px;">
+                    Update Profile <i data-lucide="check-circle-2"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- API Keys Settings Panel -->
+            <div id="settings-sect-api" style="display: none;">
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+                Securely enter your client-side **Gemini API Key**. GetCareerPilot interacts directly with Google APIs to formulate extremely tailored week-by-week roadmaps and answer career chat questions dynamically. Your key is stored solely on your local machine.
+              </p>
+              
+              <div class="input-group" style="position: relative;">
+                <label class="input-label" for="set-apikey">Gemini API Key</label>
+                <div style="display: flex; gap: 10px;">
+                  <input type="password" id="set-apikey" class="input-field" placeholder="AIzaSy...">
+                  <button class="btn btn-secondary" onclick="toggleApiKeyVisibility()" style="width: auto; padding: 0 16px;">
+                    <i id="eye-icon" data-lucide="eye"></i>
+                  </button>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+                  Don't have a key? <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-teal); text-decoration: none;">Get a free API Key from Google AI Studio</a>
+                </p>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn" onclick="saveApiKey()" style="width: auto; padding: 12px 30px;">
+                  Save Key Credentials <i data-lucide="key"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- System management Settings Panel -->
+            <div id="settings-sect-system" style="display: none;">
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+                Clear cached roadmaps, profiles, and chatbot transcripts. This resets the application to its original installation state.
+              </p>
+
+              <div style="background: rgba(236, 72, 153, 0.05); border: 1px dashed rgba(236, 72, 153, 0.2); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-pink); display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> Danger Zone
+                </h4>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
+                  This operation deletes all local roadmaps, checklists, streak records, user settings, and chat logs. This action cannot be undone.
+                </p>
+                <button class="btn btn-pink" onclick="clearAllAppData()" style="margin-top: 15px; width: auto; padding: 10px 20px; font-size: 13px;">
+                  Purge Application Data <i data-lucide="trash"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data-templates.js?v=2026_4"></script>
+  <script src="js/resume-analyzer.js?v=2026_4"></script>
+  <script src="js/ai-service.js?v=2026_4"></script>
+  <script src="js/app.js?v=2026_4"></script>
+  <!-- ========================================== -->
+  <!-- AI CAREER GUIDANCE & INTERVIEW PREP MODAL   -->
+  <!-- ========================================== -->
+  <div id="job-guidance-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.3);">
+            <i data-lucide="sparkles" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3 id="modal-job-title" style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">Job Guidance</h3>
+            <p id="modal-job-company" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;"></p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeJobGuidanceModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Modal Loader -->
+      <div id="modal-guidance-loading" style="text-align: center; padding: 40px 0;">
+        <div style="width: 40px; height: 40px; border: 4px solid var(--border-glass); border-top-color: var(--color-indigo); border-radius: 50%; animation: spin 0.8s infinite linear; margin: 0 auto 14px;"></div>
+        <h4 style="font-family: var(--font-heading); font-size: 15px; color: var(--text-primary);">Synthesizing Tailored Job Guidance...</h4>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Evaluating your roadmap progress against job requirements with Gemini 2.5 Flash</p>
+      </div>
+
+      <!-- Modal Content Output -->
+      <div id="modal-guidance-content" style="display: none;">
+        <!-- Dynamically populated by app.js -->
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

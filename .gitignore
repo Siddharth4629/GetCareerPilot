@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Environment and sensitive files
+.env
+.env.local
+.env.*.local
+*.log
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
