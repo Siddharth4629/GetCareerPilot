@@ -37,7 +37,8 @@
           <i data-lucide="compass"></i>
         </div>
         <h2 class="logo-title">GetCareerPilot</h2>
-        <p class="logo-subtitle" id="auth-subtitle">Discover. Explore. Plan. Achieve.</p>
+        <p class="logo-subtitle" style="font-weight: 600; font-size: 14.5px; color: var(--color-teal); margin-bottom: 4px;">Not Sure What You Want to Become? Let's Discover It Together.</p>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 12px 0;">Discover. Explore. Plan. Achieve.</p>
         <div id="db-status-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 10px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--color-teal);">
           <span id="db-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-teal); box-shadow: 0 0 8px var(--color-teal);"></span>
           <span id="db-status-text">Database Connected</span>
@@ -137,49 +138,45 @@
         </button>
       </div>
 
-            <nav class="sidebar-menu">
+                  <nav class="sidebar-menu">
+        <!-- Main Navigation -->
         <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')" data-tooltip="Dashboard" title="Dashboard">
           <a href="#"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
         </li>
-        <li id="nav-assessment" class="sidebar-item" onclick="switchTab('assessment')" data-tooltip="Aptitude & Interest Quiz" title="Aptitude & Interest Quiz">
-          <a href="#"><i data-lucide="sparkles"></i><span>AI Aptitude Quiz</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        <li id="nav-explorer" class="sidebar-item" onclick="switchTab('explorer')" data-tooltip="Career Discovery" title="Career Discovery">
+          <a href="#"><i data-lucide="compass"></i><span>Career Discovery</span></a>
         </li>
-        <li id="nav-explorer" class="sidebar-item" onclick="switchTab('explorer')" data-tooltip="12 Industries Explorer" title="12 Industries Explorer">
-          <a href="#"><i data-lucide="compass"></i><span>Career Explorer</span></a>
+        <li id="nav-assessment" class="sidebar-item" onclick="switchTab('assessment')" data-tooltip="Interest & Aptitude Assessment" title="Interest & Aptitude Assessment">
+          <a href="#"><i data-lucide="sparkles"></i><span>Interest & Aptitude Assessment</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        </li>
+        <li id="nav-stream-guide" class="sidebar-item stage-tag-school" onclick="switchTab('stream-guide')" data-tooltip="Stream & Subject Selection" title="Stream & Subject Selection (Class 9-10)">
+          <a href="#"><i data-lucide="layers"></i><span>Stream & Subject Selection</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; margin-left: auto;">9-10</span></a>
+        </li>
+        <li id="nav-college-explorer" class="sidebar-item stage-tag-higher-sec" onclick="switchTab('college-explorer')" data-tooltip="College & Scholarship Finder" title="College & Scholarship Finder (Class 11-12)">
+          <a href="#"><i data-lucide="graduation-cap"></i><span>College & Scholarship Finder</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; margin-left: auto;">11-12</span></a>
+        </li>
+        <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')" data-tooltip="My Career Roadmap" title="My Career Roadmap">
+          <a href="#"><i data-lucide="route"></i><span>My Career Roadmap</span></a>
+        </li>
+        <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')" data-tooltip="AI Career Mentor" title="AI Career Mentor">
+          <a href="#"><i data-lucide="messages-square"></i><span>AI Career Mentor</span></a>
         </li>
 
-        <!-- Tier A: School Students (Class 9 & 10) -->
-        <li id="nav-stream-guide" class="sidebar-item stage-tag-school" onclick="switchTab('stream-guide')" data-tooltip="Stream & Subject Guide" title="Stream & Subject Guide (Class 9-10)">
-          <a href="#"><i data-lucide="layers"></i><span>Stream Guide</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; margin-left: auto; border: 1px solid rgba(56, 189, 248, 0.3);">9-10</span></a>
+        <!-- Career Development -->
+        <li id="nav-analyzer" class="sidebar-item stage-tag-college" onclick="switchTab('analyzer')" data-tooltip="Resume & Skill Gap Analyzer" title="Resume & Skill Gap Analyzer">
+          <a href="#"><i data-lucide="file-text"></i><span>Resume & Skill Gap Analyzer</span></a>
         </li>
-
-        <!-- Tier B: Higher Secondary (Class 11 & 12) -->
-        <li id="nav-college-explorer" class="sidebar-item stage-tag-higher-sec" onclick="switchTab('college-explorer')" data-tooltip="College & Exams" title="College & Exams (Class 11-12)">
-          <a href="#"><i data-lucide="graduation-cap"></i><span>Colleges & Exams</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; margin-left: auto; border: 1px solid rgba(245, 158, 11, 0.3);">11-12</span></a>
-        </li>
-
-        <!-- Tier C: College & Career Builders -->
-        <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')" data-tooltip="AI Career Advisor" title="AI Career Advisor">
-          <a href="#"><i data-lucide="crosshair"></i><span>AI Career Matches</span></a>
-        </li>
-        <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')" data-tooltip="Roadmap Builder" title="Roadmap Builder">
-          <a href="#"><i data-lucide="route"></i><span>Roadmap Builder</span></a>
-        </li>
-        <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')" data-tooltip="Skill Gap Analyzer" title="Skill Gap Analyzer">
-          <a href="#"><i data-lucide="file-text"></i><span>Resume Analyzer</span></a>
-        </li>
-        <li id="nav-mock-interview" class="sidebar-item" onclick="switchTab('mock-interview')" data-tooltip="AI Mock Interview" title="AI Mock Interview">
-          <a href="#"><i data-lucide="mic"></i><span>Mock Interview</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+        <li id="nav-mock-interview" class="sidebar-item stage-tag-college" onclick="switchTab('mock-interview')" data-tooltip="AI Mock Interview" title="AI Mock Interview">
+          <a href="#"><i data-lucide="mic"></i><span>AI Mock Interview</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
         </li>
         <li id="nav-planner" class="sidebar-item" onclick="switchTab('planner')" data-tooltip="Daily Learning Planner" title="Daily Learning Planner">
-          <a href="#"><i data-lucide="calendar-check"></i><span>Daily Planner</span></a>
+          <a href="#"><i data-lucide="calendar-check"></i><span>Daily Learning Planner</span></a>
         </li>
-        <li id="nav-mentor" class="sidebar-item" onclick="switchTab('mentor')" data-tooltip="AI Mentor Chat" title="AI Mentor Chat">
-          <a href="#"><i data-lucide="messages-square"></i><span>AI Mentor Chat</span></a>
+        <li id="nav-tracker" class="sidebar-item stage-tag-college" onclick="switchTab('tracker')" data-tooltip="Jobs and Internships Tracker" title="Jobs and Internships Tracker">
+          <a href="#"><i data-lucide="check-square"></i><span>Jobs & Internships Tracker</span></a>
         </li>
-        <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')" data-tooltip="Tracker & Jobs" title="Tracker & Jobs">
-          <a href="#"><i data-lucide="check-square"></i><span>Job Opportunities</span></a>
-        </li>
+
+        <!-- Account -->
         <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')" data-tooltip="Settings" title="Settings">
           <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
         </li>
@@ -213,23 +210,15 @@
         </div>
         <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
           <!-- Stage Selector Dropdown -->
-          <div style="display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border-glass); padding: 4px 10px; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border-glass); padding: 5px 12px; border-radius: 10px;">
             <i data-lucide="graduation-cap" style="width: 16px; height: 16px; color: var(--color-teal);"></i>
+            <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;">Academic Stage:</span>
             <select id="stage-select-global" onchange="onStageChange(this.value)" style="background: transparent; border: none; color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer; outline: none;">
               <option value="Class 10" style="background: #0f172a;">🎓 Class 9-10 (School)</option>
               <option value="Class 12" style="background: #0f172a;">🏛️ Class 11-12 (Higher Sec)</option>
               <option value="College" selected style="background: #0f172a;">💼 College & Graduate</option>
             </select>
           </div>
-          <button class="btn btn-secondary" onclick="switchTab('assessment')" style="padding: 8px 14px; font-size: 13px; border-color: rgba(99, 102, 241, 0.4);">
-            <i data-lucide="sparkles" style="width: 15px; height: 15px; color: var(--color-teal);"></i> Aptitude Quiz
-          </button>
-          <button class="btn btn-secondary" onclick="switchTab('advisor')" style="padding: 8px 14px; font-size: 13px;">
-            <i data-lucide="compass" style="width: 15px; height: 15px; color: var(--color-teal);"></i> Matches
-          </button>
-          <button class="btn btn-pink" onclick="switchTab('generator')" style="padding: 8px 14px; font-size: 13px;">
-            <i data-lucide="plus" style="width: 15px; height: 15px;"></i> Roadmap
-          </button>
         </div>
       </header>
 
@@ -1564,7 +1553,10 @@
             <!-- Job Board Matches -->
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"><i data-lucide="briefcase"></i> Tailored Job Openings</h3>
+                <h3 class="card-title" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <span><i data-lucide="briefcase"></i> Tailored Job Openings</span>
+    <span style="font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.3);">Demonstration Data</span>
+  </h3>
               </div>
               <div id="tracker-jobs-box" style="display: flex; flex-direction: column; gap: 15px;">
                 <!-- Recommended Jobs list -->

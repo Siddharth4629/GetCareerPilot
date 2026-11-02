@@ -2605,19 +2605,34 @@ function onStageChange(stage) {
 }
 
 function updateStageUI(stage) {
-  // Update sidebar active highlights
-  const schoolTag = document.querySelector(".stage-tag-school");
-  const higherSecTag = document.querySelector(".stage-tag-higher-sec");
+  // Dynamically filter primary sidebar navigation items according to student stage (Section 7)
+  const streamGuideNav = document.getElementById("nav-stream-guide");
+  const collegeNav = document.getElementById("nav-college-explorer");
+  const analyzerNav = document.getElementById("nav-analyzer");
+  const mockNav = document.getElementById("nav-mock-interview");
+  const trackerNav = document.getElementById("nav-tracker");
 
   if (stage === "Class 10") {
-    if (schoolTag) schoolTag.style.borderLeft = "3px solid #38bdf8";
-    if (higherSecTag) higherSecTag.style.borderLeft = "none";
+    // School Students: Focus on Stream Guide, hide College/Exams, Resume, Mock Interview, Job Tracker
+    if (streamGuideNav) streamGuideNav.style.display = "flex";
+    if (collegeNav) collegeNav.style.display = "none";
+    if (analyzerNav) analyzerNav.style.display = "none";
+    if (mockNav) mockNav.style.display = "none";
+    if (trackerNav) trackerNav.style.display = "none";
   } else if (stage === "Class 12") {
-    if (higherSecTag) higherSecTag.style.borderLeft = "3px solid #f59e0b";
-    if (schoolTag) schoolTag.style.borderLeft = "none";
+    // Higher Secondary: Focus on College & Exams, hide Stream Guide, Resume, Mock Interview, Job Tracker
+    if (streamGuideNav) streamGuideNav.style.display = "none";
+    if (collegeNav) collegeNav.style.display = "flex";
+    if (analyzerNav) analyzerNav.style.display = "none";
+    if (mockNav) mockNav.style.display = "none";
+    if (trackerNav) trackerNav.style.display = "none";
   } else {
-    if (schoolTag) schoolTag.style.borderLeft = "none";
-    if (higherSecTag) higherSecTag.style.borderLeft = "none";
+    // College & Graduates: Focus on Career Development, hide School Stream Guide & College Explorer
+    if (streamGuideNav) streamGuideNav.style.display = "none";
+    if (collegeNav) collegeNav.style.display = "none";
+    if (analyzerNav) analyzerNav.style.display = "flex";
+    if (mockNav) mockNav.style.display = "flex";
+    if (trackerNav) trackerNav.style.display = "flex";
   }
 
   // Adaptive Dashboard Hero Banner
@@ -2639,8 +2654,8 @@ function updateStageUI(stage) {
     } else {
       heroTitle.innerText = "Universal Career Discovery & Development Platform";
       heroSubtitle.innerText = "AI roadmaps across 12 industries, resume gap audits, AI mock interviews, and daily study planning.";
-      heroBtn.innerHTML = `Explore Career Matches <i data-lucide="arrow-right"></i>`;
-      heroBtn.setAttribute("onclick", "switchTab('advisor')");
+      heroBtn.innerHTML = `Explore Career Discovery <i data-lucide="arrow-right"></i>`;
+      heroBtn.setAttribute("onclick", "switchTab('explorer')");
     }
   }
 
