@@ -39,11 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
   setupEventListeners();
 
-  // If user profile exists, bypass auth screen
+  // If user profile exists, bypass auth screen and enter dashboard
   if (state.user) {
     showDashboardWorkspace();
   } else {
-    showAuthScreen();
+    showLandingPage();
   }
 });
 
@@ -310,8 +310,13 @@ function initSidebarState() {
 }
 
 function showAuthScreen() {
-  document.getElementById("auth-view").style.display = "flex";
-  document.getElementById("app-workspace").style.display = "none";
+  const landing = document.getElementById("landing-view");
+  const auth = document.getElementById("auth-view");
+  const workspace = document.getElementById("app-workspace");
+  if (landing) landing.style.display = "none";
+  if (auth) auth.style.display = "flex";
+  if (workspace) workspace.style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
   setAuthMode(state.authMode || "login");
   checkDbStatus();
 
@@ -321,6 +326,7 @@ function showAuthScreen() {
   if (lastEmail && emailInput && !emailInput.value) {
     emailInput.value = lastEmail;
   }
+  if (window.lucide) lucide.createIcons();
 }
 
 async function checkDbStatus() {
@@ -384,17 +390,26 @@ function toggleAuthPasswordVisibility() {
 }
 
 function showDashboardWorkspace() {
-  document.getElementById("auth-view").style.display = "none";
-  document.getElementById("app-workspace").style.display = "flex";
+  const landing = document.getElementById("landing-view");
+  const auth = document.getElementById("auth-view");
+  const workspace = document.getElementById("app-workspace");
+  if (landing) landing.style.display = "none";
+  if (auth) auth.style.display = "none";
+  if (workspace) workspace.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
   
   // Restore persisted sidebar minimize preference
   initSidebarState();
 
   // Render user profile details in sidebar
-  document.getElementById("user-display-name").innerText = state.user.username;
-  document.getElementById("user-avatar").innerText = state.user.username.split(" ").map(n => n[0]).join("").toUpperCase();
-  
-  document.getElementById("user-display-career").innerText = formatCareerTitle(state.user.career);
+  if (state.user) {
+    const userDisplayName = document.getElementById("user-display-name");
+    const userAvatar = document.getElementById("user-avatar");
+    const userDisplayCareer = document.getElementById("user-display-career");
+    if (userDisplayName) userDisplayName.innerText = state.user.username || "Student";
+    if (userAvatar) userAvatar.innerText = (state.user.username || "JD").split(" ").map(n => n[0]).join("").toUpperCase();
+    if (userDisplayCareer) userDisplayCareer.innerText = formatCareerTitle(state.user.career || "frontend-developer");
+  }
 
   // If active roadmap is present, render generator container
   if (state.activeRoadmap) {
@@ -407,6 +422,7 @@ function showDashboardWorkspace() {
 
   // Initial tab render
   switchTab("dashboard");
+  if (window.lucide) lucide.createIcons();
 }
 
 async function handleAuth() {
@@ -431,6 +447,8 @@ async function handleAuth() {
   if (state.authMode === "signup") {
     const usernameInput = document.getElementById("auth-username");
     const username = usernameInput ? usernameInput.value.trim() : "";
+    const stageSelect = document.getElementById("auth-stage");
+    const stage = stageSelect ? stageSelect.value : (state.academicStage || "Class 10");
 
     if (!username) {
       showToast("Please enter your profile name.", "warning");
@@ -442,148 +460,118 @@ async function handleAuth() {
       return;
     }
 
-    // Try MongoDB / Backend API Signup
-    if (window.ApiClient) {
-      try {
+    try {
+      let user = null;
+      if (window.ApiClient) {
         const res = await ApiClient.signup(username, email, password);
-        state.user = res.user;
-        state.activeRoadmap = null;
-        state.checklistProgress = {};
-        state.chatHistory = [];
-        state.streakCount = 1;
-        state.lastActiveDate = new Date().toDateString();
-
-        wizardState.selectedCareer = state.user.career || "frontend-developer";
-        wizardState.skillsList = [...(state.user.skills || [])];
-
-        saveStateToLocalStorage();
-        showToast(`Welcome to GetCareerPilot, ${username}! Profile saved in database.`, "success");
-        showDashboardWorkspace();
-        return;
-      } catch (err) {
-        if (err.message && (err.message.includes("already exists") || err.message.includes("409"))) {
+        user = res.user;
+      } else {
+        const accounts = getRegisteredAccounts();
+        if (accounts[email]) {
           showToast("An account with this email already exists. Please Sign In.", "warning");
           setAuthMode("login");
           if (emailInput) emailInput.value = email;
           return;
         }
-        console.warn("API signup error, falling back to local storage:", err.message);
-      }
-    }
-
-    // Client-side Fallback
-    const accounts = getRegisteredAccounts();
-    if (accounts[email]) {
-      showToast("An account with this email already exists. Please Sign In.", "warning");
-      setAuthMode("login");
-      if (emailInput) emailInput.value = email;
-      return;
-    }
-
-    const newAccount = {
-      username: username,
-      email: email,
-      password: password,
-      career: "frontend-developer",
-      level: "intermediate",
-      hours: 15,
-      skills: [],
-      activeRoadmap: null,
-      checklistProgress: {},
-      chatHistory: [],
-      streakCount: 1,
-      lastActiveDate: new Date().toDateString(),
-      createdAt: new Date().toISOString()
-    };
-
-    accounts[email] = newAccount;
-    saveRegisteredAccounts(accounts);
-
-    state.user = { ...newAccount };
-    state.activeRoadmap = null;
-    state.checklistProgress = {};
-    state.chatHistory = [];
-    state.streakCount = 1;
-
-    wizardState.selectedCareer = state.user.career;
-    wizardState.skillsList = [];
-
-    saveStateToLocalStorage();
-    showToast(`Welcome to GetCareerPilot, ${username}! Profile created.`, "success");
-    showDashboardWorkspace();
-  } else {
-    // Login flow - Try MongoDB / Backend API Login
-    if (window.ApiClient) {
-      try {
-        const res = await ApiClient.login(email, password);
-        const u = res.user;
-        state.user = {
-          username: u.username,
-          email: u.email,
-          career: u.career || "frontend-developer",
-          level: u.level || "intermediate",
-          hours: u.hours || 15,
-          skills: u.skills || []
+        const newAccount = {
+          username: username,
+          email: email,
+          password: password,
+          career: "frontend-developer",
+          level: "intermediate",
+          hours: 15,
+          skills: [],
+          activeRoadmap: null,
+          checklistProgress: {},
+          chatHistory: [],
+          streakCount: 1,
+          lastActiveDate: new Date().toDateString(),
+          createdAt: new Date().toISOString()
         };
-        state.activeRoadmap = u.activeRoadmap || null;
-        state.checklistProgress = u.checklistProgress || {};
-        state.chatHistory = u.chatHistory || [];
-        state.streakCount = u.streakCount || 1;
-        state.lastActiveDate = u.lastActiveDate || "";
-        state.careerRecommendations = u.careerRecommendations || null;
-        if (u.apiKey) state.apiKey = u.apiKey;
+        accounts[email] = newAccount;
+        saveRegisteredAccounts(accounts);
+        user = newAccount;
+      }
 
-        wizardState.selectedCareer = state.user.career;
-        wizardState.skillsList = [...state.user.skills];
+      state.user = {
+        username: user.username,
+        email: user.email,
+        career: user.career || "frontend-developer",
+        stage: stage,
+        level: user.level || "intermediate",
+        hours: user.hours || 15,
+        skills: user.skills || []
+      };
+      state.academicStage = stage;
+      state.activeRoadmap = null;
+      state.checklistProgress = {};
+      state.chatHistory = [];
+      state.streakCount = 1;
+      state.lastActiveDate = new Date().toDateString();
 
-        saveStateToLocalStorage();
-        const dbBadge = res.database === 'mongodb' ? 'MongoDB' : 'Database';
-        showToast(`Welcome back, ${u.username}! Logged in (${dbBadge} Synced).`, "success");
-        showDashboardWorkspace();
-        return;
-      } catch (err) {
-        if (err.message && (err.message.includes("Incorrect password") || err.message.includes("No account found"))) {
-          showToast(err.message, "error");
-          return;
-        }
-        console.warn("API login error, falling back to local storage:", err.message);
+      wizardState.selectedCareer = state.user.career;
+      wizardState.skillsList = [...(state.user.skills || [])];
+
+      saveStateToLocalStorage();
+      showToast(`Welcome to GetCareerPilot, ${username}! Profile created.`, "success");
+      if (typeof onStageChange === "function") onStageChange(stage);
+      showDashboardWorkspace();
+    } catch (err) {
+      if (err.message && err.message.includes("already exists")) {
+        showToast(err.message, "warning");
+        setAuthMode("login");
+        if (emailInput) emailInput.value = email;
+      } else {
+        showToast(err.message || "Signup failed. Please try again.", "error");
       }
     }
+  } else {
+    // Login flow
+    try {
+      let u = null;
+      if (window.ApiClient) {
+        const res = await ApiClient.login(email, password);
+        u = res.user;
+      } else {
+        const accounts = getRegisteredAccounts();
+        const account = accounts[email];
+        if (!account) {
+          throw new Error("No account found for this email. Click 'Create Account' to sign up.");
+        }
+        if (account.password !== password) {
+          throw new Error("Incorrect password. Please try again.");
+        }
+        u = account;
+      }
 
-    // Client-side Fallback Login
-    const accounts = getRegisteredAccounts();
-    const account = accounts[email];
-    if (!account) {
-      showToast("No account found for this email. Click 'Create Account' to sign up.", "error");
-      return;
+      state.user = {
+        username: u.username,
+        email: u.email,
+        career: u.career || "frontend-developer",
+        stage: u.stage || state.academicStage || "Class 10",
+        level: u.level || "intermediate",
+        hours: u.hours || 15,
+        skills: u.skills || []
+      };
+      state.academicStage = state.user.stage;
+      state.activeRoadmap = u.activeRoadmap || null;
+      state.checklistProgress = u.checklistProgress || {};
+      state.chatHistory = u.chatHistory || [];
+      state.streakCount = u.streakCount || 1;
+      state.lastActiveDate = u.lastActiveDate || "";
+      state.careerRecommendations = u.careerRecommendations || null;
+      if (u.apiKey) state.apiKey = u.apiKey;
+
+      wizardState.selectedCareer = state.user.career;
+      wizardState.skillsList = [...state.user.skills];
+
+      saveStateToLocalStorage();
+      showToast(`Welcome back, ${u.username}! Signed in successfully.`, "success");
+      if (typeof onStageChange === "function") onStageChange(state.academicStage);
+      showDashboardWorkspace();
+    } catch (err) {
+      showToast(err.message || "Login failed. Please try again.", "error");
     }
-
-    if (account.password !== password) {
-      showToast("Incorrect password. Please try again.", "error");
-      return;
-    }
-
-    state.user = {
-      username: account.username,
-      email: account.email,
-      career: account.career || "frontend-developer",
-      level: account.level || "intermediate",
-      hours: account.hours || 15,
-      skills: account.skills || []
-    };
-    state.activeRoadmap = account.activeRoadmap || null;
-    state.checklistProgress = account.checklistProgress || {};
-    state.chatHistory = account.chatHistory || [];
-    state.streakCount = account.streakCount || 1;
-    state.lastActiveDate = account.lastActiveDate || "";
-    state.careerRecommendations = account.careerRecommendations || null;
-
-    wizardState.selectedCareer = state.user.career;
-    wizardState.skillsList = [...state.user.skills];
-
-    saveStateToLocalStorage();
-    showToast(`Welcome back, ${account.username}! Signed in successfully.`, "success");
-    showDashboardWorkspace();
   }
 }
 

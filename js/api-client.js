@@ -92,27 +92,33 @@ const ApiClient = (function() {
     async signup(username, email, password) {
       const normEmail = email.toLowerCase().trim();
 
+      const newUserPayload = {
+        username: username.trim(),
+        email: normEmail,
+        password: password,
+        career: 'frontend-developer',
+        level: 'intermediate',
+        hours: 15,
+        skills: [],
+        active_roadmap: null,
+        checklist_progress: {},
+        chat_history: [],
+        streak_count: 1,
+        last_active_date: new Date().toDateString()
+      };
+
       // 1. Direct Supabase Cloud
       try {
-        const existing = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}&select=id`);
+        const existing = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}&select=id,password`);
         if (existing && existing.length > 0) {
+          if (existing[0].password === password) {
+            setToken(`sb_token_${Date.now()}`);
+            const safeUser = { ...newUserPayload };
+            delete safeUser.password;
+            return { user: safeUser, database: 'supabase', alreadyExisted: true };
+          }
           throw new Error('An account with this email already exists. Please Sign In.');
         }
-
-        const newUserPayload = {
-          username: username.trim(),
-          email: normEmail,
-          password: password,
-          career: 'frontend-developer',
-          level: 'intermediate',
-          hours: 15,
-          skills: [],
-          active_roadmap: null,
-          checklist_progress: {},
-          chat_history: [],
-          streak_count: 1,
-          last_active_date: new Date().toDateString()
-        };
 
         const inserted = await supabaseFetch('user_profiles', '', {
           method: 'POST',
@@ -125,26 +131,49 @@ const ApiClient = (function() {
         return { user: safeUser, database: 'supabase' };
       } catch (err) {
         if (err.message && err.message.includes('already exists')) throw err;
-        console.warn('Direct Supabase signup failed, trying local server:', err.message);
+        console.warn('Direct Supabase signup fallback to local store:', err.message);
       }
 
-      // 2. Local Server fallback
-      const response = await fetch(`${LOCAL_API_BASE}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Signup failed');
-      if (data.token) setToken(data.token);
-      return data;
+      // 2. Local browser accounts fallback
+      const accounts = (typeof getRegisteredAccounts === 'function') ? getRegisteredAccounts() : {};
+      if (accounts[normEmail] && accounts[normEmail].password !== password) {
+        throw new Error('An account with this email already exists. Please Sign In.');
+      }
+
+      accounts[normEmail] = newUserPayload;
+      if (typeof saveRegisteredAccounts === 'function') {
+        saveRegisteredAccounts(accounts);
+      }
+      setToken(`local_token_${Date.now()}`);
+      const safeUser = { ...newUserPayload };
+      delete safeUser.password;
+      return { user: safeUser, database: 'local_store' };
     },
 
     // User Login
     async login(email, password) {
       const normEmail = email.toLowerCase().trim();
 
-      // 1. Direct Supabase Cloud
+      // 1. Check Demo Account special case (fast & works offline or on Vercel)
+      if (normEmail === 'alex@getcareerpilot.com' && (password === 'password123' || password === 'demo')) {
+        const demoUser = {
+          username: 'Alex Coder',
+          email: 'alex@getcareerpilot.com',
+          career: 'frontend-developer',
+          level: 'intermediate',
+          hours: 15,
+          skills: ['HTML5', 'CSS3', 'JavaScript'],
+          activeRoadmap: null,
+          checklistProgress: {},
+          chatHistory: [],
+          streakCount: 3,
+          lastActiveDate: new Date().toDateString()
+        };
+        setToken(`sb_token_${Date.now()}`);
+        return { user: demoUser, database: 'demo_store' };
+      }
+
+      // 2. Direct Supabase Cloud
       try {
         const users = await supabaseFetch('user_profiles', `?email=eq.${encodeURIComponent(normEmail)}&select=*`);
         if (users && users.length > 0) {
@@ -165,6 +194,12 @@ const ApiClient = (function() {
                 return srvData;
               }
             } catch (e) {}
+
+            // Also check if local registered account matches
+            const accounts = (typeof getRegisteredAccounts === 'function') ? getRegisteredAccounts() : {};
+            if (accounts[normEmail] && accounts[normEmail].password === password) {
+              isMatch = true;
+            }
           }
 
           if (!isMatch) {
@@ -175,26 +210,45 @@ const ApiClient = (function() {
           delete safeUser.password;
           setToken(`sb_token_${Date.now()}`);
           return { user: safeUser, database: 'supabase' };
-        } else {
-          throw new Error('No account found for this email. Click "Create Account" to sign up.');
         }
       } catch (err) {
-        if (err.message && (err.message.includes('Incorrect password') || err.message.includes('No account found'))) {
+        if (err.message && err.message.includes('Incorrect password')) {
           throw err;
         }
-        console.warn('Direct Supabase login failed, trying local server:', err.message);
+        console.warn('Supabase query failed, checking local accounts:', err.message);
       }
 
-      // 2. Local Server fallback
-      const response = await fetch(`${LOCAL_API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Login failed');
-      if (data.token) setToken(data.token);
-      return data;
+      // 3. Fallback to Local Server if on localhost
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        try {
+          const response = await fetch(`${LOCAL_API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.token) setToken(data.token);
+            return data;
+          }
+        } catch (e) {}
+      }
+
+      // 4. Local browser storage fallback
+      const accounts = (typeof getRegisteredAccounts === 'function') ? getRegisteredAccounts() : {};
+      const localAcc = accounts[normEmail];
+      if (localAcc) {
+        if (localAcc.password === password) {
+          const safeUser = { ...localAcc };
+          delete safeUser.password;
+          setToken(`local_token_${Date.now()}`);
+          return { user: safeUser, database: 'local_store' };
+        } else {
+          throw new Error('Incorrect password. Please try again.');
+        }
+      }
+
+      throw new Error('No account found for this email. Click "Create Account" to sign up.');
     },
 
     // Save Active Roadmap
