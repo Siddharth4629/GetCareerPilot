@@ -371,12 +371,12 @@ body {
 
 .sidebar-logo-text {
   font-family: var(--font-heading);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 800;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #ffffff, #c7d2fe);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+  color: var(--primary) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--primary) !important;
   white-space: nowrap;
 }
 
@@ -3043,4 +3043,157 @@ body {
   justify-content: center;
   color: var(--secondary);
   flex-shrink: 0;
+}
+
+
+/* ======================================================== */
+/* HIGH-CONTRAST TYPOGRAPHY & UI/UX ALIGNMENT ENHANCEMENTS  */
+/* ======================================================== */
+
+/* Force all card titles and headings to high-contrast Dark Navy */
+h1, h2, h3, h4, h5, h6,
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
+.ai-glow-card h1, .ai-glow-card h2, .ai-glow-card h3, .ai-glow-card h4,
+.modal-dialog h1, .modal-dialog h2, .modal-dialog h3, .modal-dialog h4,
+.content-header h1 {
+  color: var(--primary) !important;
+}
+
+/* Sidebar Logo High Contrast */
+.sidebar-logo-text {
+  font-family: var(--font-heading) !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--primary) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--primary) !important;
+  white-space: nowrap !important;
+}
+
+/* Sidebar Width & Alignment */
+.sidebar {
+  width: 275px !important;
+  padding: 24px 14px !important;
+}
+
+.main-content {
+  margin-left: 275px !important;
+  padding: 32px 36px !important;
+}
+
+.dashboard-wrapper.sidebar-collapsed .main-content {
+  margin-left: 76px !important;
+}
+
+.sidebar-item a {
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  gap: 12px !important;
+}
+
+.sidebar-item a span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Stage Selector Dropdown Styling */
+.stage-selector-pill {
+  background: #EEF2FF !important;
+  border: 1px solid #C7D2FE !important;
+  padding: 6px 14px !important;
+  border-radius: 10px !important;
+}
+
+#stage-select-global {
+  background: transparent !important;
+  border: none !important;
+  color: #0F172A !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+
+select option {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* Metrics Row & Card Layout */
+.metrics-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+.metric-card {
+  padding: 16px 18px !important;
+  gap: 14px !important;
+  min-width: 0 !important;
+}
+
+.metric-icon {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.metric-info {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.metric-value {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  color: var(--primary) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.metric-label {
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  margin-top: 3px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* AI Badges High Contrast */
+.ai-badge {
+  background: #EEF2FF !important;
+  border: 1px solid #C7D2FE !important;
+  color: #4F46E5 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 3px 9px !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+}
+
+/* Drag and Drop Text High Contrast */
+.drop-text, .drag-drop-zone p {
+  color: var(--text-primary) !important;
+}
+
+/* Pomodoro Timer High Contrast */
+#pomodoro-timer-display {
+  color: var(--primary) !important;
+}
+
+/* Custom Career Write-In Input High Contrast */
+.custom-career-input {
+  background: #FFFFFF !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
 }

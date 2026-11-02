@@ -2819,31 +2819,12 @@ function updateStageUI(stage) {
     if (trackerNav) trackerNav.style.display = "flex";
   }
 
-  // Adaptive Dashboard Hero Banner
-  const heroTitle = document.querySelector(".ai-glow-card h3");
-  const heroSubtitle = document.querySelector(".ai-glow-card p");
-  const heroBtn = document.querySelector(".ai-glow-card button");
-
-  if (heroTitle && heroSubtitle && heroBtn) {
-    if (stage === "Class 10") {
-      heroTitle.innerText = "Class 9-10 Stream & Subject Selection Hub";
-      heroSubtitle.innerText = "Discover your cognitive strengths with our 10-question quiz, compare Science PCM/PCB vs Commerce vs Humanities, and map your 11th track.";
-      heroBtn.innerHTML = `Explore Stream Guide <i data-lucide="arrow-right"></i>`;
-      heroBtn.setAttribute("onclick", "switchTab('stream-guide')");
-    } else if (stage === "Class 12") {
-      heroTitle.innerText = "Class 11-12 College, Exam & Scholarship Explorer";
-      heroSubtitle.innerText = "Evaluate 25+ undergraduate degrees, track JEE/NEET/CUET/CLAT deadlines, and discover central merit scholarships.";
-      heroBtn.innerHTML = `Explore Colleges & Exams <i data-lucide="arrow-right"></i>`;
-      heroBtn.setAttribute("onclick", "switchTab('college-explorer')");
-    } else {
-      heroTitle.innerText = "Universal Career Discovery & Development Platform";
-      heroSubtitle.innerText = "AI roadmaps across 12 industries, resume gap audits, AI mock interviews, and daily study planning.";
-      heroBtn.innerHTML = `Explore Career Discovery <i data-lucide="arrow-right"></i>`;
-      heroBtn.setAttribute("onclick", "switchTab('explorer')");
-    }
+  // Adaptive Dashboard Hero Banner & Metrics Render
+  if (document.getElementById("dashboard-stage-banner-wrapper") || (state.activeTab === "dashboard")) {
+    renderDashboard();
   }
 
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 }
 
 // ==========================================
