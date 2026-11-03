@@ -1990,24 +1990,91 @@ body {
 /* GETCAREERPILOT REDESIGN ENHANCEMENTS       */
 /* ========================================== */
 
-/* 1. Quiz Option Cards */
+/* 1. Quiz Option Cards (High-Contrast Clean SaaS) */
 .quiz-option-card {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
 }
 
 .quiz-option-card:hover {
-  border-color: rgba(99, 102, 241, 0.5) !important;
-  background: rgba(99, 102, 241, 0.08) !important;
+  border-color: #818CF8 !important;
+  background: #F8FAFC !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08) !important;
 }
 
 .quiz-option-card.selected {
-  border-color: var(--color-teal) !important;
-  background: rgba(20, 184, 166, 0.1) !important;
-  box-shadow: 0 0 20px rgba(20, 184, 166, 0.2) !important;
+  background: #EEF2FF !important;
+  border-color: #4F46E5 !important;
+  box-shadow: 0 0 0 1px #4F46E5, 0 6px 18px rgba(79, 70, 229, 0.12) !important;
+}
+
+.quiz-option-card .quiz-option-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #CBD5E1;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-card.selected .quiz-option-radio {
+  border-color: #4F46E5 !important;
+  background: #4F46E5 !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+}
+
+.quiz-option-card .quiz-option-text {
+  font-size: 14.5px !important;
+  color: #0F172A !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  margin-bottom: 6px !important;
+}
+
+.quiz-option-card.selected .quiz-option-text {
+  color: #1E1B4B !important;
+  font-weight: 700 !important;
+}
+
+.quiz-option-card .quiz-tag-trait {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+  background: #EEF2FF !important;
+  color: #4338CA !important;
+  border: 1px solid #C7D2FE !important;
+  display: inline-block !important;
+}
+
+.quiz-option-card.selected .quiz-tag-trait {
+  background: #4F46E5 !important;
+  color: #FFFFFF !important;
+  border-color: #4F46E5 !important;
+}
+
+.quiz-option-card .quiz-tag-holland {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+  border: 1px solid #E2E8F0 !important;
+  display: inline-block !important;
 }
 
 /* 2. Stream Comparison Matrix */

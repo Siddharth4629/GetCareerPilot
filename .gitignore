@@ -18,3 +18,5 @@ desktop.ini
 .idea/
 *.sublime-project
 *.sublime-workspace
+# Temporary and scratch test files
+scratch/

@@ -233,7 +233,7 @@ function setAuthMode(mode) {
     if (subtitle) subtitle.innerText = "Welcome back! Sign in to continue your career journey";
   }
 
-  lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function fillDemoCredentials() {
@@ -3302,7 +3302,7 @@ function renderJobOpenings() {
     div.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <h5 style="font-size: 15px; font-weight: 700; color: #fff;">${job.title}</h5>
+          <h5 style="font-size: 15px; font-weight: 700; color: var(--primary);">${job.title}</h5>
           <span style="font-size: 12px; color: var(--text-secondary);">${job.company} • ${job.location}</span>
         </div>
         <span class="ai-badge" style="${score >= 70 ? 'border-color: var(--color-teal); color: var(--color-teal);' : 'border-color: var(--color-indigo); color: var(--color-indigo);'}">${score}% Match</span>
@@ -3374,7 +3374,7 @@ function renderJobGuidanceModalContent(job, g) {
 
   const questionsHTML = (g.tailoredInterviewQuestions || []).map((q, idx) => `
     <div class="qa-card">
-      <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">
         Q${idx + 1}: ${q.question}
       </div>
       <div style="font-size: 12px; color: var(--color-teal); line-height: 1.4;">
@@ -3408,14 +3408,14 @@ function renderJobGuidanceModalContent(job, g) {
     <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
         <i data-lucide="zap" style="width: 16px; height: 16px; color: var(--color-teal);"></i>
-        <h5 style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase;">7-Day Sprint Plan</h5>
+        <h5 style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase;">7-Day Sprint Plan</h5>
       </div>
       <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.5;">${g.oneWeekSprintPlan}</p>
     </div>
 
     <!-- Tailored Interview Questions -->
     <div style="margin-bottom: 20px;">
-      <h5 style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+      <h5 style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
         <i data-lucide="help-circle" style="width: 16px; height: 16px; color: var(--color-indigo);"></i> Anticipated Interview Questions & Defense
       </h5>
       ${questionsHTML}
@@ -3423,7 +3423,7 @@ function renderJobGuidanceModalContent(job, g) {
 
     <!-- Recommended STAR Resume Bullets -->
     <div>
-      <h5 style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+      <h5 style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
         <i data-lucide="file-check-2" style="width: 16px; height: 16px; color: var(--color-pink);"></i> Tailored STAR Resume Bullets to Add
       </h5>
       ${bulletsHTML}
@@ -3683,16 +3683,16 @@ function renderAssessment() {
   optionsList.innerHTML = currentQ.options.map((opt, idx) => {
     const isSelected = currentAnswer && currentAnswer.text === opt.text;
     return `
-      <div class="card quiz-option-card ${isSelected ? 'selected' : ''}" onclick="selectQuizOption(${idx})" style="padding: 16px 20px; cursor: pointer; border: 1px solid ${isSelected ? 'var(--color-teal)' : 'var(--border-glass)'}; background: ${isSelected ? 'rgba(20, 184, 166, 0.08)' : 'rgba(15, 23, 42, 0.5)'}; border-radius: 12px; transition: all 0.2s ease;">
+      <div class="card quiz-option-card ${isSelected ? 'selected' : ''}" onclick="selectQuizOption(${idx})">
         <div style="display: flex; align-items: flex-start; gap: 14px;">
-          <div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid ${isSelected ? 'var(--color-teal)' : 'var(--border-glass)'}; background: ${isSelected ? 'var(--color-teal)' : 'transparent'}; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0;">
-            ${isSelected ? '<i data-lucide="check" style="width: 14px; height: 14px; color: #fff;"></i>' : ''}
+          <div class="quiz-option-radio">
+            ${isSelected ? '<i data-lucide="check" style="width: 13px; height: 13px; color: #FFFFFF; stroke-width: 3;"></i>' : ''}
           </div>
-          <div>
-            <div style="font-size: 14px; color: #fff; font-weight: 500; line-height: 1.45;">${opt.text}</div>
-            <div style="display: flex; gap: 8px; margin-top: 6px;">
-              <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--color-teal); border: 1px solid rgba(99, 102, 241, 0.3);">${opt.trait}</span>
-              <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-muted);">Holland: ${opt.riasec}</span>
+          <div style="flex: 1;">
+            <div class="quiz-option-text">${opt.text}</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="quiz-tag-trait">${opt.trait}</span>
+              <span class="quiz-tag-holland">Holland: ${opt.riasec}</span>
             </div>
           </div>
         </div>
@@ -3791,16 +3791,16 @@ function renderAssessmentResults(res) {
   };
 
   container.innerHTML = `
-    <div class="card col-12" style="padding: 30px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(20, 184, 166, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3);">
+    <div class="card col-12" style="padding: 30px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(20, 184, 166, 0.06)); border: 1.5px solid #C7D2FE;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
         <div>
-          <div style="font-size: 11.5px; text-transform: uppercase; font-weight: 700; color: var(--color-teal); letter-spacing: 0.08em; margin-bottom: 4px;">
+          <div style="font-size: 11.5px; text-transform: uppercase; font-weight: 700; color: #4F46E5; letter-spacing: 0.08em; margin-bottom: 4px;">
             Aptitude & Strengths Archetype
           </div>
-          <h2 style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: #fff;">
+          <h2 style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--primary);">
             ${res.archetypeTitle}
           </h2>
-          <p style="font-size: 14px; color: var(--text-secondary); max-width: 650px; line-height: 1.55; margin-top: 8px;">
+          <p style="font-size: 14px; color: var(--text-secondary); max-width: 650px; line-height: 1.6; margin-top: 8px;">
             ${res.archetypeDesc}
           </p>
         </div>
@@ -3811,32 +3811,32 @@ function renderAssessmentResults(res) {
 
       <!-- RIASEC Personality Traits -->
       <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
-        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
-          <span style="font-size: 11px; color: var(--text-muted); display: block;">Primary Holland Trait</span>
-          <span style="font-size: 14px; font-weight: 700; color: var(--color-teal);">${res.primaryTrait}</span>
+        <div style="padding: 10px 18px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block; font-weight: 500;">Primary Holland Trait</span>
+          <span style="font-size: 15px; font-weight: 700; color: #4338CA;">${res.primaryTrait}</span>
         </div>
-        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
-          <span style="font-size: 11px; color: var(--text-muted); display: block;">Secondary Trait</span>
-          <span style="font-size: 14px; font-weight: 700; color: #38bdf8;">${res.secondaryTrait}</span>
+        <div style="padding: 10px 18px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block; font-weight: 500;">Secondary Trait</span>
+          <span style="font-size: 15px; font-weight: 700; color: #0284C7;">${res.secondaryTrait}</span>
         </div>
-        <div style="padding: 8px 16px; border-radius: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);">
-          <span style="font-size: 11px; color: var(--text-muted); display: block;">Key Strengths</span>
-          <span style="font-size: 13px; font-weight: 600; color: #fff;">${res.keyTraits.slice(0, 3).join(" • ")}</span>
+        <div style="padding: 10px 18px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block; font-weight: 500;">Key Strengths</span>
+          <span style="font-size: 14px; font-weight: 600; color: #0F172A;">${res.keyTraits.slice(0, 3).join(" • ")}</span>
         </div>
       </div>
     </div>
 
     <!-- Stage-Adaptive Action Box -->
-    <div class="card col-12" style="padding: 24px; margin-bottom: 24px; border-left: 4px solid var(--color-teal);">
-      <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-        <i data-lucide="compass" style="width: 20px; height: 20px; color: var(--color-teal);"></i> Recommended Next Step for ${state.academicStage || "Your Academic Level"}
+    <div class="card col-12" style="padding: 24px; margin-bottom: 24px; border-left: 4px solid var(--secondary); background: #FFFFFF;">
+      <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="compass" style="width: 20px; height: 20px; color: var(--secondary);"></i> Recommended Next Step for ${state.academicStage || "Your Academic Level"}
       </h3>
       <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
         ${res.stageAdvice}
       </p>
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         ${(res.recommendedStreamsOrDegrees || []).map(item => `
-          <span style="padding: 6px 14px; border-radius: 20px; background: rgba(99, 102, 241, 0.15); color: #fff; font-size: 12.5px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.4);">
+          <span style="padding: 6px 14px; border-radius: 20px; background: #EEF2FF; color: #4338CA; font-size: 12.5px; font-weight: 600; border: 1px solid #C7D2FE;">
             ✨ ${item}
           </span>
         `).join("")}
@@ -3844,20 +3844,20 @@ function renderAssessmentResults(res) {
     </div>
 
     <!-- Top 3 Sector Matches -->
-    <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px;">
+    <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 16px;">
       Top Recommended Industry Sectors
     </h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 24px;">
       ${res.topDomains.map((dom, i) => `
-        <div class="card" style="padding: 20px; border-top: 3px solid ${i === 0 ? 'var(--color-teal)' : i === 1 ? '#38bdf8' : '#ec4899'};">
+        <div class="card" style="padding: 22px; border-top: 3px solid ${i === 0 ? '#4F46E5' : i === 1 ? '#0284C7' : '#EC4899'}; background: #FFFFFF; border-left: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Match Rank #${i + 1}</span>
-            <span style="font-size: 12px; font-weight: 700; color: var(--color-teal);">${dom.score * 10}% Compatibility</span>
+            <span style="font-size: 12px; font-weight: 700; color: #4F46E5;">${dom.score * 10}% Compatibility</span>
           </div>
-          <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">
+          <h4 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
             ${domainNames[dom.id] || dom.id}
           </h4>
-          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 16px;">
+          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
             Strong alignment with your ${res.primaryTrait} problem-solving approach and natural interests.
           </p>
           <div style="display: flex; gap: 8px;">
@@ -3869,7 +3869,7 @@ function renderAssessmentResults(res) {
       `).join("")}
     </div>
 
-    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 10px;">
+    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 10px; flex-wrap: wrap;">
       <button class="btn btn-secondary" onclick="switchTab('stream-guide')" style="padding: 10px 20px;">
         <i data-lucide="layers"></i> View Stream Guide (Class 9-10)
       </button>
@@ -3882,7 +3882,7 @@ function renderAssessmentResults(res) {
     </div>
   `;
 
-  lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function restartAssessment() {
@@ -4103,7 +4103,7 @@ function renderStreamGuide() {
   if (tbody) {
     tbody.innerHTML = streams.map(s => `
       <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s ease;">
-        <td style="padding: 14px; font-weight: 700; color: #fff;">
+        <td style="padding: 14px; font-weight: 700; color: var(--primary);">
           <span style="color: ${s.color};">●</span> ${s.title}
         </td>
         <td style="padding: 14px; color: var(--text-secondary); max-width: 220px;">${s.badge}</td>
@@ -4127,7 +4127,7 @@ function renderStreamGuide() {
             </span>
           </div>
 
-          <h3 style="font-family: var(--font-heading); font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;">
+          <h3 style="font-family: var(--font-heading); font-size: 19px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">
             ${s.title}
           </h3>
           <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
@@ -4138,8 +4138,8 @@ function renderStreamGuide() {
             ${s.overview}
           </p>
 
-          <div style="margin-bottom: 14px; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px;">
-            <div style="font-size: 11.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Core Compulsory Subjects:</div>
+          <div style="margin-bottom: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 8px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">Core Compulsory Subjects:</div>
             <div style="font-size: 12px; color: var(--color-teal); line-height: 1.4;">${s.coreSubjects.join(" • ")}</div>
           </div>
 
@@ -4149,7 +4149,7 @@ function renderStreamGuide() {
           </div>
 
           <div style="margin-bottom: 16px;">
-            <div style="font-size: 11.5px; font-weight: 700; color: #fff; margin-bottom: 4px;">Direct Career Trajectories:</div>
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">Direct Career Trajectories:</div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
               ${s.careerPaths.slice(0, 4).map(cp => `<li>${cp}</li>`).join("")}
             </ul>
@@ -4396,12 +4396,12 @@ function filterDegrees() {
           </span>
         </div>
 
-        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px;">
+        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
           ${c.degree}
         </h3>
 
-        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
-          <strong style="color: #fff;">Eligibility:</strong> ${c.eligibility}
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 10px; border-radius: 6px;">
+          <strong style="color: var(--primary);">Eligibility:</strong> ${c.eligibility}
         </div>
 
         <div style="font-size: 12px; color: var(--color-teal); font-weight: 600; margin-bottom: 10px;">
@@ -4409,11 +4409,11 @@ function filterDegrees() {
         </div>
 
         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-          <strong style="color: #fff;">Gateway Entrances:</strong> ${c.entranceExams.join(", ")}
+          <strong style="color: var(--primary);">Gateway Entrances:</strong> ${c.entranceExams.join(", ")}
         </div>
 
         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
-          <strong style="color: #fff;">Top Institutes:</strong> ${c.topInstitutes.slice(0, 4).join(" • ")}
+          <strong style="color: var(--primary);">Top Institutes:</strong> ${c.topInstitutes.slice(0, 4).join(" • ")}
         </div>
       </div>
 
@@ -4459,7 +4459,7 @@ function filterExams() {
           </span>
         </div>
 
-        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
           ${item.name}
         </h3>
 
@@ -4471,8 +4471,8 @@ function filterExams() {
           ${item.description}
         </p>
 
-        <div style="font-size: 12px; color: var(--text-muted); background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px; margin-bottom: 16px;">
-          <strong style="color: #fff;">Eligibility:</strong> ${item.eligibility}
+        <div style="font-size: 12px; color: var(--text-muted); background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 10px; border-radius: 6px; margin-bottom: 16px;">
+          <strong style="color: var(--primary);">Eligibility:</strong> ${item.eligibility}
         </div>
       </div>
 
@@ -4660,11 +4660,11 @@ function renderDailyPlanner() {
   }
 
   list.innerHTML = tasks.map(task => `
-    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 8px; transition: all 0.2s ease;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; transition: all 0.2s ease;">
       <div style="display: flex; align-items: center; gap: 12px;">
         <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="togglePlannerTarget('${task.id}')" style="width: 18px; height: 18px; accent-color: var(--color-teal); cursor: pointer;">
         <div>
-          <span style="font-size: 13.5px; color: ${task.completed ? 'var(--text-muted)' : '#fff'}; text-decoration: ${task.completed ? 'line-through' : 'none'}; font-weight: 500;">
+          <span style="font-size: 13.5px; color: ${task.completed ? 'var(--text-muted)' : 'var(--text-primary)'}; text-decoration: ${task.completed ? 'line-through' : 'none'}; font-weight: 500;">
             ${task.text}
           </span>
           <div style="display: flex; gap: 8px; margin-top: 4px;">
