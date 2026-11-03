@@ -617,7 +617,7 @@
   <div id="app-workspace" class="dashboard-wrapper" style="display: none;">
     
     <!-- Sidebar Navigation -->
-    <aside id="app-sidebar" class="sidebar">
+        <aside id="app-sidebar" class="sidebar">
       <div class="sidebar-logo">
         <div class="sidebar-logo-icon" onclick="toggleSidebar()" title="Toggle Sidebar" style="cursor: pointer;">
           <i data-lucide="compass"></i>
@@ -628,8 +628,9 @@
         </button>
       </div>
 
-                  <nav class="sidebar-menu">
-        <!-- Main Navigation -->
+      <nav class="sidebar-menu">
+        <!-- MAIN MENU -->
+        <div class="sidebar-category-header">MAIN MENU</div>
         <li id="nav-dashboard" class="sidebar-item active" onclick="switchTab('dashboard')" data-tooltip="Dashboard" title="Dashboard">
           <a href="#"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
         </li>
@@ -637,13 +638,10 @@
           <a href="#"><i data-lucide="compass"></i><span>Career Discovery</span></a>
         </li>
         <li id="nav-assessment" class="sidebar-item" onclick="switchTab('assessment')" data-tooltip="Interest & Aptitude Assessment" title="Interest & Aptitude Assessment">
-          <a href="#"><i data-lucide="sparkles"></i><span>Interest & Aptitude Assessment</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+          <a href="#"><i data-lucide="sparkles"></i><span>Interest Assessment</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
         </li>
-        <li id="nav-stream-guide" class="sidebar-item stage-tag-school" onclick="switchTab('stream-guide')" data-tooltip="Stream & Subject Selection" title="Stream & Subject Selection (Class 9-10)">
-          <a href="#"><i data-lucide="layers"></i><span>Stream & Subject Selection</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; margin-left: auto;">9-10</span></a>
-        </li>
-        <li id="nav-college-explorer" class="sidebar-item stage-tag-higher-sec" onclick="switchTab('college-explorer')" data-tooltip="College & Scholarship Finder" title="College & Scholarship Finder (Class 11-12)">
-          <a href="#"><i data-lucide="graduation-cap"></i><span>College & Scholarship Finder</span><span style="font-size: 9px; padding: 2px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; margin-left: auto;">11-12</span></a>
+        <li id="nav-advisor" class="sidebar-item" onclick="switchTab('advisor')" data-tooltip="AI Career Advisor" title="AI Career Advisor">
+          <a href="#"><i data-lucide="bot"></i><span>AI Career Advisor</span></a>
         </li>
         <li id="nav-generator" class="sidebar-item" onclick="switchTab('generator')" data-tooltip="My Career Roadmap" title="My Career Roadmap">
           <a href="#"><i data-lucide="route"></i><span>My Career Roadmap</span></a>
@@ -652,21 +650,45 @@
           <a href="#"><i data-lucide="messages-square"></i><span>AI Career Mentor</span></a>
         </li>
 
-        <!-- Career Development -->
-        <li id="nav-analyzer" class="sidebar-item stage-tag-college" onclick="switchTab('analyzer')" data-tooltip="Resume & Skill Gap Analyzer" title="Resume & Skill Gap Analyzer">
-          <a href="#"><i data-lucide="file-text"></i><span>Resume & Skill Gap Analyzer</span></a>
-        </li>
-        <li id="nav-mock-interview" class="sidebar-item stage-tag-college" onclick="switchTab('mock-interview')" data-tooltip="AI Mock Interview" title="AI Mock Interview">
-          <a href="#"><i data-lucide="mic"></i><span>AI Mock Interview</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
-        </li>
-        <li id="nav-planner" class="sidebar-item" onclick="switchTab('planner')" data-tooltip="Daily Learning Planner" title="Daily Learning Planner">
-          <a href="#"><i data-lucide="calendar-check"></i><span>Daily Learning Planner</span></a>
-        </li>
-        <li id="nav-tracker" class="sidebar-item stage-tag-college" onclick="switchTab('tracker')" data-tooltip="Jobs and Internships Tracker" title="Jobs and Internships Tracker">
-          <a href="#"><i data-lucide="check-square"></i><span>Jobs & Internships Tracker</span></a>
-        </li>
+        <!-- EDUCATION GUIDANCE (Shown for Class 9-12) -->
+        <div id="sidebar-sect-education" class="sidebar-group">
+          <div class="sidebar-category-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <span>EDUCATION GUIDANCE</span>
+            <span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700;">9-12</span>
+          </div>
+          <li id="nav-stream-guide" class="sidebar-item" onclick="switchTab('stream-guide')" data-tooltip="Stream & Subject Selection" title="Stream & Subject Selection Guide">
+            <a href="#"><i data-lucide="layers"></i><span>Stream & Subject Explorer</span></a>
+          </li>
+          <li id="nav-college-explorer" class="sidebar-item" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" data-tooltip="Course & College Finder" title="Course & College Finder">
+            <a href="#"><i data-lucide="graduation-cap"></i><span>Course & College Finder</span></a>
+          </li>
+          <li id="nav-scholarships" class="sidebar-item" onclick="switchTab('college-explorer'); setCollegeSubTab('exams');" data-tooltip="Scholarship & Entrance Exams" title="Scholarship & Entrance Exams">
+            <a href="#"><i data-lucide="award"></i><span>Scholarship & Exams</span></a>
+          </li>
+        </div>
 
-        <!-- Account -->
+        <!-- CAREER DEVELOPMENT (Shown for College & Graduate) -->
+        <div id="sidebar-sect-career" class="sidebar-group">
+          <div class="sidebar-category-header" style="display: flex; align-items: center; justify-content: space-between;">
+            <span>CAREER DEVELOPMENT</span>
+            <span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(168, 85, 247, 0.15); color: #c084fc; font-weight: 700;">College+</span>
+          </div>
+          <li id="nav-analyzer" class="sidebar-item" onclick="switchTab('analyzer')" data-tooltip="Resume & Skill Gap Analyzer" title="Resume & Skill Gap Analyzer">
+            <a href="#"><i data-lucide="file-text"></i><span>Resume & Skill Gap Analyzer</span></a>
+          </li>
+          <li id="nav-mock-interview" class="sidebar-item" onclick="switchTab('mock-interview')" data-tooltip="AI Mock Interview" title="AI Mock Interview">
+            <a href="#"><i data-lucide="mic"></i><span>AI Mock Interview</span><span class="ai-badge" style="font-size: 9px; padding: 2px 6px; margin-left: auto;">AI</span></a>
+          </li>
+          <li id="nav-tracker" class="sidebar-item" onclick="switchTab('tracker')" data-tooltip="Jobs and Internships Tracker" title="Jobs & Internships Tracker">
+            <a href="#"><i data-lucide="briefcase"></i><span>Jobs & Internships</span></a>
+          </li>
+          <li id="nav-planner" class="sidebar-item" onclick="switchTab('planner')" data-tooltip="My Progress" title="My Progress">
+            <a href="#"><i data-lucide="calendar-check"></i><span>My Progress</span></a>
+          </li>
+        </div>
+
+        <!-- Account / Preferences -->
+        <div class="sidebar-category-header" style="margin-top: 10px;">PREFERENCES</div>
         <li id="nav-settings" class="sidebar-item" onclick="switchTab('settings')" data-tooltip="Settings" title="Settings">
           <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
         </li>
@@ -704,9 +726,13 @@
             <i data-lucide="graduation-cap" style="width: 16px; height: 16px; color: var(--secondary);"></i>
             <span style="font-size: 12px; color: #475569; font-weight: 600; white-space: nowrap;">Academic Stage:</span>
             <select id="stage-select-global" onchange="onStageChange(this.value)" style="background: transparent; border: none; color: #0F172A; font-size: 13px; font-weight: 700; cursor: pointer; outline: none;">
-              <option value="Class 10" style="background: #FFFFFF; color: #0F172A;">🎓 Class 9-10 (School)</option>
-              <option value="Class 12" style="background: #FFFFFF; color: #0F172A;">🏛️ Class 11-12 (Higher Sec)</option>
-              <option value="College" selected style="background: #FFFFFF; color: #0F172A;">💼 College & Graduate</option>
+              <option value="Class 9" style="background: #FFFFFF; color: #0F172A;">📚 Class 9 (School)</option>
+              <option value="Class 10" style="background: #FFFFFF; color: #0F172A;">🎓 Class 10 (School)</option>
+              <option value="Class 11" style="background: #FFFFFF; color: #0F172A;">🔬 Class 11 (Higher Sec)</option>
+              <option value="Class 12" style="background: #FFFFFF; color: #0F172A;">🏛️ Class 12 (Higher Sec)</option>
+              <option value="Undergraduate" style="background: #FFFFFF; color: #0F172A;">💼 Undergraduate (College)</option>
+              <option value="Postgraduate" style="background: #FFFFFF; color: #0F172A;">🚀 Postgraduate (Master's/PhD)</option>
+              <option value="Graduate / Job Seeker" selected style="background: #FFFFFF; color: #0F172A;">👔 Graduate / Job Seeker</option>
             </select>
           </div>
         </div>
@@ -785,26 +811,45 @@
         <div class="card col-12" style="margin-bottom: 24px; padding: 22px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
             <div>
-              <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--primary);">Universal Career Explorer</h2>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--primary);">Career List</h2>
+                <i data-lucide="info" style="width: 16px; height: 16px; color: var(--text-muted); cursor: pointer;" title="Explore career pathways, required credentials, and clusters"></i>
+              </div>
               <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
-                Discover top career paths across 12 major sectors: Science, Medicine, Finance, Law, Tech, Design, Arts, and Civil Services.
+                Explore real-world careers across Medical, Law, Finance, Business, Arts, Sports, Science, Design, and Technology.
               </p>
             </div>
-            <!-- Search bar -->
-            <div style="position: relative; width: 320px; max-width: 100%;">
-              <input type="text" id="explorer-search-input" oninput="filterCareers()" placeholder="Search careers, skills, degrees..." class="input-field" style="padding-left: 38px; font-size: 13px;">
+            
+            <!-- MaiaLearning Subtabs: Search, List, Apprenticeships (Image 2) -->
+            <div style="display: flex; background: #EEF2FF; padding: 4px; border-radius: 8px; border: 1px solid #E0E7FF; gap: 4px;">
+              <button class="btn btn-secondary" onclick="document.getElementById('explorer-search-input').focus()" style="padding: 6px 14px; font-size: 12.5px; width: auto;">
+                Search
+              </button>
+              <button class="btn" style="padding: 6px 16px; font-size: 12.5px; width: auto;">
+                List
+              </button>
+              <button class="btn btn-secondary" onclick="selectExplorerDomain('engineering-tech')" style="padding: 6px 14px; font-size: 12.5px; width: auto;">
+                Apprenticeships
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+            <div style="position: relative; flex: 1; min-width: 280px;">
+              <input type="text" id="explorer-search-input" oninput="filterCareers()" placeholder="Search career title, skill, pathway, or cluster..." class="input-field" style="padding-left: 38px; font-size: 13px;">
               <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
             </div>
           </div>
 
-          <!-- Domain Filter Chips -->
+          <!-- Domain / Cluster Filter Chips -->
           <div id="explorer-domain-chips" style="display: flex; gap: 8px; flex-wrap: wrap;">
             <!-- Dynamically populated by app.js -->
           </div>
         </div>
 
-        <!-- Career Cards Grid -->
-        <div id="explorer-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+        <!-- Career Cards Grid (Image 2 MaiaLearning Style) -->
+        <div id="explorer-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;">
           <!-- Dynamically populated by app.js -->
         </div>
       </section>
@@ -867,46 +912,175 @@
         <div class="card col-12" style="margin-bottom: 24px; padding: 22px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
             <div>
-              <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--primary);">College & Scholarship Explorer (Class 11-12)</h2>
+              <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--primary);">College & Course Explorer (Class 11-12 & Beyond)</h2>
               <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
-                Explore 25+ undergraduate degrees, top institutions, fee structures, national entrance exams, and central scholarship schemes.
+                Explore leading institutions, filter by majors and match levels, browse 25+ undergraduate degrees, and track national entrance examinations.
               </p>
             </div>
-            <!-- Sub tabs: Degrees vs Exams & Scholarships -->
-            <div style="display: flex; background: rgba(15, 23, 42, 0.7); padding: 4px; border-radius: 8px; border: 1px solid var(--border-glass);">
-              <button id="college-subtab-degrees" class="btn" onclick="setCollegeSubTab('degrees')" style="padding: 6px 16px; font-size: 13px;">
+            <!-- Sub tabs: Find Colleges vs Degrees vs Exams -->
+            <div style="display: flex; background: #EEF2FF; padding: 4px; border-radius: 10px; border: 1px solid #E0E7FF; gap: 4px; flex-wrap: wrap;">
+              <button id="college-subtab-colleges" class="btn" onclick="setCollegeSubTab('colleges')" style="padding: 7px 16px; font-size: 12.5px;">
+                🏛️ Find Colleges
+              </button>
+              <button id="college-subtab-degrees" class="btn btn-secondary" onclick="setCollegeSubTab('degrees')" style="padding: 7px 16px; font-size: 12.5px;">
                 🎓 Degrees Directory (25+)
               </button>
-              <button id="college-subtab-exams" class="btn btn-secondary" onclick="setCollegeSubTab('exams')" style="padding: 6px 16px; font-size: 13px;">
-                🏛️ Entrance Exams & Scholarships
+              <button id="college-subtab-exams" class="btn btn-secondary" onclick="setCollegeSubTab('exams')" style="padding: 7px 16px; font-size: 12.5px;">
+                📜 Entrance Exams & Scholarships
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Search and filters -->
-          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <div style="position: relative; flex: 1; min-width: 260px;">
-              <input type="text" id="college-search-input" oninput="filterColleges()" placeholder="Filter degrees, exams, institutions..." class="input-field" style="padding-left: 38px; font-size: 13px;">
-              <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+        <!-- SUBTAB 1: FIND COLLEGES DIRECTORY (Image 3) -->
+        <div id="college-directory-container" style="display: block;">
+          <div class="card col-12" style="padding: 24px; margin-bottom: 24px; border: 1px solid var(--border-glass);">
+            <!-- Title & Info -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                  Find Colleges <span style="font-size: 11px; font-weight: 600; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 6px;">Global & National Directory</span>
+                </h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                  Search institutions, compare acceptance rates, analyze match levels (Reach, Target, Safety), and save to your target list.
+                </p>
+              </div>
+              <button class="btn btn-secondary" onclick="resetCollegeFilters()" style="padding: 6px 14px; font-size: 12px; width: auto;">
+                <i data-lucide="rotate-ccw"></i> Reset Filters
+              </button>
             </div>
-            <select id="college-stream-filter" onchange="filterColleges()" class="input-field" style="width: auto; font-size: 13px;">
-              <option value="all">All Academic Streams</option>
-              <option value="Science (PCM)">Science (PCM)</option>
-              <option value="Science (PCB)">Science (PCB)</option>
-              <option value="Commerce">Commerce</option>
-              <option value="All Streams">Open to All Streams</option>
-            </select>
+
+            <!-- Search Filters (Image 3) -->
+            <div class="colleges-filter-box" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+              <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="filter" style="width: 14px; height: 14px; color: var(--secondary);"></i> Search Filters
+              </div>
+              
+              <!-- Filter Row 1 -->
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div style="position: relative;">
+                  <input type="text" id="college-name-search" oninput="renderCollegesTable()" placeholder="Search colleges by name..." class="input-field" style="padding-left: 36px; font-size: 13px; height: 38px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <i data-lucide="search" style="position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: #64748b;"></i>
+                </div>
+                <select id="college-country-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 13px; height: 38px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Countries</option>
+                  <option value="United States">United States</option>
+                  <option value="India">India</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                </select>
+                <select id="college-type-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 13px; height: 38px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Types</option>
+                  <option value="Public">Public</option>
+                  <option value="Private">Private</option>
+                </select>
+              </div>
+
+              <!-- Filter Row 2 -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) auto; gap: 10px; align-items: center;">
+                <select id="college-major-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 12.5px; height: 36px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Majors</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Medicine / Healthcare">Medicine / Healthcare</option>
+                  <option value="Business & Finance">Business & Finance</option>
+                  <option value="Law & Legal">Law & Legal</option>
+                  <option value="Arts & Humanities">Arts & Humanities</option>
+                  <option value="Design">Design</option>
+                  <option value="Data Science">Data Science</option>
+                </select>
+                <select id="college-tuition-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 12.5px; height: 36px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Tuition Ranges</option>
+                  <option value="Under $20k">Under $20k / ₹5 Lakh</option>
+                  <option value="$20k-$50k">$20k - $50k / ₹5L-15L</option>
+                  <option value="$50k+">$50k+ / ₹15 Lakh+</option>
+                </select>
+                <select id="college-housing-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 12.5px; height: 36px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Housing Options</option>
+                  <option value="On-Campus">On-Campus</option>
+                  <option value="Off-Campus">Off-Campus</option>
+                </select>
+                <select id="college-size-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 12.5px; height: 36px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Sizes</option>
+                  <option value="Small">Small (&lt;5k)</option>
+                  <option value="Medium">Medium (5k-15k)</option>
+                  <option value="Large">Large (15k+)</option>
+                </select>
+                <select id="college-tier-filter" onchange="renderCollegesTable()" class="input-field" style="font-size: 12.5px; height: 36px; background: #fff; border-color: #cbd5e1; color: #0f172a;">
+                  <option value="all">All Tiers (Match Level)</option>
+                  <option value="Reach">Reach</option>
+                  <option value="Target">Target</option>
+                  <option value="Safety">Safety</option>
+                </select>
+                <button type="button" class="btn btn-secondary" onclick="resetCollegeFilters()" style="height: 36px; padding: 0 14px; font-size: 12px; color: #4f46e5; border-color: #cbd5e1; background: #fff; width: auto;">
+                  Clear Filters
+                </button>
+              </div>
+
+              <!-- Found Count -->
+              <div style="margin-top: 12px; font-size: 12.5px; font-weight: 600; color: #64748b;" id="college-results-count">
+                Found 19 colleges
+              </div>
+            </div>
+
+            <!-- College Table (Image 3) -->
+            <div style="overflow-x: auto; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff;">
+              <table class="colleges-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Logo</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">College Name</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Location</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Type</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Acceptance Rate</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Match Level</th>
+                    <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="colleges-table-body">
+                  <!-- Populated dynamically by renderCollegesTable() -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <!-- Degrees View Container -->
-        <div id="college-degrees-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;">
-          <!-- Dynamically populated by app.js -->
+        <!-- SUBTAB 2: DEGREES DIRECTORY -->
+        <div id="college-degrees-container" style="display: none;">
+          <div class="card col-12" style="padding: 18px; margin-bottom: 20px;">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <div style="position: relative; flex: 1; min-width: 260px;">
+                <input type="text" id="college-degree-search" oninput="filterDegrees()" placeholder="Filter degrees (e.g. B.Tech, MBBS, B.Com, Design)..." class="input-field" style="padding-left: 38px; font-size: 13px;">
+                <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+              </div>
+              <select id="college-stream-filter" onchange="filterDegrees()" class="input-field" style="width: auto; font-size: 13px;">
+                <option value="all">All Academic Streams</option>
+                <option value="Science (PCM)">Science (PCM)</option>
+                <option value="Science (PCB)">Science (PCB)</option>
+                <option value="Commerce">Commerce</option>
+                <option value="All Streams">Open to All Streams</option>
+              </select>
+            </div>
+          </div>
+          <div id="college-degrees-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+            <!-- Populated dynamically by app.js -->
+          </div>
         </div>
 
-        <!-- Exams & Scholarships Container -->
-        <div id="college-exams-container" style="display: none; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;">
-          <!-- Dynamically populated by app.js -->
+        <!-- SUBTAB 3: ENTRANCE EXAMS & SCHOLARSHIPS -->
+        <div id="college-exams-container" style="display: none;">
+          <div class="card col-12" style="padding: 18px; margin-bottom: 20px;">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <div style="position: relative; flex: 1; min-width: 260px;">
+                <input type="text" id="college-exam-search" oninput="filterExams()" placeholder="Filter exams & scholarships (e.g. JEE, NEET, CUET, INSPIRE)..." class="input-field" style="padding-left: 38px; font-size: 13px;">
+                <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+              </div>
+            </div>
+          </div>
+          <div id="college-exams-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+            <!-- Populated dynamically by app.js -->
+          </div>
         </div>
       </section>
 
@@ -1175,14 +1349,14 @@
         <div id="dashboard-stage-banner-wrapper" style="margin-bottom: 24px;"></div>
 
         <!-- Metrics Row -->
-        <div class="metrics-row">
+        <div class="metrics-row" id="dashboard-metrics-row">
           <div class="metric-card">
             <div class="metric-icon indigo">
               <i data-lucide="route"></i>
             </div>
             <div class="metric-info">
               <span id="metric-career" class="metric-value">-</span>
-              <span class="metric-label">Active Career Target</span>
+              <span class="metric-label">Active Target</span>
             </div>
           </div>
           <div class="metric-card">
@@ -1191,7 +1365,7 @@
             </div>
             <div class="metric-info">
               <span id="metric-progress" class="metric-value">0%</span>
-              <span class="metric-label">Roadmap Completion</span>
+              <span class="metric-label">Milestone Progress</span>
             </div>
           </div>
           <div class="metric-card">
@@ -1200,7 +1374,7 @@
             </div>
             <div class="metric-info">
               <span id="metric-gaps" class="metric-value">0</span>
-              <span class="metric-label">Detected Skill Gaps</span>
+              <span class="metric-label">Key Gaps / Focus</span>
             </div>
           </div>
           <div class="metric-card">
@@ -1214,55 +1388,8 @@
           </div>
         </div>
 
-        <div class="grid-container">
-          <!-- Active Roadmap Card -->
-          <div class="card col-8">
-            <div class="card-header">
-              <h3 class="card-title"><i data-lucide="calendar"></i> Weekly Roadmap Tasks</h3>
-              <button class="btn btn-secondary" onclick="switchTab('generator')" style="padding: 6px 12px; font-size: 12px; width: auto;">
-                View Timeline
-              </button>
-            </div>
-            <div id="dashboard-active-roadmap-content">
-              <!-- Dynamically populated tasks checklist -->
-              <p class="text-secondary" style="font-size: 14px; text-align: center; padding: 40px 0;">
-                No active roadmap configured. Click the "Build Roadmap" button above to get started!
-              </p>
-            </div>
-          </div>
-
-          <!-- Quick Actions & Alerts -->
-          <div class="card col-4">
-            <div class="card-header">
-              <h3 class="card-title"><i data-lucide="activity"></i> Quick Commands</h3>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-              <div style="background: rgba(20, 184, 166, 0.05); border: 1px dashed rgba(20, 184, 166, 0.2); padding: 15px; border-radius: 10px;">
-                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-teal); display: flex; align-items: center; gap: 8px;">
-                  <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> Skill Gap Analyzer
-                </h4>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
-                  Upload a resume and job description to identify missing tools and inject them into your schedule.
-                </p>
-                <button class="btn" onclick="switchTab('analyzer')" style="margin-top: 12px; padding: 8px 12px; font-size: 12px;">
-                  Analyze Gaps <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i>
-                </button>
-              </div>
-
-              <div style="background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.2); padding: 15px; border-radius: 10px;">
-                <h4 style="font-size: 14px; font-weight: 600; color: var(--color-indigo); display: flex; align-items: center; gap: 8px;">
-                  <i data-lucide="messages-square" style="width: 16px; height: 16px;"></i> Career Mentor Chat
-                </h4>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
-                  Get advice on portfolios, resume structure, or complex technical bugs from your mentor.
-                </p>
-                <button class="btn btn-secondary" onclick="switchTab('mentor')" style="margin-top: 12px; padding: 8px 12px; font-size: 12px; border-color: rgba(99, 102, 241, 0.3);">
-                  Ask Mentor <i data-lucide="message-square" style="width: 12px; height: 12px;"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Dynamic Stage Dashboard View Container (Populated by renderDashboard()) -->
+        <div id="dashboard-stage-dynamic-view" style="margin-top: 24px;"></div>
       </section>
 
       <!-- ========================================== -->
@@ -2252,188 +2379,149 @@
   <!-- ======================================================== -->
   <!-- 5-STEP PERSONALIZED ONBOARDING WIZARD MODAL              -->
   <!-- ======================================================== -->
+    <!-- ========================================== -->
+  <!-- 3-STEP LEVEL ONBOARDING WIZARD (IMAGE 1)   -->
+  <!-- ========================================== -->
   <div id="onboarding-modal" class="modal-overlay" style="display: none;">
-    <div class="onboarding-dialog">
-      <!-- Wizard Header -->
-      <div class="onboarding-header">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary);">
-              Personalize Your Career Journey
-            </h3>
-            <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
-              Step <span id="onboard-step-num">1</span> of 5: Tailoring your dashboard experience
-            </p>
-          </div>
-          <button type="button" class="modal-close-btn" onclick="closeOnboardingModal()">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
+    <div class="onboarding-dialog" style="max-width: 820px; width: 95%; max-height: 90vh; overflow-y: auto; background: #ffffff; border-radius: 20px; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25); border: 1px solid #e2e8f0; padding: 36px 40px; position: relative;">
+      
+      <!-- Wizard Top Header with 3-Step Circles -->
+      <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; position: relative;">
+        <button type="button" class="modal-close-btn" onclick="closeOnboardingModal()" style="position: absolute; right: -15px; top: -15px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b;">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
 
-        <!-- 5-Step Visual Indicator -->
-        <div class="onboarding-steps-indicator">
-          <div class="step-indicator-item active" id="step-ind-1" onclick="jumpToOnboardingStep(1)">
-            <div class="step-circle">1</div>
-            <span class="step-label">Profile</span>
+        <!-- 3-Step Visual Progress Indicator (Image 1) -->
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+          <div id="onboard-step-badge-1" class="onboard-step-pill active" style="width: 34px; height: 34px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">1</div>
+          <div style="width: 44px; height: 2px; background: #e2e8f0;" id="onboard-step-line-1"></div>
+          <div id="onboard-step-badge-2" class="onboard-step-pill" style="width: 34px; height: 34px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">2</div>
+          <div style="width: 44px; height: 2px; background: #e2e8f0;" id="onboard-step-line-2"></div>
+          <div id="onboard-step-badge-3" class="onboard-step-pill" style="width: 34px; height: 34px; border-radius: 50%; background: #f1f5f9; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">3</div>
+        </div>
+      </div>
+
+      <!-- STEP 1: SELECT YOUR LEVEL (Image 1) -->
+      <div id="onboard-view-1" class="onboarding-step-view active">
+        <h2 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 32px; font-weight: 600; color: #1e293b; text-align: center; margin-bottom: 6px;">Select Your Level</h2>
+        <p style="text-align: center; font-size: 14px; color: #64748b; margin-bottom: 28px;">
+          Where are you in your educational journey? This helps us tailor questions, modules, and recommendations for you.
+        </p>
+
+        <!-- 7 Education Level Cards Grid (Image 1 style) -->
+        <div class="level-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 32px;">
+          <!-- Class 9 -->
+          <div class="level-select-card" id="lvl-card-class-9" onclick="selectOnboardStageOption('Class 9')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">📚</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Class 9</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">Middle School (Ages 14-15)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Interests & Foundation</span></div>
           </div>
-          <div class="step-indicator-item" id="step-ind-2" onclick="jumpToOnboardingStep(2)">
-            <div class="step-circle">2</div>
-            <span class="step-label">Education</span>
+          <!-- Class 10 -->
+          <div class="level-select-card selected" id="lvl-card-class-10" onclick="selectOnboardStageOption('Class 10')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">🎓</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Class 10</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">High School (Ages 15-16)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Stream & Subject Choice</span></div>
           </div>
-          <div class="step-indicator-item" id="step-ind-3" onclick="jumpToOnboardingStep(3)">
-            <div class="step-circle">3</div>
-            <span class="step-label">Academics</span>
+          <!-- Class 11 -->
+          <div class="level-select-card" id="lvl-card-class-11" onclick="selectOnboardStageOption('Class 11')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">🔬</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Class 11</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">Higher Secondary (Ages 16-17)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Stream & Exam Prep</span></div>
           </div>
-          <div class="step-indicator-item" id="step-ind-4" onclick="jumpToOnboardingStep(4)">
-            <div class="step-circle">4</div>
-            <span class="step-label">Interests</span>
+          <!-- Class 12 -->
+          <div class="level-select-card" id="lvl-card-class-12" onclick="selectOnboardStageOption('Class 12')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">🏛️</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Class 12</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">Senior Secondary (Ages 17-18)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">College & Entrance Exams</span></div>
           </div>
-          <div class="step-indicator-item" id="step-ind-5" onclick="jumpToOnboardingStep(5)">
-            <div class="step-circle">5</div>
-            <span class="step-label">Launch</span>
+          <!-- Undergraduate -->
+          <div class="level-select-card" id="lvl-card-undergraduate" onclick="selectOnboardStageOption('Undergraduate')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">💼</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Undergraduate</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">College Degree (Ages 18-22)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Skills, Projects & ATS</span></div>
+          </div>
+          <!-- Postgraduate -->
+          <div class="level-select-card" id="lvl-card-postgraduate" onclick="selectOnboardStageOption('Postgraduate')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">🚀</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Postgraduate</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">Master's / Ph.D (Ages 21-25)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Specialization & Research</span></div>
+          </div>
+          <!-- Graduate / Job Seeker -->
+          <div class="level-select-card" id="lvl-card-graduate" onclick="selectOnboardStageOption('Graduate / Job Seeker')">
+            <div class="level-icon-wrapper" style="font-size: 30px; margin-bottom: 10px;">👔</div>
+            <div class="level-title" style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Graduate / Job Seeker</div>
+            <div class="level-subtitle" style="font-size: 12px; color: #64748b;">Early & Mid Career (Ages 21+)<br><span style="color: #4f46e5; font-size: 11px; font-weight: 600;">Mock Interviews & Jobs</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Wizard Body -->
-      <div class="onboarding-body">
-        
-        <!-- STEP 1: BASIC PROFILE SETUP -->
-        <div class="onboarding-step-content active" id="onboard-step-1">
-          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 1: What should we call you?</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Let's set up your profile and current career ambition.</p>
+      <!-- STEP 2: STAGE-SPECIFIC ACADEMIC DETAILS -->
+      <div id="onboard-view-2" class="onboarding-step-view" style="display: none;">
+        <h2 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 28px; font-weight: 600; color: #1e293b; text-align: center; margin-bottom: 6px;">Tell Us About Your Background</h2>
+        <p style="text-align: center; font-size: 14px; color: #64748b; margin-bottom: 24px;" id="onboard-step-2-subtitle">
+          Personalize your curriculum recommendations and AI advice.
+        </p>
 
+        <!-- Common Name & Target Role / Undecided -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
           <div class="input-group">
-            <label class="input-label" for="onboard-name">Your Full Name</label>
-            <input type="text" id="onboard-name" class="input-field" placeholder="e.g. Rahul Sharma / Ananya Verma" required>
+            <label class="input-label" for="onboard-name-input" style="color: #334155; font-weight: 600;">Your Full Name</label>
+            <input type="text" id="onboard-name-input" class="input-field" placeholder="e.g. Rahul Sharma" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
           </div>
-
           <div class="input-group">
-            <label class="input-label" for="onboard-career">Target Career or Ambition</label>
-            <input type="text" id="onboard-career" class="input-field" placeholder="e.g. Software Engineer / Doctor / Chartered Accountant / Product Designer">
-          </div>
-
-          <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); cursor: pointer; margin-top: 10px;">
-            <input type="checkbox" id="onboard-not-sure" onchange="toggleOnboardNotSure(this)" style="accent-color: var(--secondary);">
-            <span>I am not sure what I want to become yet (We will help you discover it!)</span>
-          </label>
-        </div>
-
-        <!-- STEP 2: EDUCATION LEVEL SELECTION -->
-        <div class="onboarding-step-content" id="onboard-step-2">
-          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 2: What is your current academic stage?</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Your dashboard and tools will dynamically customize based on this choice.</p>
-
-          <div class="stage-select-card selected" id="stage-card-school" onclick="selectOnboardingStage('Class 10')">
-            <div class="stage-card-icon"><i data-lucide="book-open"></i></div>
-            <div>
-              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">School Student (Class 9 & 10)</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
-                Need help discovering interests, evaluating subject strengths, and choosing a Class 11 stream (Science, Commerce, Arts, Vocational).
-              </div>
-            </div>
-          </div>
-
-          <div class="stage-select-card" id="stage-card-higher" onclick="selectOnboardingStage('Class 12')">
-            <div class="stage-card-icon"><i data-lucide="graduation-cap"></i></div>
-            <div>
-              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">Higher Secondary (Class 11 & 12)</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
-                Looking for undergraduate degree programs, entrance examinations (JEE, NEET, CUET, CLAT), colleges, and scholarships.
-              </div>
-            </div>
-          </div>
-
-          <div class="stage-select-card" id="stage-card-college" onclick="selectOnboardingStage('Undergraduate')">
-            <div class="stage-card-icon"><i data-lucide="briefcase"></i></div>
-            <div>
-              <div style="font-weight: 700; font-size: 14.5px; color: var(--primary);">College Student / Graduate</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 3px;">
-                Seeking resume ATS evaluation, multi-discipline skill gap analysis, AI mock interviews, and learning roadmaps.
-              </div>
-            </div>
+            <label class="input-label" for="onboard-target-career-input" style="color: #334155; font-weight: 600;">Target Role / Career Ambition</label>
+            <input type="text" id="onboard-target-career-input" class="input-field" placeholder="e.g. AI Engineer or Undecided" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
           </div>
         </div>
 
-        <!-- STEP 3: ACADEMIC DETAILS (DYNAMIC) -->
-        <div class="onboarding-step-content" id="onboard-step-3">
-          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 3: Academic Details</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;" id="onboard-step-3-desc">
-            Provide details about your current subjects or field of study.
+        <!-- Dynamic Academic Fields Container based on Selected Stage -->
+        <div id="onboard-dynamic-fields-container" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+          <!-- Dynamically populated according to user requirements -->
+        </div>
+      </div>
+
+      <!-- STEP 3: CONFIRMATION & PERSONALIZED LAUNCH -->
+      <div id="onboard-view-3" class="onboarding-step-view" style="display: none;">
+        <div style="text-align: center; padding: 10px 0 20px;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: #EEF2FF; color: #4F46E5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">
+            ✨
+          </div>
+          <h2 style="font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 30px; font-weight: 600; color: #1e293b; margin-bottom: 6px;">
+            Your Personalized Dashboard is Ready!
+          </h2>
+          <p style="font-size: 14px; color: #64748b; max-width: 520px; margin: 0 auto 24px;">
+            We have calibrated your dashboard, dynamic navigation, and AI advisor based on your educational stage.
           </p>
 
-          <!-- Dynamic Container for Stage Details -->
-          <div id="onboard-stage-specific-fields">
-            <!-- Populated via JS depending on stage selected in Step 2 -->
-          </div>
-        </div>
-
-        <!-- STEP 4: CAREER INTERESTS & PREFERENCES -->
-        <div class="onboarding-step-content" id="onboard-step-4">
-          <h4 style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">Step 4: Which fields spark your curiosity?</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">Select 2 to 4 sectors that interest you (click to toggle):</p>
-
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="onboard-interest-chips-container">
-            <div class="interest-chip selected" onclick="toggleOnboardingChip(this, 'Technology & Software')">💻 Technology & Software</div>
-            <div class="interest-chip selected" onclick="toggleOnboardingChip(this, 'Artificial Intelligence')">🤖 AI & Data Science</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Core Engineering')">⚙️ Core Engineering</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Medicine & Healthcare')">🩺 Medicine & Healthcare</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Business & Startups')">📊 Business & Startups</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Finance & Banking')">📈 Finance & Banking</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Design & Media')">🎨 Creative Design & Media</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Law & Policy')">⚖️ Law & Public Policy</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Civil Services')">🏛️ Civil Services & Govt</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Teaching & Research')">📚 Education & Research</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Aviation & Defense')">✈️ Aviation & Defense</div>
-            <div class="interest-chip" onclick="toggleOnboardingChip(this, 'Vocational Trades')">🛠️ Skilled Trades</div>
-          </div>
-        </div>
-
-        <!-- STEP 5: PERSONALIZED DASHBOARD LAUNCH -->
-        <div class="onboarding-step-content" id="onboard-step-5">
-          <div style="text-align: center; padding: 20px 0;">
-            <div style="width: 54px; height: 54px; border-radius: 50%; background: #DCFCE7; color: var(--success); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-              <i data-lucide="check-circle" style="width: 28px; height: 28px;"></i>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; max-width: 540px; margin: 0 auto 28px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px;">
+              <span style="font-size: 13px; color: #64748b;">Selected Stage:</span>
+              <strong id="onboard-conf-stage" style="color: #4f46e5; font-size: 14px;">Class 10</strong>
             </div>
-            <h4 style="font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 8px;">Your Career Pilot Is Ready!</h4>
-            <p style="font-size: 14px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 24px; line-height: 1.6;">
-              We have configured your custom learning dashboard based on your academic level and chosen interests.
-            </p>
-
-            <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 24px; max-width: 460px; margin: 0 auto 24px; text-align: left;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-size: 12.5px; color: var(--text-muted);">Name:</span>
-                <span id="onboard-summary-name" style="font-size: 13px; font-weight: 600; color: var(--text-primary);">-</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-size: 12.5px; color: var(--text-muted);">Academic Level:</span>
-                <span id="onboard-summary-stage" style="font-size: 13px; font-weight: 600; color: var(--secondary);">Class 10</span>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                <span style="font-size: 12.5px; color: var(--text-muted);">Target Direction:</span>
-                <span id="onboard-summary-career" style="font-size: 13px; font-weight: 600; color: var(--text-primary);">-</span>
-              </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px;">
+              <span style="font-size: 13px; color: #64748b;">Active Modules:</span>
+              <span id="onboard-conf-modules" style="font-size: 12.5px; color: #0f172a; font-weight: 600;">Interests, Careers, Stream Guide, Subject Selection</span>
             </div>
-
-            <button type="button" class="btn" onclick="finishOnboarding()" style="padding: 12px 32px; font-size: 15px; font-weight: 700;">
-              <i data-lucide="rocket"></i> Launch My Career Dashboard
-            </button>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13px; color: #64748b;">AI Guidance Mode:</span>
+              <span id="onboard-conf-ai" style="font-size: 12.5px; color: #10b981; font-weight: 600;">Foundational Career Guidance</span>
+            </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Wizard Footer -->
-      <div class="onboarding-footer">
-        <button type="button" id="onboard-prev-btn" class="btn btn-secondary" onclick="prevOnboardingStep()" style="display: none;">
-          <i data-lucide="chevron-left"></i> Previous
+      <!-- Wizard Bottom Navigation Controls (Image 1) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+        <button type="button" id="onboard-back-btn" class="btn btn-secondary" onclick="prevOnboardStep()" style="display: none; padding: 10px 24px; font-size: 13px; background: #fff; border: 1px solid #cbd5e1; color: #475569; border-radius: 10px; width: auto;">
+          ← Back
         </button>
         <div style="margin-left: auto;">
-          <button type="button" id="onboard-next-btn" class="btn" onclick="nextOnboardingStep()">
-            Continue <i data-lucide="chevron-right"></i>
+          <button type="button" id="onboard-continue-btn" class="btn" onclick="nextOnboardStep()" style="padding: 10px 28px; font-size: 13px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff; border: none; border-radius: 10px; font-weight: 600; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); width: auto;">
+            Continue →
           </button>
         </div>
       </div>
+
     </div>
   </div>
 

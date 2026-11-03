@@ -326,7 +326,7 @@ function showAuthScreen() {
   if (lastEmail && emailInput && !emailInput.value) {
     emailInput.value = lastEmail;
   }
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 async function checkDbStatus() {
@@ -386,7 +386,7 @@ function toggleAuthPasswordVisibility() {
     input.type = "password";
     if (icon) icon.setAttribute("data-lucide", "eye");
   }
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function showDashboardWorkspace() {
@@ -422,7 +422,7 @@ function showDashboardWorkspace() {
 
   // Initial tab render
   switchTab("dashboard");
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 async function handleAuth() {
@@ -1478,6 +1478,42 @@ function showChecklistAchievements() {
 // ==========================================
 
 
+function getSavedCareers() {
+  try {
+    const saved = localStorage.getItem("devpath_saved_careers");
+    return saved ? JSON.parse(saved) : ["UI/UX & Product Designer", "Astrophysicist & Space Scientist"];
+  } catch (e) {
+    return ["UI/UX & Product Designer", "Astrophysicist & Space Scientist"];
+  }
+}
+
+function toggleSaveCareer(career) {
+  let list = getSavedCareers();
+  const idx = list.indexOf(career);
+  if (idx !== -1) {
+    list.splice(idx, 1);
+    showToast(`Removed "${career}" from saved list.`, "info");
+  } else {
+    list.push(career);
+    showToast(`Saved "${career}" to your favorites!`, "success");
+  }
+  localStorage.setItem("devpath_saved_careers", JSON.stringify(list));
+  if (state.activeTab === "dashboard") {
+    renderDashboard();
+  }
+}
+
+function sendMentorPrompt(promptText) {
+  switchTab("mentor");
+  const input = document.getElementById("mentor-input");
+  if (input) {
+    input.value = promptText;
+    if (typeof sendMentorMessage === "function") {
+      setTimeout(() => sendMentorMessage(), 150);
+    }
+  }
+}
+
 function renderDashboard() {
   showProgressMetrics();
 
@@ -1485,57 +1521,61 @@ function renderDashboard() {
   const container = document.getElementById("tab-dashboard");
   if (!container) return;
 
-  // Render Stage Banner
+  const isSchool = stage.includes("9") || stage.includes("10");
+  const isHigherSec = stage.includes("11") || stage.includes("12");
+  const isCollege = !isSchool && !isHigherSec;
+
+  // 1. RENDER ADAPTIVE STAGE BANNER
   let bannerHTML = "";
-  if (stage.includes("10") || stage.includes("9")) {
+  if (isSchool) {
     bannerHTML = `
-      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-left: 4px solid #38bdf8;">
         <div style="display: flex; align-items: center; gap: 16px;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
-            <i data-lucide="compass" style="width: 24px; height: 24px;"></i>
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+            <i data-lucide="compass" style="width: 26px; height: 26px;"></i>
           </div>
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Discover Your Strengths and Choose Your Ideal Stream</h3>
-              <span class="ai-badge">Class 9 & 10</span>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary);">Let's discover your interests and explore your future.</h3>
+              <span class="ai-badge" style="background: rgba(56, 189, 248, 0.15); color: #0284c7;">${stage} (School)</span>
             </div>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
-              Unsure about Science PCM/PCB, Commerce, Humanities, or Vocational courses? Discover your Holland RIASEC traits and compare streams side-by-side.
+              Discover your cognitive strengths with our 10-question Holland RIASEC quiz, compare Science PCM/PCB vs Commerce vs Humanities, and map your high school track.
             </p>
           </div>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
           <button class="btn" onclick="switchTab('assessment')" style="width: auto; padding: 10px 20px; font-size: 13px;">
-            <i data-lucide="help-circle"></i> Take RIASEC Test
+            <i data-lucide="sparkles"></i> Take RIASEC Test
           </button>
           <button class="btn btn-secondary" onclick="switchTab('stream-guide')" style="width: auto; padding: 10px 18px; font-size: 13px;">
-            <i data-lucide="git-branch"></i> Stream Comparison
+            <i data-lucide="git-branch"></i> Stream Guide
           </button>
         </div>
       </div>
     `;
-  } else if (stage.includes("11") || stage.includes("12")) {
+  } else if (isHigherSec) {
     bannerHTML = `
-      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-left: 4px solid #f59e0b;">
         <div style="display: flex; align-items: center; gap: 16px;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
-            <i data-lucide="graduation-cap" style="width: 24px; height: 24px;"></i>
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: #FEF3C7; display: flex; align-items: center; justify-content: center; color: #d97706;">
+            <i data-lucide="graduation-cap" style="width: 26px; height: 26px;"></i>
           </div>
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Plan Your College Journey and Future Career</h3>
-              <span class="ai-badge">Class 11 & 12</span>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary);">Explore your opportunities after Class 12.</h3>
+              <span class="ai-badge" style="background: rgba(245, 158, 11, 0.15); color: #b45309;">${stage} (Higher Sec)</span>
             </div>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
-              Explore 25+ undergraduate degrees, track national entrance examinations (JEE, NEET, CUET, CLAT, NDA), and identify verified scholarships.
+              Explore 25+ undergraduate degrees, track national entrance examinations (JEE, NEET, CUET, CLAT, NDA, NATA), and discover verified scholarships.
             </p>
           </div>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn" onclick="switchTab('colleges'); setCollegeSubTab('degrees');" style="width: auto; padding: 10px 20px; font-size: 13px;">
-            <i data-lucide="book-open"></i> Degree Explorer
+          <button class="btn" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" style="width: auto; padding: 10px 20px; font-size: 13px;">
+            <i data-lucide="search"></i> Find Colleges
           </button>
-          <button class="btn btn-secondary" onclick="switchTab('colleges'); setCollegeSubTab('exams');" style="width: auto; padding: 10px 18px; font-size: 13px;">
+          <button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('exams');" style="width: auto; padding: 10px 18px; font-size: 13px;">
             <i data-lucide="calendar"></i> Entrance Exams
           </button>
         </div>
@@ -1543,18 +1583,18 @@ function renderDashboard() {
     `;
   } else {
     bannerHTML = `
-      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+      <div class="card col-12 ai-glow-card" style="margin-bottom: 25px; padding: 22px 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-left: 4px solid #7c3aed;">
         <div style="display: flex; align-items: center; gap: 16px;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
-            <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
+          <div style="width: 50px; height: 50px; border-radius: 14px; background: #F3E8FF; display: flex; align-items: center; justify-content: center; color: #7c3aed;">
+            <i data-lucide="briefcase" style="width: 26px; height: 26px;"></i>
           </div>
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">Accelerate Your Professional Career</h3>
-              <span class="ai-badge">College & Graduates</span>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary);">Build the skills and confidence for your next career opportunity.</h3>
+              <span class="ai-badge" style="background: rgba(124, 58, 237, 0.15); color: #7c3aed;">${stage}</span>
             </div>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
-              Optimize your ATS resume score, audit multi-discipline skill gaps, practice sector mock interviews, and build consistent learning streaks.
+              Audit multi-discipline skill gaps, track role compatibility with real-time gauges, optimize your ATS resume score, and prepare with domain mock interviews.
             </p>
           </div>
         </div>
@@ -1562,7 +1602,7 @@ function renderDashboard() {
           <button class="btn" onclick="switchTab('mock-interview')" style="width: auto; padding: 10px 20px; font-size: 13px;">
             <i data-lucide="mic"></i> Practice Mock Interview
           </button>
-          <button class="btn btn-secondary" onclick="switchTab('resume')" style="width: auto; padding: 10px 18px; font-size: 13px;">
+          <button class="btn btn-secondary" onclick="switchTab('analyzer')" style="width: auto; padding: 10px 18px; font-size: 13px;">
             <i data-lucide="file-check"></i> ATS Resume Scan
           </button>
         </div>
@@ -1570,109 +1610,888 @@ function renderDashboard() {
     `;
   }
 
-  // Find or insert the banner container
-  let bannerWrapper = document.getElementById("dashboard-stage-banner-wrapper");
-  if (!bannerWrapper) {
-    const metricsRow = container.querySelector(".metrics-row");
-    if (metricsRow) {
-      bannerWrapper = document.createElement("div");
-      bannerWrapper.id = "dashboard-stage-banner-wrapper";
-      metricsRow.parentNode.insertBefore(bannerWrapper, metricsRow);
-    }
-  }
-  if (bannerWrapper) {
-    bannerWrapper.innerHTML = bannerHTML;
-  }
+  const bannerWrapper = document.getElementById("dashboard-stage-banner-wrapper");
+  if (bannerWrapper) bannerWrapper.innerHTML = bannerHTML;
 
-  // Populate active roadmap task list
-  const content = document.getElementById("dashboard-active-roadmap-content");
-  const r = state.activeRoadmap;
+  // 2. RENDER DYNAMIC DASHBOARD SECTIONS
+  const viewContainer = document.getElementById("dashboard-stage-dynamic-view");
+  if (!viewContainer) return;
 
-  if (content) {
-    if (!r) {
-      if (stage.includes("10") || stage.includes("9")) {
-        content.innerHTML = `
-          <div style="text-align: center; padding: 30px 0;">
-            <i data-lucide="compass" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
-            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">Your High School Roadmap is Ready to Configure</h4>
-            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
-              Take our 10-question aptitude assessment or compare streams to generate your custom weekly study plan.
-            </p>
-            <button class="btn" onclick="switchTab('assessment')" style="font-size: 12.5px; padding: 8px 18px;">
-              Start RIASEC Assessment <i data-lucide="arrow-right"></i>
+  const targetCareer = state.user && state.user.career ? formatCareerTitle(state.user.career) : "Senior Data Analyst";
+  const savedCareers = getSavedCareers();
+
+  if (isSchool) {
+    // ==========================================
+    // DASHBOARD A: CLASS 9-10 (7 SECTIONS)
+    // ==========================================
+    viewContainer.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- SECTION 1: DISCOVER MY INTERESTS (RIASEC) -->
+        <div class="card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="sparkles" style="color: var(--secondary);"></i> 1. Discover My Interests & Aptitude
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                Uncover what naturally motivates you based on the scientifically validated Holland RIASEC psychological framework.
+              </p>
+            </div>
+            <button class="btn" onclick="switchTab('assessment')" style="padding: 8px 18px; font-size: 12.5px; width: auto;">
+              Take Assessment (10 Questions) <i data-lucide="arrow-right"></i>
             </button>
           </div>
-        `;
-      } else if (stage.includes("11") || stage.includes("12")) {
-        content.innerHTML = `
-          <div style="text-align: center; padding: 30px 0;">
-            <i data-lucide="graduation-cap" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
-            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">Plan Your Entrance & College Preparation</h4>
-            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
-              Explore degree programs, check target entrance requirements, and generate a customized study schedule.
-            </p>
-            <button class="btn" onclick="switchTab('colleges')" style="font-size: 12.5px; padding: 8px 18px;">
-              Explore College Degrees <i data-lucide="arrow-right"></i>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">🛠️</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Realistic</strong>
+              <span style="font-size: 11px; color: #64748b;">Hands-on, Practical</span>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">🔬</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Investigative</strong>
+              <span style="font-size: 11px; color: #64748b;">Analytical, Scientific</span>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">🎨</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Artistic</strong>
+              <span style="font-size: 11px; color: #64748b;">Creative, Expressive</span>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">🤝</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Social</strong>
+              <span style="font-size: 11px; color: #64748b;">Helping, Mentoring</span>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">🚀</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Enterprising</strong>
+              <span style="font-size: 11px; color: #64748b;">Leadership, Persuasion</span>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 6px;">📊</div>
+              <strong style="font-size: 13px; color: #1e293b; display: block;">Conventional</strong>
+              <span style="font-size: 11px; color: #64748b;">Organized, Detail-driven</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: EXPLORE DIFFERENT CAREERS -->
+        <div class="card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="compass" style="color: var(--secondary);"></i> 2. Explore Different Careers
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                Discover careers even if you don't know what you want to become yet.
+              </p>
+            </div>
+            <button class="btn btn-secondary" onclick="switchTab('explorer')" style="padding: 8px 18px; font-size: 12.5px; width: auto;">
+              Browse 30+ Careers <i data-lucide="external-link"></i>
             </button>
           </div>
-        `;
-      } else {
-        content.innerHTML = `
-          <div style="text-align: center; padding: 30px 0;">
-            <i data-lucide="route" style="color: var(--secondary); width: 36px; height: 36px; margin-bottom: 10px;"></i>
-            <h4 style="font-size: 15px; font-weight: 700; color: var(--primary);">No Active Career Roadmap Configured</h4>
-            <p style="font-size: 13px; color: var(--text-secondary); max-width: 420px; margin: 6px auto 16px;">
-              Select a target role or scan your resume to build a weekly milestones roadmap.
-            </p>
-            <button class="btn" onclick="switchTab('generator')" style="font-size: 12.5px; padding: 8px 18px;">
-              Build Custom Roadmap <i data-lucide="arrow-right"></i>
-            </button>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase;">Science & Space</span>
+                <span style="font-size: 10.5px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">High Growth</span>
+              </div>
+              <strong style="font-size: 14px; color: #1e293b; display: block;">Astrophysicist & Space Scientist</strong>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 10px; line-height: 1.4;">Study stars, black holes, and space missions with ISRO and NASA.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="color: #0f172a; font-weight: 700;">₹12 - 25 LPA</span>
+                <button onclick="switchTab('explorer')" style="background: none; border: none; color: #4f46e5; font-weight: 600; cursor: pointer;">Explore →</button>
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Design & Tech</span>
+                <span style="font-size: 10.5px; background: #f3e8ff; color: #7e22ce; padding: 2px 6px; border-radius: 4px; font-weight: 600;">In Demand</span>
+              </div>
+              <strong style="font-size: 14px; color: #1e293b; display: block;">UI/UX & Product Designer</strong>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 10px; line-height: 1.4;">Create beautiful apps, user experiences, and digital interfaces.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="color: #0f172a; font-weight: 700;">₹8 - 20 LPA</span>
+                <button onclick="switchTab('explorer')" style="background: none; border: none; color: #4f46e5; font-weight: 600; cursor: pointer;">Explore →</button>
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 700; color: #059669; text-transform: uppercase;">Medicine</span>
+                <span style="font-size: 10.5px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Essential</span>
+              </div>
+              <strong style="font-size: 14px; color: #1e293b; display: block;">Molecular Biologist</strong>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 10px; line-height: 1.4;">Research genetics, mRNA vaccines, and disease treatments.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="color: #0f172a; font-weight: 700;">₹10 - 22 LPA</span>
+                <button onclick="switchTab('explorer')" style="background: none; border: none; color: #4f46e5; font-weight: 600; cursor: pointer;">Explore →</button>
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 700; color: #d97706; text-transform: uppercase;">Finance & Law</span>
+                <span style="font-size: 10.5px; background: #fef3c7; color: #b45309; padding: 2px 6px; border-radius: 4px; font-weight: 600;">High Prestige</span>
+              </div>
+              <strong style="font-size: 14px; color: #1e293b; display: block;">Corporate & Cyber Lawyer</strong>
+              <p style="font-size: 12px; color: #64748b; margin: 4px 0 10px; line-height: 1.4;">Handle intellectual property, data privacy, and global mergers.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="color: #0f172a; font-weight: 700;">₹12 - 30 LPA</span>
+                <button onclick="switchTab('explorer')" style="background: none; border: none; color: #4f46e5; font-weight: 600; cursor: pointer;">Explore →</button>
+              </div>
+            </div>
           </div>
-        `;
-      }
-    } else {
-      let taskRows = [];
-      let foundTasks = 0;
-      r.roadmap.weeks.forEach((week, weekIdx) => {
-        week.tasks.forEach((task, taskIdx) => {
-          const isChecked = state.checklistProgress[`${weekIdx}-${taskIdx}`];
-          if (!isChecked && foundTasks < 4) {
-            taskRows.push(`
-              <div class="checklist-item" onclick="toggleTask(${weekIdx}, ${taskIdx}); renderDashboard();">
-                <div class="checklist-checkbox">
-                  <i data-lucide="check"></i>
+        </div>
+
+        <!-- SECTION 3: CHOOSE MY STREAM & SECTION 4: EXPLORE SUBJECTS -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Section 3: Choose Stream -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                3. Choose My Stream (Class 11)
+              </h3>
+              <button class="btn btn-secondary" onclick="switchTab('stream-guide')" style="padding: 4px 10px; font-size: 11px; width: auto;">
+                Compare Matrix →
+              </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 12px; border-radius: 6px;">
+                <strong style="font-size: 13px; color: #166534;">Science (PCM / PCB)</strong>
+                <p style="font-size: 11.5px; color: #15803d; margin: 2px 0 0;">Engineering, Medicine, AI, Biotechnology, Data Science.</p>
+              </div>
+              <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px; border-radius: 6px;">
+                <strong style="font-size: 13px; color: #1e40af;">Commerce (with/without Maths)</strong>
+                <p style="font-size: 11.5px; color: #1d4ed8; margin: 2px 0 0;">Chartered Accountancy, Finance, Business Analytics, Economics.</p>
+              </div>
+              <div style="background: #faf5ff; border-left: 4px solid #9333ea; padding: 12px; border-radius: 6px;">
+                <strong style="font-size: 13px; color: #6b21a8;">Humanities & Arts</strong>
+                <p style="font-size: 11.5px; color: #7e22ce; margin: 2px 0 0;">Law (CLAT), Civil Services (UPSC), Psychology, Media & Design.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Explore Subjects -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                4. Explore High School Subjects
+              </h3>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 12px;">
+              Pair core curriculum with high-impact electives to prepare for future-proof courses:
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #e0e7ff; color: #4338ca; font-weight: 600;">💻 Computer Science & Python</span>
+              <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #fef3c7; color: #92400e; font-weight: 600;">📈 Applied Mathematics</span>
+              <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #dcfce7; color: #166534; font-weight: 600;">🧠 Psychology</span>
+              <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #fce7f3; color: #9d174d; font-weight: 600;">🎨 Design & Multimedia</span>
+              <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #f1f5f9; color: #475569; font-weight: 600;">💰 Financial Markets</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: MY CAREER ROADMAP & SECTION 6: ASK AI CAREER MENTOR -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <!-- Section 5: Roadmap -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                5. My Foundation Roadmap
+              </h3>
+              <button class="btn btn-secondary" onclick="switchTab('generator')" style="padding: 4px 12px; font-size: 12px; width: auto;">
+                Customize Roadmap →
+              </button>
+            </div>
+            <div id="dashboard-active-roadmap-content">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+                <div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Recommended Next Steps for ${stage}:</div>
+                <div class="checklist-item" style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #4f46e5; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Take the RIASEC 10-Question Aptitude Assessment to pinpoint natural work traits.</span>
                 </div>
-                <div style="flex-grow: 1;">
-                  <span class="checklist-text" style="font-weight: 500;">${task}</span>
-                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">${week.title}</div>
+                <div class="checklist-item" style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #4f46e5; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Review the Stream Comparison Guide (PCM vs PCB vs Commerce vs Arts).</span>
+                </div>
+                <div class="checklist-item" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #4f46e5; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Save 3 target careers to explore during vacation.</span>
                 </div>
               </div>
-            `);
-            foundTasks++;
-          }
-        });
-      });
-
-      if (taskRows.length === 0) {
-        content.innerHTML = `
-          <div style="text-align: center; padding: 30px 0;">
-            <i data-lucide="sparkles" style="color: var(--success); width: 32px; height: 32px; margin-bottom: 10px;"></i>
-            <h4 style="font-size: 15px; font-weight: 600;">Roadmap Fully Completed!</h4>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Excellent work. Use the skill analyzer to verify new gaps.</p>
+            </div>
           </div>
-        `;
-      } else {
-        content.innerHTML = `
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">Your immediate next steps from your roadmap:</p>
-          <div class="tasks-checklist">${taskRows.join("")}</div>
-        `;
-      }
-    }
+
+          <!-- Section 6: Ask AI Career Mentor -->
+          <div class="card" style="padding: 24px;">
+            <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 12px;">
+              6. Ask AI Mentor
+            </h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+              Ask anything about subjects, board exams, or future tracks:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('Which stream should I choose if I love both coding and biology?')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "Which stream fits coding & biology?"
+              </button>
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('How do I choose between PCM and Commerce with Maths?')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "PCM vs Commerce with Maths?"
+              </button>
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('What skills can I learn in high school to become an AI engineer?')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "High school skills for AI?"
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 7: SAVED CAREERS -->
+        <div class="card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="bookmark" style="color: var(--secondary);"></i> 7. Saved Careers
+            </h3>
+            <button class="btn btn-secondary" onclick="switchTab('explorer')" style="padding: 4px 12px; font-size: 12px; width: auto;">
+              + Add More Careers
+            </button>
+          </div>
+          <div id="dashboard-saved-careers-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+            ${savedCareers.length ? savedCareers.map(c => `
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1e293b;">${c}</span>
+                <button onclick="toggleSaveCareer('${c}')" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 13px;">✕</button>
+              </div>
+            `).join("") : `
+              <p style="font-size: 12.5px; color: var(--text-secondary); margin: 0;">No saved careers yet. Browse the Career Discovery tab to pin careers of interest!</p>
+            `}
+          </div>
+        </div>
+
+      </div>
+    `;
+
+  } else if (isHigherSec) {
+    // ==========================================
+    // DASHBOARD B: CLASS 11-12 (7 SECTIONS)
+    // ==========================================
+    viewContainer.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- SECTION 1: CAREER RECOMMENDATIONS -->
+        <div class="card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="target" style="color: var(--secondary);"></i> 1. Career Recommendations for Class 11-12
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                Tailored degree programs and professional trajectories matching your higher secondary academic track.
+              </p>
+            </div>
+            <button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('degrees');" style="padding: 8px 18px; font-size: 12.5px; width: auto;">
+              Explore 25+ Degrees →
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <span style="font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase;">Engineering & AI</span>
+              <strong style="font-size: 14px; color: #1e293b; display: block; margin: 4px 0 2px;">B.Tech in Computer Science & AI</strong>
+              <span style="font-size: 11.5px; color: #64748b;">Entrance: JEE Main / Advanced • BITSAT</span>
+              <div style="margin-top: 10px; font-size: 12px; font-weight: 600; color: #0f172a;">Top: IIT Bombay, BITS Pilani, NITs</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <span style="font-size: 11px; font-weight: 700; color: #059669; text-transform: uppercase;">Medical & Life Sciences</span>
+              <strong style="font-size: 14px; color: #1e293b; display: block; margin: 4px 0 2px;">MBBS & Biotechnology</strong>
+              <span style="font-size: 11.5px; color: #64748b;">Entrance: NEET UG</span>
+              <div style="margin-top: 10px; font-size: 12px; font-weight: 600; color: #0f172a;">Top: AIIMS Delhi, CMC Vellore, JIPMER</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <span style="font-size: 11px; font-weight: 700; color: #d97706; text-transform: uppercase;">Commerce & Management</span>
+              <strong style="font-size: 14px; color: #1e293b; display: block; margin: 4px 0 2px;">Integrated IPM (BBA + MBA)</strong>
+              <span style="font-size: 11.5px; color: #64748b;">Entrance: IPMAT • JIPMAT</span>
+              <div style="margin-top: 10px; font-size: 12px; font-weight: 600; color: #0f172a;">Top: IIM Indore, IIM Rohtak, SRCC</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+              <span style="font-size: 11px; font-weight: 700; color: #7c3aed; text-transform: uppercase;">Law & Legal</span>
+              <strong style="font-size: 14px; color: #1e293b; display: block; margin: 4px 0 2px;">5-Year B.A. LL.B (Hons)</strong>
+              <span style="font-size: 11.5px; color: #64748b;">Entrance: CLAT • AILET</span>
+              <div style="margin-top: 10px; font-size: 12px; font-weight: 600; color: #0f172a;">Top: NLSIU Bengaluru, NALSAR, NLU Delhi</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: EXPLORE COURSES & SECTION 3: FIND COLLEGES (IMAGE 3 PREVIEW) -->
+        <div class="card" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="building" style="color: var(--secondary);"></i> 3. Find Colleges Directory (Preview)
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                Filter colleges by majors, acceptance rates, tuition, and match level (Reach, Target, Safety).
+              </p>
+            </div>
+            <button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" style="padding: 8px 18px; font-size: 12.5px; width: auto;">
+              Open Full Directory (19 Colleges) <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Preview Table snippet of top colleges -->
+          <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;">
+            <table class="colleges-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569;">College</th>
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569;">Location</th>
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569;">Type</th>
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569;">Acceptance</th>
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569;">Match Level</th>
+                  <th style="padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: #475569; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 12px 14px;"><strong>IIT Bombay</strong><div style="font-size: 11px; color: #64748b;">India's premier engineering & tech institute</div></td>
+                  <td style="padding: 12px 14px; font-size: 12px;">Mumbai, India</td>
+                  <td style="padding: 12px 14px;"><span class="type-badge-public">Public</span></td>
+                  <td style="padding: 12px 14px; font-weight: 700;">1.2% (JEE Adv)</td>
+                  <td style="padding: 12px 14px;"><span class="match-badge-reach">Reach</span></td>
+                  <td style="padding: 12px 14px; text-align: right;"><button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" style="padding: 4px 10px; font-size: 11.5px; width: auto;">View</button></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 14px;"><strong>AIIMS New Delhi</strong><div style="font-size: 11px; color: #64748b;">Pinnacle of medical education & research</div></td>
+                  <td style="padding: 12px 14px; font-size: 12px;">New Delhi, India</td>
+                  <td style="padding: 12px 14px;"><span class="type-badge-public">Public</span></td>
+                  <td style="padding: 12px 14px; font-weight: 700;">0.1% (NEET)</td>
+                  <td style="padding: 12px 14px;"><span class="match-badge-reach">Reach</span></td>
+                  <td style="padding: 12px 14px; text-align: right;"><button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" style="padding: 4px 10px; font-size: 11.5px; width: auto;">View</button></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 14px;"><strong>BITS Pilani</strong><div style="font-size: 11px; color: #64748b;">Leading private engineering university</div></td>
+                  <td style="padding: 12px 14px; font-size: 12px;">Pilani, Rajasthan</td>
+                  <td style="padding: 12px 14px;"><span class="type-badge-private">Private</span></td>
+                  <td style="padding: 12px 14px; font-weight: 700;">8.0% (BITSAT)</td>
+                  <td style="padding: 12px 14px;"><span class="match-badge-target">Target</span></td>
+                  <td style="padding: 12px 14px; text-align: right;"><button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('colleges');" style="padding: 4px 10px; font-size: 11.5px; width: auto;">View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 4: ENTRANCE EXAM GUIDANCE & SECTION 5: SCHOLARSHIP FINDER -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Section 4: Entrance Exams -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                4. Entrance Exam Guidance
+              </h3>
+              <button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('exams');" style="padding: 4px 10px; font-size: 11px; width: auto;">
+                All Exams →
+              </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 13px; color: #1e293b;">JEE Main & Advanced</strong>
+                  <div style="font-size: 11px; color: #64748b;">Engineering (IITs, NITs) • Jan / Apr</div>
+                </div>
+                <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; font-weight: 700;">National</span>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 13px; color: #1e293b;">NEET UG</strong>
+                  <div style="font-size: 11px; color: #64748b;">Medicine / MBBS • May</div>
+                </div>
+                <span style="font-size: 11px; background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: 700;">Medical</span>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 13px; color: #1e293b;">CUET UG</strong>
+                  <div style="font-size: 11px; color: #64748b;">Central Universities (DU, BHU, JNU) • May</div>
+                </div>
+                <span style="font-size: 11px; background: #f3e8ff; color: #7e22ce; padding: 3px 8px; border-radius: 4px; font-weight: 700;">Common</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 5: Scholarships -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                5. Scholarship Finder
+              </h3>
+              <button class="btn btn-secondary" onclick="switchTab('college-explorer'); setCollegeSubTab('exams');" style="padding: 4px 10px; font-size: 11px; width: auto;">
+                View Details →
+              </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px;">
+                <strong style="font-size: 13px; color: #166534;">INSPIRE Scholarship (DST)</strong>
+                <p style="font-size: 11.5px; color: #15803d; margin: 2px 0 0;">₹80,000/yr for top 1% Class 12 pursuing Natural Sciences.</p>
+              </div>
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px;">
+                <strong style="font-size: 13px; color: #1e40af;">Central Sector Scheme of Scholarships (CSSS)</strong>
+                <p style="font-size: 11.5px; color: #1d4ed8; margin: 2px 0 0;">₹12,000/yr for college studies for top 80th percentile students.</p>
+              </div>
+              <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 12px;">
+                <strong style="font-size: 13px; color: #6b21a8;">AICTE Pragati Scholarship for Girls</strong>
+                <p style="font-size: 11.5px; color: #7e22ce; margin: 2px 0 0;">₹50,000/yr for female candidates pursuing technical degrees.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 6: CAREER ROADMAP & SECTION 7: AI CAREER MENTOR -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <!-- Section 6: Roadmap -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary);">
+                6. Board & Entrance Roadmap
+              </h3>
+              <button class="btn btn-secondary" onclick="switchTab('generator')" style="padding: 4px 12px; font-size: 12px; width: auto;">
+                View Timeline →
+              </button>
+            </div>
+            <div id="dashboard-active-roadmap-content">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+                <div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Key Milestones for ${stage}:</div>
+                <div class="checklist-item" style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #f59e0b; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Finalize target list of 5 colleges (2 Reach, 2 Target, 1 Safety) in Find Colleges.</span>
+                </div>
+                <div class="checklist-item" style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #f59e0b; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Check application deadlines and syllabus weightage for target entrance exams.</span>
+                </div>
+                <div class="checklist-item" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #f59e0b; font-size: 16px;">📌</span>
+                  <span style="font-size: 12.5px; color: #334155;">Schedule weekly mock tests and practice question sets.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 7: AI Career Mentor -->
+          <div class="card" style="padding: 24px;">
+            <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 12px;">
+              7. Ask AI Mentor
+            </h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+              Get answers about college admissions, entrance cutoffs, or scholarships:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('How do I balance CBSE Board prep with JEE Main?')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "Balance Boards & JEE?"
+              </button>
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('What are top computer science colleges in India besides IITs?')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "Top CS colleges besides IITs?"
+              </button>
+              <button class="btn btn-secondary" onclick="sendMentorPrompt('Explain the CUET UG exam pattern and eligibility.')" style="text-align: left; font-size: 11.5px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155;">
+                💬 "CUET UG exam pattern?"
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+  } else {
+    // ==========================================
+    // DASHBOARD C: COLLEGE & GRADUATE (IMAGE 4 SKILLOPTI SUITE)
+    // ==========================================
+    viewContainer.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- TOP BAR: ROLE FIT SCORE CIRCULAR/ARCH GAUGE (IMAGE 4) -->
+        <div class="role-fit-gauge-card">
+          <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+            <!-- Semi-circle / Arc Gauge -->
+            <div style="position: relative; width: 140px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
+              <svg viewBox="0 0 100 55" style="width: 130px; overflow: visible;">
+                <!-- Background Arc -->
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="8" stroke-linecap="round" />
+                <!-- Foreground Value Arc (78%) -->
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-dasharray="125.6" stroke-dashoffset="27.6" stroke-linecap="round" />
+              </svg>
+              <div style="position: absolute; bottom: 0; text-align: center;">
+                <div style="font-size: 22px; font-weight: 800; color: #ffffff; line-height: 1;">78/100</div>
+                <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.85); margin-top: 2px;">Role Fit Score</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 6px;">
+                <span>Overall Compatibility Rating:</span>
+                <span style="color: #a7f3d0;">High (78%)</span>
+                <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+              </div>
+              <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 2px;">
+                Your profile is highly compatible with the target role of "${targetCareer}".
+              </h2>
+              <p style="font-size: 13px; color: rgba(255,255,255,0.85);">
+                Closing 3 critical gaps in cloud and big data will advance your role fit score to 95%+.
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="switchTab('analyzer')" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: #fff; padding: 8px 18px; font-size: 12.5px; width: auto;">
+              <i data-lucide="file-text"></i> Audit Resume
+            </button>
+            <button class="btn" onclick="switchTab('mock-interview')" style="background: #ffffff; color: #4f46e5; padding: 8px 18px; font-size: 12.5px; width: auto; font-weight: 700;">
+              <i data-lucide="mic"></i> Practice Mock
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-COLUMN SUITE (IMAGE 4): CURRENT SKILLS | SKILLS GAP | RECOMMENDED SKILLS -->
+        <div style="display: grid; grid-template-columns: 1.1fr 1.3fr 1fr; gap: 20px;">
+
+          <!-- COLUMN 1: CURRENT SKILLS ANALYSIS (IMAGE 4) -->
+          <div class="card" style="padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--primary);">
+                Current Skills Analysis
+              </h3>
+              <span style="font-size: 11px; color: #64748b; font-weight: 600;">Show Advanced Skills 🟢</span>
+            </div>
+
+            <!-- Skills with Proficiency Bars & Badges -->
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Data Analysis</span>
+                  <span style="color: #059669; font-size: 11.5px;">92% Proficiency, Expert ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 92%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Python</span>
+                  <span style="color: #059669; font-size: 11.5px;">85% Proficiency, Advanced ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 85%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>SQL</span>
+                  <span style="color: #059669; font-size: 11.5px;">85% Proficiency, Advanced ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 85%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Machine Learning</span>
+                  <span style="color: #2563eb; font-size: 11.5px;">75% Proficiency, Intermediate ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 75%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Communication</span>
+                  <span style="color: #059669; font-size: 11.5px;">80% Proficiency, Advanced ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 80%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Project Management</span>
+                  <span style="color: #2563eb; font-size: 11.5px;">70% Proficiency, Intermediate ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 70%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #1e293b;">
+                  <span>Tableau</span>
+                  <span style="color: #059669; font-size: 11.5px;">78% Proficiency, Advanced ✓</span>
+                </div>
+                <div class="proficiency-bar-wrapper">
+                  <div class="proficiency-bar-fill" style="width: 78%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Skills Highlighted Pills -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 14px;">
+              <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 8px;">Top Skills Highlighted:</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <span style="font-size: 11px; font-weight: 700; background: #059669; color: #fff; padding: 4px 10px; border-radius: 20px;">Data Analysis</span>
+                <span style="font-size: 11px; font-weight: 700; background: #059669; color: #fff; padding: 4px 10px; border-radius: 20px;">Python</span>
+                <span style="font-size: 11px; font-weight: 700; background: #059669; color: #fff; padding: 4px 10px; border-radius: 20px;">SQL</span>
+              </div>
+            </div>
+
+            <!-- Accordion Counters -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px; font-size: 12px; color: #334155;">
+              <div style="background: #f8fafc; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between;">
+                <strong>Technical Skills: 12</strong>
+                <span style="color: #64748b;">(Advanced Average)</span>
+              </div>
+              <div style="background: #f8fafc; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between;">
+                <strong>Soft Skills: 8</strong>
+                <span style="color: #64748b;">(Advanced Average)</span>
+              </div>
+              <div style="background: #f8fafc; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between;">
+                <strong>Industry-Specific: 5</strong>
+                <span style="color: #64748b;">(Intermediate Average)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: SKILLS GAP ANALYSIS & MATCHING FLOWCHART (IMAGE 4) -->
+          <div class="card" style="padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--primary);">
+                Skills Gap Analysis
+              </h3>
+            </div>
+
+            <!-- Gap Overview Bar Chart & Severity Indicators -->
+            <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 14px; margin-bottom: 20px;">
+              <!-- Overview Stack -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">Gap Overview</div>
+                <div style="height: 90px; width: 44px; margin: 0 auto; background: #fee2e2; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;">
+                  <div style="background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%); height: 78%;" title="Present Skills (78%)"></div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 8px; font-size: 10px; font-weight: 700;">
+                  <span style="color: #4f46e5;">Present (78%)</span>
+                  <span style="color: #ef4444;">Missing (22%)</span>
+                </div>
+              </div>
+
+              <!-- Severity Indicators -->
+              <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="gap-severity-circle critical">3</div>
+                  <div>
+                    <strong style="font-size: 12px; color: #991b1b; display: block;">Critical Gaps:</strong>
+                    <span style="font-size: 11px; color: #475569;">AWS, Cloud Computing, Big Data</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="gap-severity-circle important">5</div>
+                  <div>
+                    <strong style="font-size: 12px; color: #c2410c; display: block;">Important Gaps:</strong>
+                    <span style="font-size: 11px; color: #475569;">Docker, Kubernetes, A/B Testing</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="gap-severity-circle nice">4</div>
+                  <div>
+                    <strong style="font-size: 12px; color: #854d0e; display: block;">Nice-to-have Gaps:</strong>
+                    <span style="font-size: 11px; color: #475569;">Git, Jenkins, Agile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PROFILE VS TARGET ROLE MATCHING FLOWCHART (IMAGE 4) -->
+            <div style="margin-top: 14px;">
+              <div style="font-size: 12.5px; font-weight: 700; color: #1e293b; margin-bottom: 10px; text-align: center;">
+                Profile vs. Target Role Requirements
+              </div>
+
+              <div class="flowchart-container">
+                <!-- Left Column: Current Profile -->
+                <div>
+                  <div class="flowchart-column-title">Current Profile</div>
+                  <div class="flowchart-node">Python (Advanced)</div>
+                  <div class="flowchart-node">SQL (Advanced)</div>
+                  <div class="flowchart-node">Tableau (Advanced)</div>
+                  <div class="flowchart-node">Machine Learning (Intermediate)</div>
+                </div>
+
+                <!-- Right Column: Target Role Requirements -->
+                <div>
+                  <div class="flowchart-column-title">Target: ${targetCareer}</div>
+                  <div class="flowchart-node target-match">Python (Expert) ✓</div>
+                  <div class="flowchart-node target-match">SQL (Expert) ✓</div>
+                  <div class="flowchart-node target-gap">AWS (Required) ⚠️</div>
+                  <div class="flowchart-node target-gap">Cloud Computing (Required) ⚠️</div>
+                  <div class="flowchart-node target-gap">Big Data (Required) ⚠️</div>
+                  <div class="flowchart-node target-preferred">Docker (Preferred)</div>
+                  <div class="flowchart-node target-preferred">Kubernetes (Preferred)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: RECOMMENDED SKILLS TO ADD (IMAGE 4) -->
+          <div class="card" style="padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--primary);">
+                Recommended Skills to Add
+              </h3>
+            </div>
+
+            <!-- Prioritized Suggestions -->
+            <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 10px;">Prioritized Skill Suggestions:</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+              <!-- Skill 1 -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 12.5px; color: #1e293b;">1. AWS (Cloud Services)</strong>
+                    <div style="font-size: 11px; color: #059669; font-weight: 600; margin-top: 2px;">High Impact (95%)</div>
+                  </div>
+                  <button class="btn btn-secondary" onclick="showToast('Added AWS to your resume skill targets', 'success')" style="padding: 3px 8px; font-size: 10.5px; width: auto; background: #e0e7ff; color: #4338ca; border-color: #c7d2fe;">
+                    + Add to Resume
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 11px;">
+                  <a href="https://aws.amazon.com/certification/" target="_blank" style="color: #4f46e5; text-decoration: none;">Learning Resource ↗</a>
+                </div>
+              </div>
+
+              <!-- Skill 2 -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 12.5px; color: #1e293b;">2. Cloud Computing</strong>
+                    <div style="font-size: 11px; color: #059669; font-weight: 600; margin-top: 2px;">High Impact (90%)</div>
+                  </div>
+                  <button class="btn btn-secondary" onclick="showToast('Added Cloud Computing to target skills', 'success')" style="padding: 3px 8px; font-size: 10.5px; width: auto; background: #e0e7ff; color: #4338ca; border-color: #c7d2fe;">
+                    + Add to Resume
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 11px;">
+                  <a href="https://www.coursera.org/learn/cloud-computing-basics" target="_blank" style="color: #4f46e5; text-decoration: none;">Learning Resource ↗</a>
+                </div>
+              </div>
+
+              <!-- Skill 3 -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 12.5px; color: #1e293b;">3. Big Data Technologies</strong>
+                    <div style="font-size: 11px; color: #059669; font-weight: 600; margin-top: 2px;">High Impact (88%)</div>
+                  </div>
+                  <button class="btn btn-secondary" onclick="showToast('Added Big Data to target skills', 'success')" style="padding: 3px 8px; font-size: 10.5px; width: auto; background: #e0e7ff; color: #4338ca; border-color: #c7d2fe;">
+                    + Add to Resume
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 11px;">
+                  <a href="https://spark.apache.org/" target="_blank" style="color: #4f46e5; text-decoration: none;">Learning Resource ↗</a>
+                </div>
+              </div>
+
+              <!-- Skill 4 -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <strong style="font-size: 12.5px; color: #1e293b;">4. Docker & Containers</strong>
+                    <div style="font-size: 11px; color: #2563eb; font-weight: 600; margin-top: 2px;">Medium Impact (75%)</div>
+                  </div>
+                  <button class="btn btn-secondary" onclick="showToast('Added Docker to target skills', 'success')" style="padding: 3px 8px; font-size: 10.5px; width: auto; background: #e0e7ff; color: #4338ca; border-color: #c7d2fe;">
+                    + Add to Resume
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 11px;">
+                  <a href="https://docs.docker.com/get-started/" target="_blank" style="color: #4f46e5; text-decoration: none;">Learning Resource ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Learning Resources Links -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 14px;">
+              <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 8px;">Learning Resources:</div>
+              <ul style="margin: 0; padding-left: 16px; font-size: 11.5px; line-height: 1.6; color: #4f46e5;">
+                <li><a href="https://aws.amazon.com/certification/" target="_blank" style="color: #4f46e5; text-decoration: none;">AWS Certified Solutions Architect (Course) ↗</a></li>
+                <li><a href="https://cloud.google.com/training" target="_blank" style="color: #4f46e5; text-decoration: none;">Introduction to Cloud Computing (Article) ↗</a></li>
+                <li><a href="https://www.edx.org" target="_blank" style="color: #4f46e5; text-decoration: none;">Big Data Fundamentals (Webinar) ↗</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOWER SUITE: RESUME ANALYZER | MOCK INTERVIEWS | JOBS TRACKER | PROGRESS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+          <!-- Card: Resume Analyzer -->
+          <div class="card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="file-check" style="color: var(--secondary);"></i> ATS Resume Score
+              </strong>
+              <span style="font-size: 12px; font-weight: 800; color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 12px;">74 / 100</span>
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+              Your resume matches 8 core keywords. Add Cloud and Docker to exceed 85+.
+            </p>
+            <button class="btn btn-secondary" onclick="switchTab('analyzer')" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+              Open Resume Analyzer →
+            </button>
+          </div>
+
+          <!-- Card: AI Mock Interview -->
+          <div class="card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="mic" style="color: var(--secondary);"></i> AI Mock Interview
+              </strong>
+              <span class="ai-badge" style="font-size: 9px; padding: 2px 6px;">AI LIVE</span>
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+              Practice Technical & Behavioral questions with instant AI scoring and feedback.
+            </p>
+            <button class="btn" onclick="switchTab('mock-interview')" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+              Start Mock Interview →
+            </button>
+          </div>
+
+          <!-- Card: Jobs & Internships -->
+          <div class="card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="briefcase" style="color: var(--secondary);"></i> Jobs & Internships
+              </strong>
+              <span style="font-size: 11px; color: #64748b;">3 Active</span>
+            </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+              <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px;">Applied: 3</span>
+              <span style="font-size: 11px; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px;">Interview: 1</span>
+              <span style="font-size: 11px; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px;">Offer: 0</span>
+            </div>
+            <button class="btn btn-secondary" onclick="switchTab('tracker')" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+              Track Applications →
+            </button>
+          </div>
+        </div>
+
+      </div>
+    `;
   }
 
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
-
 
 function showProgressMetrics() {
   const r = state.activeRoadmap;
@@ -2785,46 +3604,38 @@ function onStageChange(stage) {
   }
 
   updateStageUI(stage);
-  showToast(`Switched perspective to ${stage === "Class 10" ? "Class 9 & 10 (School)" : stage === "Class 12" ? "Class 11 & 12 (Higher Sec)" : "College & Graduate"}`, "info");
+  showToast(`Switched perspective to ${stage}`, "info");
 }
 
 function updateStageUI(stage) {
-  // Dynamically filter primary sidebar navigation items according to student stage (Section 7)
-  const streamGuideNav = document.getElementById("nav-stream-guide");
-  const collegeNav = document.getElementById("nav-college-explorer");
-  const analyzerNav = document.getElementById("nav-analyzer");
-  const mockNav = document.getElementById("nav-mock-interview");
-  const trackerNav = document.getElementById("nav-tracker");
+  // Dynamically filter primary sidebar navigation items according to student stage (Section 6 & 7)
+  const eduGroup = document.getElementById("sidebar-sect-education");
+  const careerGroup = document.getElementById("sidebar-sect-career");
 
-  if (stage === "Class 10") {
-    // School Students: Focus on Stream Guide, hide College/Exams, Resume, Mock Interview, Job Tracker
-    if (streamGuideNav) streamGuideNav.style.display = "flex";
-    if (collegeNav) collegeNav.style.display = "none";
-    if (analyzerNav) analyzerNav.style.display = "none";
-    if (mockNav) mockNav.style.display = "none";
-    if (trackerNav) trackerNav.style.display = "none";
-  } else if (stage === "Class 12") {
-    // Higher Secondary: Focus on College & Exams, hide Stream Guide, Resume, Mock Interview, Job Tracker
-    if (streamGuideNav) streamGuideNav.style.display = "none";
-    if (collegeNav) collegeNav.style.display = "flex";
-    if (analyzerNav) analyzerNav.style.display = "none";
-    if (mockNav) mockNav.style.display = "none";
-    if (trackerNav) trackerNav.style.display = "none";
-  } else {
-    // College & Graduates: Focus on Career Development, hide School Stream Guide & College Explorer
-    if (streamGuideNav) streamGuideNav.style.display = "none";
-    if (collegeNav) collegeNav.style.display = "none";
-    if (analyzerNav) analyzerNav.style.display = "flex";
-    if (mockNav) mockNav.style.display = "flex";
-    if (trackerNav) trackerNav.style.display = "flex";
+  const isSchool = stage.includes("9") || stage.includes("10");
+  const isHigherSec = stage.includes("11") || stage.includes("12");
+  const isCollege = !isSchool && !isHigherSec;
+
+  if (eduGroup) {
+    eduGroup.style.display = (isSchool || isHigherSec) ? "block" : "none";
+  }
+
+  if (careerGroup) {
+    careerGroup.style.display = isCollege ? "block" : "none";
+  }
+
+  // Specific item tweaks
+  const streamGuideNav = document.getElementById("nav-stream-guide");
+  if (streamGuideNav) {
+    streamGuideNav.style.display = isSchool ? "flex" : (isHigherSec ? "flex" : "none");
   }
 
   // Adaptive Dashboard Hero Banner & Metrics Render
-  if (document.getElementById("dashboard-stage-banner-wrapper") || (state.activeTab === "dashboard")) {
+  if (state.activeTab === "dashboard" || document.getElementById("dashboard-stage-dynamic-view")) {
     renderDashboard();
   }
 
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ==========================================
@@ -3138,7 +3949,9 @@ function filterCareers() {
           domainId: domain.id,
           domainName: domain.name,
           domainIcon: domain.icon,
-          domainColor: domain.color
+          domainColor: domain.color,
+          pathway: role.pathway || domain.name + " Services",
+          cluster: role.cluster || domain.name
         });
       });
     }
@@ -3149,6 +3962,8 @@ function filterCareers() {
       r.title.toLowerCase().includes(query) ||
       r.domainName.toLowerCase().includes(query) ||
       r.description.toLowerCase().includes(query) ||
+      (r.pathway && r.pathway.toLowerCase().includes(query)) ||
+      (r.cluster && r.cluster.toLowerCase().includes(query)) ||
       (r.keySkills || []).some(s => s.toLowerCase().includes(query))
     );
   }
@@ -3157,155 +3972,122 @@ function filterCareers() {
     grid.innerHTML = `
       <div class="card col-12" style="padding: 40px; text-align: center; grid-column: 1 / -1;">
         <i data-lucide="search-x" style="width: 40px; height: 40px; color: var(--text-muted); margin: 0 auto 12px;"></i>
-        <h4 style="font-family: var(--font-heading); font-size: 16px; color: #fff;">No careers found matching "${query}"</h4>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Try searching for a different skill, title, or sector chip.</p>
+        <h4 style="font-family: var(--font-heading); font-size: 16px; color: #1e293b;">No careers found matching "${query}"</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Try searching for a different skill, title, pathway, or cluster chip.</p>
       </div>
     `;
-    lucide.createIcons();
+    if (window.lucide) window.lucide.createIcons();
     return;
   }
 
-  grid.innerHTML = rolesList.map(r => `
-    <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid ${r.domainColor || 'var(--color-indigo)'};">
-      <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${r.domainColor || 'var(--color-teal)'};">
-            ${r.domainName}
-          </span>
-          <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-weight: 600;">
-            ${r.growth}
-          </span>
-        </div>
+  // Pre-configured Unsplash images for rich visual career cards (Image 2 style)
+  const categoryImages = {
+    "science-research": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=600&q=80",
+    "medical-healthcare": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80",
+    "commerce-finance": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80",
+    "business-management": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80",
+    "arts-humanities": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+    "law-legal": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80",
+    "engineering-tech": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "design-creative": "https://images.unsplash.com/photo-1509395062183-67c5ad6faff9?auto=format&fit=crop&w=600&q=80",
+    "education-teaching": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80",
+    "sports-fitness": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80",
+    "government-civil": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=600&q=80",
+    "agriculture-environment": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80"
+  };
 
-        <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px;">
-          ${r.title}
-        </h3>
+  const saved = getSavedCareers();
 
-        <div style="font-size: 13px; font-weight: 600; color: var(--color-teal); margin-bottom: 12px;">
-          💰 ${r.salary}
-        </div>
+  grid.innerHTML = rolesList.map(r => {
+    const cardImg = categoryImages[r.domainId] || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80";
+    const isSaved = saved.includes(r.title);
 
-        <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
-          ${r.description}
-        </p>
-
-        <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 14px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
-          <strong style="color: #fff;">🎓 Path:</strong> ${r.educationReq}
-        </div>
-
-        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;">
-          ${(r.keySkills || []).slice(0, 4).map(sk => `
-            <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(99, 102, 241, 0.15); color: var(--text-primary); border: 1px solid rgba(99, 102, 241, 0.25);">
-              ${sk}
-            </span>
-          `).join("")}
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 10px; border-top: 1px solid var(--border-glass); padding-top: 14px;">
-        <button class="btn btn-secondary" onclick="openCareerDetailModal('${r.domainId}', '${r.title.replace(/'/g, "\\'")}')" style="flex: 1; padding: 8px; font-size: 12px;">
-          <i data-lucide="info"></i> Details
-        </button>
-        <button class="btn btn-pink" onclick="launchRoadmapFromRole('${r.title.replace(/'/g, "\\'")}', '${r.roadmapSlug || 'software-engineer'}')" style="flex: 1.2; padding: 8px; font-size: 12px;">
-          <i data-lucide="route"></i> Roadmap
-        </button>
-      </div>
-    </div>
-  `).join("");
-
-  lucide.createIcons();
-}
-
-function openCareerDetailModal(domainId, roleTitle) {
-  const data = typeof CAREER_EXPLORER_DATA !== 'undefined' ? CAREER_EXPLORER_DATA : [];
-  const domain = data.find(d => d.id === domainId);
-  if (!domain) return;
-  const role = domain.roles.find(r => r.title === roleTitle);
-  if (!role) return;
-
-  const modal = document.getElementById("career-detail-modal");
-  const modalTitle = document.getElementById("career-modal-title");
-  const modalDomain = document.getElementById("career-modal-domain");
-  const modalBody = document.getElementById("career-modal-body");
-
-  if (modalTitle) modalTitle.innerText = role.title;
-  if (modalDomain) modalDomain.innerText = domain.name;
-
-  if (modalBody) {
-    modalBody.innerHTML = `
-      <div style="margin-bottom: 18px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.7); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-glass); margin-bottom: 16px;">
-          <div>
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Global Compensation Range</div>
-            <div style="font-size: 16px; font-weight: 800; color: var(--color-teal); margin-top: 2px;">${role.salary}</div>
+    return `
+      <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        
+        <!-- Image Header with Play Button (Image 2) -->
+        <div class="career-video-card-header" style="background-image: url('${cardImg}');">
+          <div class="career-play-btn" onclick="selectCareerFromExplorer('${r.title}', '${r.domainName}')" title="Explore Career">
+            <i data-lucide="play" style="width: 20px; height: 20px; margin-left: 2px;"></i>
           </div>
-          <div>
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">10-Year Growth Rate</div>
-            <div style="font-size: 14px; font-weight: 700; color: #34d399; margin-top: 2px;">${role.growth}</div>
-          </div>
-        </div>
-
-        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Role Overview</h4>
-        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px;">
-          ${role.description}
-        </p>
-
-        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">A Day in the Life</h4>
-        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px; background: rgba(99, 102, 241, 0.08); padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--color-indigo);">
-          "${role.dayInLife}"
-        </p>
-
-        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Recommended Academic & Degree Pathway</h4>
-        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
-          ${role.educationReq}
-        </p>
-
-        <h4 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Essential Competencies & Frameworks</h4>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px;">
-          ${(role.keySkills || []).map(sk => `
-            <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: rgba(20, 184, 166, 0.12); color: var(--color-teal); border: 1px solid rgba(20, 184, 166, 0.3);">
-              ${sk}
-            </span>
-          `).join("")}
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-glass); padding-top: 16px;">
-          <button class="btn btn-secondary" onclick="closeCareerDetailModal()">Close</button>
-          <button class="btn btn-pink" onclick="closeCareerDetailModal(); launchRoadmapFromRole('${role.title.replace(/'/g, "\\'")}', '${role.roadmapSlug || 'software-engineer'}')">
-            <i data-lucide="route"></i> Launch Personalized Roadmap
+          <span style="position: absolute; top: 12px; left: 14px; z-index: 2; font-size: 11px; font-weight: 700; background: rgba(15,23,42,0.7); backdrop-filter: blur(4px); color: #fff; padding: 2px 8px; border-radius: 4px;">
+            🌐 Global & National
+          </span>
+          <button onclick="toggleSaveCareer('${r.title}')" style="position: absolute; top: 12px; right: 14px; z-index: 2; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ${isSaved ? '#ef4444' : '#64748b'};" title="Save Career">
+            ${isSaved ? '★' : '☆'}
           </button>
         </div>
+
+        <!-- Body Details -->
+        <div style="padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <!-- Career Title -->
+            <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 6px; line-height: 1.3;">
+              ${r.title}
+            </h3>
+
+            <!-- 2-line Description -->
+            <p style="font-size: 12.5px; color: #64748b; line-height: 1.5; margin-bottom: 14px;">
+              ${r.description}
+            </p>
+
+            <!-- MaiaLearning Pathway & Cluster Tags (Image 2) -->
+            <div style="font-size: 11.5px; color: #334155; margin-bottom: 6px;">
+              <strong>Pathway:</strong> ${r.pathway}
+            </div>
+            <div style="font-size: 11.5px; color: #334155; margin-bottom: 12px;">
+              <strong>Cluster:</strong> ${r.cluster}
+            </div>
+
+            <!-- Salary & Growth -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px;">
+              <span style="font-size: 12px; font-weight: 700; color: #0f172a;">💰 ${r.salary}</span>
+              <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: #dcfce7; color: #15803d; font-weight: 600;">${r.growth}</span>
+            </div>
+
+            <!-- Education Path -->
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 14px;">
+              <strong>🎓 Path:</strong> ${r.educationReq}
+            </div>
+
+            <!-- Skills -->
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+              ${(r.keySkills || []).slice(0, 3).map(sk => `
+                <span style="font-size: 10.5px; padding: 2px 8px; border-radius: 4px; background: #EEF2FF; color: #4338CA; font-weight: 500;">
+                  ${sk}
+                </span>
+              `).join("")}
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div style="border-top: 1px solid #f1f5f9; padding-top: 14px; display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="toggleSaveCareer('${r.title}')" style="padding: 8px 12px; font-size: 12px; width: auto; background: #fff; border: 1px solid #cbd5e1; color: #334155;">
+              ${isSaved ? 'Saved ★' : 'Save Career'}
+            </button>
+            <button class="btn" onclick="selectCareerFromExplorer('${r.title}', '${r.domainName}')" style="flex: 1; padding: 8px 14px; font-size: 12px;">
+              Explore Roadmap →
+            </button>
+          </div>
+        </div>
+
       </div>
     `;
+  }).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function selectCareerFromExplorer(title, domain) {
+  if (state.user) {
+    state.user.career = title.toLowerCase().replace(/\s+/g, "-");
+    saveStateToLocalStorage();
   }
+  const metricEl = document.getElementById("metric-career");
+  if (metricEl) metricEl.innerText = title;
 
-  if (modal) modal.style.display = "flex";
-  lucide.createIcons();
-}
-
-function closeCareerDetailModal() {
-  const modal = document.getElementById("career-detail-modal");
-  if (modal) modal.style.display = "none";
-}
-
-function launchRoadmapFromRole(roleTitle, fallbackSlug) {
   switchTab("generator");
-  const careerSelect = document.getElementById("wizard-career");
-  if (careerSelect) {
-    let exists = false;
-    for (let i = 0; i < careerSelect.options.length; i++) {
-      if (careerSelect.options[i].text.toLowerCase().includes(roleTitle.toLowerCase()) || 
-          careerSelect.options[i].value === fallbackSlug) {
-        careerSelect.selectedIndex = i;
-        exists = true;
-        break;
-      }
-    }
-    if (!exists) {
-      careerSelect.value = fallbackSlug || "fullstack-developer";
-    }
-  }
-  showToast(`Configured Roadmap Builder for ${roleTitle}`, "info");
+  showToast(`Configured "${title}" as your active target! Generated customized roadmap.`, "success");
 }
 
 // ==========================================
@@ -3395,158 +4177,315 @@ function renderStreamGuide() {
 
 function setCollegeSubTab(subTab) {
   state.collegeSubTab = subTab;
+  const btnColleges = document.getElementById("college-subtab-colleges");
   const btnDegrees = document.getElementById("college-subtab-degrees");
   const btnExams = document.getElementById("college-subtab-exams");
+
+  const containerColleges = document.getElementById("college-directory-container");
   const containerDegrees = document.getElementById("college-degrees-container");
   const containerExams = document.getElementById("college-exams-container");
 
-  if (subTab === "degrees") {
-    if (btnDegrees) { btnDegrees.className = "btn"; }
-    if (btnExams) { btnExams.className = "btn btn-secondary"; }
-    if (containerDegrees) containerDegrees.style.display = "grid";
-    if (containerExams) containerExams.style.display = "none";
+  if (btnColleges) btnColleges.className = (subTab === "colleges") ? "btn" : "btn btn-secondary";
+  if (btnDegrees) btnDegrees.className = (subTab === "degrees") ? "btn" : "btn btn-secondary";
+  if (btnExams) btnExams.className = (subTab === "exams") ? "btn" : "btn btn-secondary";
+
+  if (containerColleges) containerColleges.style.display = (subTab === "colleges") ? "block" : "none";
+  if (containerDegrees) containerDegrees.style.display = (subTab === "degrees") ? "block" : "none";
+  if (containerExams) containerExams.style.display = (subTab === "exams") ? "block" : "none";
+
+  if (subTab === "colleges") {
+    renderCollegesTable();
+  } else if (subTab === "degrees") {
+    filterDegrees();
   } else {
-    if (btnExams) { btnExams.className = "btn"; }
-    if (btnDegrees) { btnDegrees.className = "btn btn-secondary"; }
-    if (containerExams) containerExams.style.display = "grid";
-    if (containerDegrees) containerDegrees.style.display = "none";
+    filterExams();
   }
 
-  filterColleges();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function renderCollegeExplorer() {
-  setCollegeSubTab(state.collegeSubTab || "degrees");
+  setCollegeSubTab(state.collegeSubTab || "colleges");
+}
+
+function renderCollegesTable() {
+  const data = typeof COLLEGES_DIRECTORY_DATA !== 'undefined' ? COLLEGES_DIRECTORY_DATA : [];
+  const searchInput = document.getElementById("college-name-search");
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const countryFilter = document.getElementById("college-country-filter");
+  const selectedCountry = (countryFilter && countryFilter.value) ? countryFilter.value : "all";
+  const typeFilter = document.getElementById("college-type-filter");
+  const selectedType = (typeFilter && typeFilter.value) ? typeFilter.value : "all";
+  const majorFilter = document.getElementById("college-major-filter");
+  const selectedMajor = (majorFilter && majorFilter.value) ? majorFilter.value : "all";
+  const tuitionFilter = document.getElementById("college-tuition-filter");
+  const selectedTuition = (tuitionFilter && tuitionFilter.value) ? tuitionFilter.value : "all";
+  const housingFilter = document.getElementById("college-housing-filter");
+  const selectedHousing = (housingFilter && housingFilter.value) ? housingFilter.value : "all";
+  const sizeFilter = document.getElementById("college-size-filter");
+  const selectedSize = (sizeFilter && sizeFilter.value) ? sizeFilter.value : "all";
+  const tierFilter = document.getElementById("college-tier-filter");
+  const selectedTier = (tierFilter && tierFilter.value) ? tierFilter.value : "all";
+
+  const tbody = document.getElementById("colleges-table-body");
+  const countEl = document.getElementById("college-results-count");
+  if (!tbody) return;
+
+  let filtered = data.filter(c => {
+    if (query && !c.name.toLowerCase().includes(query) && !c.location.toLowerCase().includes(query) && !c.description.toLowerCase().includes(query)) return false;
+    if (selectedCountry !== "all" && c.country !== selectedCountry) return false;
+    if (selectedType !== "all" && c.type !== selectedType) return false;
+    if (selectedMajor !== "all" && !(c.majors || []).includes(selectedMajor)) return false;
+    if (selectedTuition !== "all" && c.tuitionRange !== selectedTuition) return false;
+    if (selectedHousing !== "all" && c.housing !== selectedHousing) return false;
+    if (selectedSize !== "all" && c.size !== selectedSize) return false;
+    if (selectedTier !== "all" && c.matchLevel !== selectedTier) return false;
+    return true;
+  });
+
+  if (countEl) {
+    countEl.innerText = `Found ${filtered.length} college${filtered.length === 1 ? '' : 's'}`;
+  }
+
+  if (!filtered.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="padding: 40px; text-align: center; color: #64748b;">
+          <i data-lucide="search-x" style="width: 36px; height: 36px; margin: 0 auto 10px; color: #94a3b8; display: block;"></i>
+          <strong>No colleges match your current filters.</strong>
+          <p style="font-size: 12px; margin-top: 4px;">Try loosening the location, type, or major criteria, or click "Clear Filters".</p>
+        </td>
+      </tr>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(c => `
+    <tr>
+      <td style="padding: 14px 16px;">
+        <div class="college-logo-pill" style="background: ${c.logoColor || '#4f46e5'};">
+          ${c.logoText || c.name.substring(0, 3).toUpperCase()}
+        </div>
+      </td>
+      <td style="padding: 14px 16px;">
+        <strong style="color: #0f172a; font-size: 14px;">${c.name}</strong>
+        <p style="font-size: 12px; color: #64748b; margin-top: 3px; line-height: 1.4; max-width: 450px;">
+          ${c.description}
+        </p>
+        <div style="font-size: 11px; color: #475569; margin-top: 4px;">
+          <strong>Majors:</strong> ${(c.majors || []).slice(0, 3).join(", ")}${c.majors && c.majors.length > 3 ? ' +' + (c.majors.length - 3) : ''}
+        </div>
+      </td>
+      <td style="padding: 14px 16px; white-space: nowrap;">
+        <div style="font-weight: 500; color: #1e293b;">${c.location}</div>
+        <div style="font-size: 11px; color: #64748b;">${c.country}</div>
+      </td>
+      <td style="padding: 14px 16px;">
+        <span class="type-badge-${c.type.toLowerCase()}">${c.type}</span>
+      </td>
+      <td style="padding: 14px 16px; font-weight: 700; color: #0f172a;">
+        ${c.acceptanceRate}
+      </td>
+      <td style="padding: 14px 16px;">
+        <span class="match-badge-${c.matchLevel.toLowerCase()}">${c.matchLevel}</span>
+      </td>
+      <td style="padding: 14px 16px; text-align: right; white-space: nowrap;">
+        <button type="button" class="btn btn-secondary" onclick="viewCollegeDetails('${c.id}')" style="padding: 6px 12px; font-size: 12px; width: auto; margin-right: 6px; border: 1px solid #cbd5e1; background: #fff; color: #334155;">
+          View Details
+        </button>
+        <button type="button" class="btn ${c.isAdded ? 'btn-secondary' : ''}" onclick="toggleCollegeSaved('${c.id}')" style="padding: 6px 14px; font-size: 12px; width: auto; ${c.isAdded ? 'background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE;' : 'background: #4F46E5; color: #fff;'}">
+          ${c.isAdded ? 'Added ✓' : 'Add to List'}
+        </button>
+      </td>
+    </tr>
+  `).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function resetCollegeFilters() {
+  clearCollegeFilters();
+}
+
+function clearCollegeFilters() {
+  const searchInput = document.getElementById("college-name-search");
+  if (searchInput) searchInput.value = "";
+  const countryFilter = document.getElementById("college-country-filter");
+  if (countryFilter) countryFilter.value = "all";
+  const typeFilter = document.getElementById("college-type-filter");
+  if (typeFilter) typeFilter.value = "all";
+  const majorFilter = document.getElementById("college-major-filter");
+  if (majorFilter) majorFilter.value = "all";
+  const tuitionFilter = document.getElementById("college-tuition-filter");
+  if (tuitionFilter) tuitionFilter.value = "all";
+  const housingFilter = document.getElementById("college-housing-filter");
+  if (housingFilter) housingFilter.value = "all";
+  const sizeFilter = document.getElementById("college-size-filter");
+  if (sizeFilter) sizeFilter.value = "all";
+  const tierFilter = document.getElementById("college-tier-filter");
+  if (tierFilter) tierFilter.value = "all";
+
+  renderCollegesTable();
+  showToast("Filters reset to default view.", "info");
+}
+
+function toggleCollegeSaved(id) {
+  const data = typeof COLLEGES_DIRECTORY_DATA !== 'undefined' ? COLLEGES_DIRECTORY_DATA : [];
+  const col = data.find(c => c.id === id);
+  if (!col) return;
+  col.isAdded = !col.isAdded;
+  renderCollegesTable();
+  showToast(col.isAdded ? `Added ${col.name} to your target list.` : `Removed ${col.name} from your target list.`, "info");
+}
+
+function viewCollegeDetails(id) {
+  const data = typeof COLLEGES_DIRECTORY_DATA !== 'undefined' ? COLLEGES_DIRECTORY_DATA : [];
+  const col = data.find(c => c.id === id);
+  if (!col) return;
+  alert(`🏛️ ${col.name} (${col.country})\n\nLocation: ${col.location}\nType: ${col.type} University\nAcceptance Rate: ${col.acceptanceRate}\nMatch Level: ${col.matchLevel}\nAvg Tuition: ${col.tuition}\nHousing: ${col.housing}\nCampus Size: ${col.size}\n\nKey Majors: ${col.majors.join(', ')}\n\nOfficial Website: ${col.website}`);
 }
 
 function filterColleges() {
-  const searchInput = document.getElementById("college-search-input");
+  if (state.collegeSubTab === "colleges") {
+    renderCollegesTable();
+  } else if (state.collegeSubTab === "degrees") {
+    filterDegrees();
+  } else {
+    filterExams();
+  }
+}
+
+function filterDegrees() {
+  const courses = typeof COLLEGE_COURSE_DATA !== 'undefined' ? COLLEGE_COURSE_DATA : [];
+  const searchInput = document.getElementById("college-degree-search");
   const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
   const streamFilter = document.getElementById("college-stream-filter");
   const selectedStream = streamFilter ? streamFilter.value : "all";
 
-  if (state.collegeSubTab === "degrees") {
-    const courses = typeof COLLEGE_COURSE_DATA !== 'undefined' ? COLLEGE_COURSE_DATA : [];
-    const container = document.getElementById("college-degrees-container");
-    if (!container) return;
+  const container = document.getElementById("college-degrees-cards-grid");
+  if (!container) return;
 
-    let filtered = courses;
-    if (selectedStream !== "all") {
-      filtered = filtered.filter(c => c.stream.includes(selectedStream) || c.stream.includes("All Streams"));
-    }
-    if (query) {
-      filtered = filtered.filter(c => 
-        c.degree.toLowerCase().includes(query) ||
-        c.stream.toLowerCase().includes(query) ||
-        (c.topInstitutes || []).some(inst => inst.toLowerCase().includes(query)) ||
-        (c.careerOpportunities || []).some(opp => opp.toLowerCase().includes(query))
-      );
-    }
-
-    if (!filtered.length) {
-      container.innerHTML = `<div class="card col-12" style="padding: 30px; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-muted);">No degree programs found matching "${query}".</p></div>`;
-      return;
-    }
-
-    container.innerHTML = filtered.map(c => `
-      <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600;">
-              ${c.stream}
-            </span>
-            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
-              ⏳ ${c.duration}
-            </span>
-          </div>
-
-          <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px;">
-            ${c.degree}
-          </h3>
-
-          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
-            <strong style="color: #fff;">Eligibility:</strong> ${c.eligibility}
-          </div>
-
-          <div style="font-size: 12px; color: var(--color-teal); font-weight: 600; margin-bottom: 10px;">
-            💵 Avg Fees: ${c.avgFees}
-          </div>
-
-          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-            <strong style="color: #fff;">Gateway Entrances:</strong> ${c.entranceExams.join(", ")}
-          </div>
-
-          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
-            <strong style="color: #fff;">Top Institutes:</strong> ${c.topInstitutes.slice(0, 4).join(" • ")}
-          </div>
-        </div>
-
-        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
-          <p style="font-size: 11.5px; color: var(--text-muted); margin: 0 0 10px 0; font-style: italic;">
-            ✨ ${c.pros}
-          </p>
-          <button class="btn btn-secondary" onclick="switchTab('generator')" style="width: 100%; padding: 7px; font-size: 12px;">
-            <i data-lucide="route"></i> Build Roadmap for this Degree
-          </button>
-        </div>
-      </div>
-    `).join("");
-
-  } else {
-    // Exams & Scholarships View
-    const items = typeof EXAM_SCHOLARSHIP_DATA !== 'undefined' ? EXAM_SCHOLARSHIP_DATA : [];
-    const container = document.getElementById("college-exams-container");
-    if (!container) return;
-
-    let filtered = items;
-    if (query) {
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query) ||
-        item.conductingBody.toLowerCase().includes(query)
-      );
-    }
-
-    container.innerHTML = filtered.map(item => `
-      <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'};">
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: ${item.type === 'scholarship' ? 'rgba(20, 184, 166, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'}; font-weight: 700; text-transform: uppercase;">
-              ${item.type === 'scholarship' ? 'Scholarship Grant' : 'National Entrance'}
-            </span>
-            <span style="font-size: 11.5px; color: var(--text-muted);">
-              ${item.frequency}
-            </span>
-          </div>
-
-          <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px;">
-            ${item.name}
-          </h3>
-
-          <div style="font-size: 12px; color: #38bdf8; margin-bottom: 10px; font-weight: 500;">
-            🏛️ Conducting: ${item.conductingBody}
-          </div>
-
-          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
-            ${item.description}
-          </p>
-
-          <div style="font-size: 12px; color: var(--text-muted); background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px; margin-bottom: 16px;">
-            <strong style="color: #fff;">Eligibility:</strong> ${item.eligibility}
-          </div>
-        </div>
-
-        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
-          <a href="${item.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; font-size: 12.5px; padding: 8px;">
-            <span>Visit Official Portal</span>
-            <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
-          </a>
-        </div>
-      </div>
-    `).join("");
+  let filtered = courses;
+  if (selectedStream !== "all") {
+    filtered = filtered.filter(c => c.stream.includes(selectedStream) || c.stream.includes("All Streams"));
+  }
+  if (query) {
+    filtered = filtered.filter(c => 
+      c.degree.toLowerCase().includes(query) ||
+      c.stream.toLowerCase().includes(query) ||
+      (c.topInstitutes || []).some(inst => inst.toLowerCase().includes(query)) ||
+      (c.careerOpportunities || []).some(opp => opp.toLowerCase().includes(query))
+    );
   }
 
-  lucide.createIcons();
+  if (!filtered.length) {
+    container.innerHTML = `<div class="card col-12" style="padding: 30px; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-muted);">No degree programs found matching "${query}".</p></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => `
+    <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600;">
+            ${c.stream}
+          </span>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">
+            ⏳ ${c.duration}
+          </span>
+        </div>
+
+        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px;">
+          ${c.degree}
+        </h3>
+
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px;">
+          <strong style="color: #fff;">Eligibility:</strong> ${c.eligibility}
+        </div>
+
+        <div style="font-size: 12px; color: var(--color-teal); font-weight: 600; margin-bottom: 10px;">
+          💵 Avg Fees: ${c.avgFees}
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          <strong style="color: #fff;">Gateway Entrances:</strong> ${c.entranceExams.join(", ")}
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+          <strong style="color: #fff;">Top Institutes:</strong> ${c.topInstitutes.slice(0, 4).join(" • ")}
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
+        <p style="font-size: 11.5px; color: var(--text-muted); margin: 0 0 10px 0; font-style: italic;">
+          ✨ ${c.pros}
+        </p>
+        <button class="btn btn-secondary" onclick="switchTab('generator')" style="width: 100%; padding: 7px; font-size: 12px;">
+          <i data-lucide="route"></i> Build Roadmap for this Degree
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function filterExams() {
+  const items = typeof EXAM_SCHOLARSHIP_DATA !== 'undefined' ? EXAM_SCHOLARSHIP_DATA : [];
+  const searchInput = document.getElementById("college-exam-search");
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const container = document.getElementById("college-exams-cards-grid");
+  if (!container) return;
+
+  let filtered = items;
+  if (query) {
+    filtered = filtered.filter(item => 
+      item.name.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query) ||
+      item.conductingBody.toLowerCase().includes(query)
+    );
+  }
+
+  container.innerHTML = filtered.map(item => `
+    <div class="card" style="padding: 22px; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'};">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 11px; padding: 2px 7px; border-radius: 4px; background: ${item.type === 'scholarship' ? 'rgba(20, 184, 166, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${item.type === 'scholarship' ? 'var(--color-teal)' : '#f59e0b'}; font-weight: 700; text-transform: uppercase;">
+            ${item.type === 'scholarship' ? 'Scholarship Grant' : 'National Entrance'}
+          </span>
+          <span style="font-size: 11.5px; color: var(--text-muted);">
+            ${item.frequency}
+          </span>
+        </div>
+
+        <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px;">
+          ${item.name}
+        </h3>
+
+        <div style="font-size: 12px; color: #38bdf8; margin-bottom: 10px; font-weight: 500;">
+          🏛️ Conducting: ${item.conductingBody}
+        </div>
+
+        <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
+          ${item.description}
+        </p>
+
+        <div style="font-size: 12px; color: var(--text-muted); background: rgba(15, 23, 42, 0.6); padding: 8px 10px; border-radius: 6px; margin-bottom: 16px;">
+          <strong style="color: #fff;">Eligibility:</strong> ${item.eligibility}
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-glass); padding-top: 12px;">
+        <a href="${item.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; font-size: 12.5px; padding: 8px;">
+          <span>Visit Official Portal</span>
+          <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+        </a>
+      </div>
+    </div>
+  `).join("");
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // ==========================================
@@ -3850,7 +4789,7 @@ function showLandingPage() {
   if (auth) auth.style.display = "none";
   if (workspace) workspace.style.display = "none";
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function scrollToSection(sectionId) {
@@ -3867,7 +4806,7 @@ function toggleFaq(item) {
   if (!wasOpen) {
     item.classList.add("open");
   }
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function openDemoWithSector(sectorKey) {
@@ -3898,25 +4837,40 @@ function openDemoWithSector(sectorKey) {
   }, 400);
 }
 
+// ==========================================
+// 15. 3-STEP LEVEL ONBOARDING WIZARD (IMAGE 1)
+// ==========================================
+
+let onboardingLevelState = {
+  currentStep: 1,
+  selectedLevel: "Class 10",
+  name: "",
+  targetCareer: "",
+  academics: {}
+};
+
 function startOnboardingWithStage(stage) {
-  onboardingState.academicStage = stage;
+  onboardingLevelState.selectedLevel = stage;
   startOnboarding();
-  selectOnboardingStage(stage);
+  selectOnboardStageOption(stage);
 }
 
 function startOnboarding() {
   const modal = document.getElementById("onboarding-modal");
   if (!modal) return;
   
-  onboardingState.currentStep = 1;
-  const nameInput = document.getElementById("onboard-name");
-  const careerInput = document.getElementById("onboard-career");
+  onboardingLevelState.currentStep = 1;
+  onboardingLevelState.selectedLevel = state.academicStage || "Class 10";
+
+  const nameInput = document.getElementById("onboard-name-input");
+  const careerInput = document.getElementById("onboard-target-career-input");
   if (nameInput) nameInput.value = state.user ? state.user.username : "";
   if (careerInput) careerInput.value = state.user ? formatCareerTitle(state.user.career) : "";
 
-  renderOnboardingStep();
+  selectOnboardStageOption(onboardingLevelState.selectedLevel);
   modal.style.display = "flex";
-  if (window.lucide) lucide.createIcons();
+  renderOnboardingWizardStep();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function closeOnboardingModal() {
@@ -3924,112 +4878,139 @@ function closeOnboardingModal() {
   if (modal) modal.style.display = "none";
 }
 
-function jumpToOnboardingStep(step) {
-  if (step < 1 || step > 5) return;
-  onboardingState.currentStep = step;
-  renderOnboardingStep();
+function selectOnboardStageOption(stage) {
+  onboardingLevelState.selectedLevel = stage;
+  const cards = document.querySelectorAll(".level-select-card");
+  cards.forEach(c => c.classList.remove("selected"));
+
+  let cardId = "lvl-card-class-10";
+  if (stage === "Class 9") cardId = "lvl-card-class-9";
+  else if (stage === "Class 10") cardId = "lvl-card-class-10";
+  else if (stage === "Class 11") cardId = "lvl-card-class-11";
+  else if (stage === "Class 12") cardId = "lvl-card-class-12";
+  else if (stage === "Undergraduate") cardId = "lvl-card-undergraduate";
+  else if (stage === "Postgraduate") cardId = "lvl-card-postgraduate";
+  else if (stage.includes("Graduate")) cardId = "lvl-card-graduate";
+
+  const targetCard = document.getElementById(cardId);
+  if (targetCard) targetCard.classList.add("selected");
 }
 
-function nextOnboardingStep() {
-  if (onboardingState.currentStep === 1) {
-    const nameInput = document.getElementById("onboard-name");
-    const careerInput = document.getElementById("onboard-career");
-    const notSureCheck = document.getElementById("onboard-not-sure");
-    
-    const name = nameInput ? nameInput.value.trim() : "";
-    if (!name) {
-      showToast("Please enter your name to personalize your guidance.", "warning");
-      if (nameInput) nameInput.focus();
-      return;
-    }
-    onboardingState.name = name;
-    onboardingState.targetCareer = notSureCheck && notSureCheck.checked ? "Undecided - Exploring Options" : (careerInput ? careerInput.value.trim() : "Software Engineer");
-  }
-
-  if (onboardingState.currentStep === 2) {
-    renderOnboardStageFields(onboardingState.academicStage);
-  }
-
-  if (onboardingState.currentStep === 4) {
-    // Populate summary for step 5
-    const nameSum = document.getElementById("onboard-summary-name");
-    const stageSum = document.getElementById("onboard-summary-stage");
-    const careerSum = document.getElementById("onboard-summary-career");
-    if (nameSum) nameSum.innerText = onboardingState.name || "Student";
-    if (stageSum) stageSum.innerText = onboardingState.academicStage;
-    if (careerSum) careerSum.innerText = onboardingState.targetCareer || "Undecided - Exploring Options";
-  }
-
-  if (onboardingState.currentStep < 5) {
-    onboardingState.currentStep++;
-    renderOnboardingStep();
-  }
+function selectOnboardingStage(stage) {
+  selectOnboardStageOption(stage);
 }
 
-function prevOnboardingStep() {
-  if (onboardingState.currentStep > 1) {
-    onboardingState.currentStep--;
-    renderOnboardingStep();
-  }
-}
+function renderOnboardingWizardStep() {
+  const step = onboardingLevelState.currentStep;
 
-function renderOnboardingStep() {
-  const step = onboardingState.currentStep;
-  const stepNumEl = document.getElementById("onboard-step-num");
-  if (stepNumEl) stepNumEl.innerText = step;
+  // Views display
+  for (let i = 1; i <= 3; i++) {
+    const view = document.getElementById(`onboard-view-${i}`);
+    if (view) view.style.display = (i === step) ? "block" : "none";
 
-  // Indicators
-  for (let i = 1; i <= 5; i++) {
-    const ind = document.getElementById(`step-ind-${i}`);
-    if (ind) {
-      ind.classList.remove("active", "completed");
-      if (i === step) ind.classList.add("active");
-      else if (i < step) ind.classList.add("completed");
-    }
-    const content = document.getElementById(`onboard-step-${i}`);
-    if (content) {
-      content.classList.toggle("active", i === step);
+    const badge = document.getElementById(`onboard-step-badge-${i}`);
+    if (badge) {
+      if (i === step) {
+        badge.style.background = "#e0e7ff";
+        badge.style.color = "#4338ca";
+        badge.innerText = i;
+      } else if (i < step) {
+        badge.style.background = "#dcfce7";
+        badge.style.color = "#15803d";
+        badge.innerText = "✓";
+      } else {
+        badge.style.background = "#f1f5f9";
+        badge.style.color = "#94a3b8";
+        badge.innerText = i;
+      }
     }
   }
 
   // Buttons
-  const prevBtn = document.getElementById("onboard-prev-btn");
-  const nextBtn = document.getElementById("onboard-next-btn");
-  if (prevBtn) prevBtn.style.display = step > 1 ? "inline-flex" : "none";
-  if (nextBtn) {
-    nextBtn.style.display = step === 5 ? "none" : "inline-flex";
-    nextBtn.innerHTML = step === 4 ? `Review & Setup <i data-lucide="chevron-right"></i>` : `Continue <i data-lucide="chevron-right"></i>`;
+  const backBtn = document.getElementById("onboard-back-btn");
+  const contBtn = document.getElementById("onboard-continue-btn");
+  if (backBtn) backBtn.style.display = (step > 1) ? "inline-flex" : "none";
+  if (contBtn) contBtn.innerText = (step === 3) ? "Launch Dashboard →" : "Continue →";
+}
+
+function nextOnboardStep() {
+  if (onboardingLevelState.currentStep === 1) {
+    onboardingLevelState.currentStep = 2;
+    renderOnboardDynamicFields();
+    renderOnboardingWizardStep();
+    return;
   }
 
-  if (window.lucide) lucide.createIcons();
+  if (onboardingLevelState.currentStep === 2) {
+    const nameInput = document.getElementById("onboard-name-input");
+    const careerInput = document.getElementById("onboard-target-career-input");
+    onboardingLevelState.name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : "Student";
+    onboardingLevelState.targetCareer = careerInput && careerInput.value.trim() ? careerInput.value.trim() : "Exploring Careers";
+
+    // Summary for step 3
+    const confStage = document.getElementById("onboard-conf-stage");
+    const confModules = document.getElementById("onboard-conf-modules");
+    const confAi = document.getElementById("onboard-conf-ai");
+
+    if (confStage) confStage.innerText = onboardingLevelState.selectedLevel;
+    if (confModules) {
+      if (onboardingLevelState.selectedLevel.includes("9") || onboardingLevelState.selectedLevel.includes("10")) {
+        confModules.innerText = "Interests Assessment, Career Discovery, Stream Guide, Subject Explorer";
+      } else if (onboardingLevelState.selectedLevel.includes("11") || onboardingLevelState.selectedLevel.includes("12")) {
+        confModules.innerText = "Course & Degree Explorer, Find Colleges, Entrance Exams, Scholarships";
+      } else {
+        confModules.innerText = "SkillOpti Analysis, Resume ATS Scan, Mock Interviews, Job Pipeline";
+      }
+    }
+    if (confAi) {
+      if (onboardingLevelState.selectedLevel.includes("9") || onboardingLevelState.selectedLevel.includes("10")) {
+        confAi.innerText = "High School Stream & Subject Guidance";
+      } else if (onboardingLevelState.selectedLevel.includes("11") || onboardingLevelState.selectedLevel.includes("12")) {
+        confAi.innerText = "College Admissions & Entrance Strategy";
+      } else {
+        confAi.innerText = "Role Competency & ATS Optimization";
+      }
+    }
+
+    onboardingLevelState.currentStep = 3;
+    renderOnboardingWizardStep();
+    return;
+  }
+
+  if (onboardingLevelState.currentStep === 3) {
+    finishOnboardingLevel();
+  }
 }
 
-function selectOnboardingStage(stage) {
-  onboardingState.academicStage = stage;
-  const schoolCard = document.getElementById("stage-card-school");
-  const higherCard = document.getElementById("stage-card-higher");
-  const collegeCard = document.getElementById("stage-card-college");
-
-  if (schoolCard) schoolCard.classList.toggle("selected", stage.includes("10") || stage.includes("9"));
-  if (higherCard) higherCard.classList.toggle("selected", stage.includes("11") || stage.includes("12"));
-  if (collegeCard) collegeCard.classList.toggle("selected", stage.includes("Undergraduate") || stage.includes("Graduate"));
-
-  renderOnboardStageFields(stage);
+function nextOnboardingStep() {
+  nextOnboardStep();
 }
 
-function renderOnboardStageFields(stage) {
-  const container = document.getElementById("onboard-stage-specific-fields");
-  const desc = document.getElementById("onboard-step-3-desc");
+function prevOnboardStep() {
+  if (onboardingLevelState.currentStep > 1) {
+    onboardingLevelState.currentStep--;
+    renderOnboardingWizardStep();
+  }
+}
+
+function prevOnboardingStep() {
+  prevOnboardStep();
+}
+
+function renderOnboardDynamicFields() {
+  const container = document.getElementById("onboard-dynamic-fields-container");
+  const sub = document.getElementById("onboard-step-2-subtitle");
   if (!container) return;
 
-  if (stage.includes("10") || stage.includes("9")) {
-    if (desc) desc.innerText = "Select your favorite subjects and preferred learning approach for stream matching.";
+  const lvl = onboardingLevelState.selectedLevel;
+  if (lvl === "Class 9") {
+    if (sub) sub.innerText = "Class 9: Tell us your favorite subjects and exploratory interests.";
     container.innerHTML = `
       <div class="input-group">
-        <label class="input-label">Favorite School Subjects (Select all that apply)</label>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Favorite Subjects (Select all that apply)</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
           <div class="interest-chip selected" onclick="this.classList.toggle('selected')">📐 Mathematics</div>
-          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🔬 Science (Physics/Chem/Bio)</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🔬 Science (Physics/Chemistry/Bio)</div>
           <div class="interest-chip" onclick="this.classList.toggle('selected')">🌍 Social Studies & History</div>
           <div class="interest-chip" onclick="this.classList.toggle('selected')">📖 English & Literature</div>
           <div class="interest-chip selected" onclick="this.classList.toggle('selected')">💻 Computer Applications / Coding</div>
@@ -4037,106 +5018,175 @@ function renderOnboardStageFields(stage) {
         </div>
       </div>
       <div class="input-group" style="margin-top: 16px;">
-        <label class="input-label" for="onboard-learning-style">Preferred Learning Style</label>
-        <select id="onboard-learning-style" class="input-field">
-          <option value="Hands-on experiments & building things">Hands-on experiments & building things (Practical)</option>
-          <option value="Analytical problem-solving & logical formulas">Analytical problem-solving & logical formulas (Maths/Logic)</option>
-          <option value="Reading, writing & conceptual discussions">Reading, writing & conceptual discussions (Humanities)</option>
-          <option value="Visual diagrams, charts & multimedia">Visual diagrams, charts & multimedia (Creative)</option>
-        </select>
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Hobbies & Activities You Enjoy</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🤖 Building Gadgets / Robotics</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🎮 Gaming & Logic Puzzles</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">⚽ Sports & Athletics</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">✍️ Creative Writing & Debating</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">🎵 Music & Digital Production</div>
+        </div>
       </div>
     `;
-  } else if (stage.includes("11") || stage.includes("12")) {
-    if (desc) desc.innerText = "Select your current Class 11-12 stream and target national entrance examinations.";
+  } else if (lvl === "Class 10") {
+    if (sub) sub.innerText = "Class 10: Tell us your subjects and upcoming stream preferences.";
     container.innerHTML = `
       <div class="input-group">
-        <label class="input-label" for="onboard-current-stream">Current Higher Secondary Stream</label>
-        <select id="onboard-current-stream" class="input-field">
-          <option value="Science (PCM - Physics, Chemistry, Maths)">Science (PCM - Physics, Chemistry, Maths)</option>
-          <option value="Science (PCB - Physics, Chemistry, Biology)">Science (PCB - Physics, Chemistry, Biology)</option>
-          <option value="Science (PCMB - All Sciences & Maths)">Science (PCMB - All Sciences & Maths)</option>
-          <option value="Commerce (with Mathematics)">Commerce (with Mathematics)</option>
-          <option value="Commerce (without Mathematics / IP)">Commerce (without Mathematics / IP)</option>
-          <option value="Humanities / Arts">Humanities / Arts</option>
-          <option value="Vocational / Applied Skills">Vocational / Applied Skills</option>
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Stream Preference for Class 11</label>
+        <select class="input-field" id="onboard-class10-stream" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+          <option value="Science (PCM)">Science (PCM) - Physics, Chemistry, Mathematics (Engineering / Tech)</option>
+          <option value="Science (PCB)">Science (PCB) - Physics, Chemistry, Biology (Medicine / Life Sciences)</option>
+          <option value="Science (PCMB)">Science (PCMB) - Dual Science (Engineering & Medicine)</option>
+          <option value="Commerce with Maths">Commerce with Mathematics (Finance / Economics / CA)</option>
+          <option value="Commerce without Maths">Commerce without Mathematics (Business / Management)</option>
+          <option value="Humanities / Arts">Humanities / Arts (Law / Psychology / Media / UPSC)</option>
+          <option value="Vocational / Applied">Vocational / Applied Skills</option>
+          <option value="Undecided">Undecided - Need RIASEC Guidance</option>
         </select>
       </div>
       <div class="input-group" style="margin-top: 16px;">
-        <label class="input-label">Target Competitive Entrance Examinations</label>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
-          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">⚡ JEE (Main / Adv)</div>
-          <div class="interest-chip" onclick="this.classList.toggle('selected')">🩺 NEET-UG</div>
-          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">🎓 CUET-UG (Central Universities)</div>
-          <div class="interest-chip" onclick="this.classList.toggle('selected')">⚖️ CLAT (National Law Universities)</div>
-          <div class="interest-chip" onclick="this.classList.toggle('selected')">✈️ NDA (National Defence Academy)</div>
-          <div class="interest-chip" onclick="this.classList.toggle('selected')">🎨 NATA / UCEED (Design & Architecture)</div>
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Strongest Current Subjects</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Mathematics</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Science</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">Social Science</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">English</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Computer Applications</div>
         </div>
       </div>
     `;
-  } else {
-    if (desc) desc.innerText = "Provide details regarding your degree program, expected graduation, and career domain.";
+  } else if (lvl === "Class 11") {
+    if (sub) sub.innerText = "Class 11: Share your current stream, core subjects, and interests.";
     container.innerHTML = `
       <div class="input-group">
-        <label class="input-label" for="onboard-degree-name">Degree Program / Field of Study</label>
-        <input type="text" id="onboard-degree-name" class="input-field" placeholder="e.g. B.Tech Computer Science / B.Com Honours / B.A. Economics / MBBS / BCA / BBA">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Current Class 11 Stream</label>
+        <select class="input-field" id="onboard-class11-stream" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+          <option value="Science PCM">Science (Physics, Chemistry, Mathematics)</option>
+          <option value="Science PCB">Science (Physics, Chemistry, Biology)</option>
+          <option value="Commerce">Commerce (Accountancy, Business Studies, Economics)</option>
+          <option value="Humanities">Humanities (Political Science, History, Psychology)</option>
+        </select>
       </div>
-      <div class="grid-container" style="margin-bottom: 0;">
-        <div class="col-6">
-          <div class="input-group">
-            <label class="input-label" for="onboard-grad-year">Expected Graduation Year</label>
-            <select id="onboard-grad-year" class="input-field">
-              <option value="2026">2026 (Final Year)</option>
-              <option value="2027">2027 (Pre-Final Year)</option>
-              <option value="2028">2028 (Sophomore)</option>
-              <option value="2029">2029 (Freshman)</option>
-              <option value="Graduated">Already Graduated / Working</option>
-            </select>
-          </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Elective / Special Subject</label>
+        <input type="text" class="input-field" placeholder="e.g. Computer Science, Applied Math, Psychology, Fine Arts" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+      </div>
+    `;
+  } else if (lvl === "Class 12") {
+    if (sub) sub.innerText = "Class 12: Tell us your stream, preferred undergraduate courses, and entrance goals.";
+    container.innerHTML = `
+      <div class="input-group">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Current Stream</label>
+        <select class="input-field" id="onboard-class12-stream" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+          <option value="Science PCM">Science PCM</option>
+          <option value="Science PCB">Science PCB</option>
+          <option value="Commerce">Commerce</option>
+          <option value="Humanities">Humanities</option>
+        </select>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Preferred Undergraduate Degrees (Select)</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">B.Tech / B.E. (Engineering/CS)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">MBBS / BDS (Medicine)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">B.Com (Hons) / BBA</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">B.A. LL.B (5-Yr Law)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">B.Des (Design)</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">IPM (5-Yr IIM BBA+MBA)</div>
         </div>
-        <div class="col-6">
-          <div class="input-group">
-            <label class="input-label" for="onboard-primary-goal">Immediate Priority</label>
-            <select id="onboard-primary-goal" class="input-field">
-              <option value="Campus Placements & Software Roles">Campus Placements & Software Roles</option>
-              <option value="Internship Search">Summer / Off-Campus Internship</option>
-              <option value="Resume ATS & Interview Prep">Resume ATS & Mock Interview Practice</option>
-              <option value="Higher Studies (GATE / CAT / GRE)">Higher Studies (GATE / CAT / GRE)</option>
-            </select>
-          </div>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Target Entrance Exams</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">JEE Main / Advanced</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">NEET UG</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">CUET UG</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">CLAT</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">BITSAT</div>
+        </div>
+      </div>
+    `;
+  } else if (lvl === "Undergraduate") {
+    if (sub) sub.innerText = "Undergraduate: Tell us your current degree, specialization, and mastered skills.";
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Degree Program</label>
+          <input type="text" class="input-field" placeholder="e.g. B.Tech / B.Sc / B.Com" value="B.Tech" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+        </div>
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Specialization / Major</label>
+          <input type="text" class="input-field" placeholder="e.g. Computer Science & AI" value="Computer Science" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Skills You Currently Know</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Python</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">SQL</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Data Analysis</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">React / JS</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">Machine Learning</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">Git & GitHub</div>
+        </div>
+      </div>
+    `;
+  } else if (lvl === "Postgraduate") {
+    if (sub) sub.innerText = "Postgraduate: Tell us your degree, specialization, and career goal.";
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Postgraduate Degree</label>
+          <input type="text" class="input-field" placeholder="e.g. M.Tech / MBA / M.Sc" value="M.Tech" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+        </div>
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Specialization</label>
+          <input type="text" class="input-field" placeholder="e.g. Artificial Intelligence & Robotics" value="Artificial Intelligence" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Career Goal / Target Industry</label>
+        <input type="text" class="input-field" placeholder="e.g. AI Research Scientist / Quant Analyst" value="AI Research Scientist" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+      </div>
+    `;
+  } else {
+    // Graduate / Job Seeker
+    if (sub) sub.innerText = "Graduate / Job Seeker: Tell us your qualification, skills, experience, and target role.";
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Highest Qualification</label>
+          <input type="text" class="input-field" placeholder="e.g. B.Tech in CSE / MBA" value="B.Tech" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+        </div>
+        <div class="input-group">
+          <label class="input-label" style="font-weight: 600; color: #1e293b;">Work Experience</label>
+          <select class="input-field" style="background: #fff; border-color: #cbd5e1; color: #0f172a;">
+            <option value="0">Fresh Graduate (0 years)</option>
+            <option value="1-2">1 - 2 Years</option>
+            <option value="3-5">3 - 5 Years</option>
+            <option value="5+">5+ Years</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-group" style="margin-top: 16px;">
+        <label class="input-label" style="font-weight: 600; color: #1e293b;">Core Skills Mastered</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Python</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">SQL</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Data Analysis</div>
+          <div class="interest-chip selected" onclick="this.classList.toggle('selected')">Machine Learning</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">Cloud / AWS</div>
+          <div class="interest-chip" onclick="this.classList.toggle('selected')">Docker</div>
         </div>
       </div>
     `;
   }
-
-  if (window.lucide) lucide.createIcons();
 }
 
-function toggleOnboardNotSure(cb) {
-  const careerInput = document.getElementById("onboard-career");
-  if (!careerInput) return;
-  if (cb.checked) {
-    careerInput.value = "Undecided - Exploring Options";
-    careerInput.disabled = true;
-  } else {
-    careerInput.value = "";
-    careerInput.disabled = false;
-    careerInput.focus();
-  }
-}
-
-function toggleOnboardingChip(chip, name) {
-  chip.classList.toggle("selected");
-  if (chip.classList.contains("selected")) {
-    if (!onboardingState.interests.includes(name)) onboardingState.interests.push(name);
-  } else {
-    onboardingState.interests = onboardingState.interests.filter(i => i !== name);
-  }
-}
-
-function finishOnboarding() {
-  const name = onboardingState.name || "Explorer";
-  const stage = onboardingState.academicStage || "Class 10";
-  const career = onboardingState.targetCareer || "Software Engineer";
+function finishOnboardingLevel() {
+  const name = onboardingLevelState.name || "Explorer";
+  const stage = onboardingLevelState.selectedLevel || "Class 10";
+  const career = onboardingLevelState.targetCareer || "Software Engineer";
 
   if (!state.user) {
     state.user = {
@@ -4155,7 +5205,6 @@ function finishOnboarding() {
   state.academicStage = stage;
   saveStateToLocalStorage();
 
-  // If ApiClient active, sync profile to Supabase
   if (window.ApiClient && ApiClient.saveUserProfile) {
     ApiClient.saveUserProfile({
       user: state.user,
@@ -4169,4 +5218,8 @@ function finishOnboarding() {
   onStageChange(stage);
   switchTab("dashboard");
   showToast(`Welcome, ${name}! Your personalized ${stage} dashboard is ready.`, "success");
+}
+
+function finishOnboarding() {
+  finishOnboardingLevel();
 }
